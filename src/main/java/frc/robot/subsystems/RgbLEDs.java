@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Seconds;
 
 public class RgbLEDs extends SubsystemBase {
     AddressableLED led;
@@ -48,7 +50,14 @@ public class RgbLEDs extends SubsystemBase {
                 led.setData(ledBuffer);
   }
 
-public Command runPattern(LEDPattern pattern) {
- return run(() -> pattern.applyTo(ledBuffer));
+  public Command runPattern(LEDPattern pattern) {
+  return run(() -> pattern.applyTo(ledBuffer));
+  }
+  public void RGBflash(){
+  LEDPattern white = LEDPattern.solid(Color.kWhite);
+  LEDPattern pattern = white.blink(Seconds.of(1.5));
+  pattern = white.atBrightness(Percent.of(200));
+  white.applyTo(ledBuffer);
+  led.setData(ledBuffer);
   }
   }
