@@ -14,6 +14,15 @@ import frc.robot.commands.DealgerDrop;
 import frc.robot.commands.DealgerUp;
 import frc.robot.commands.ElevatorManualUp;
 import frc.robot.commands.ElevatorManualDown;
+<<<<<<< HEAD
+=======
+import frc.robot.commands.ElevatorTestOFF;
+
+import frc.robot.commands.HexAlign;
+import frc.robot.commands.ElevatorTestDOWN;
+import frc.robot.commands.ElevatorTestUP;
+import frc.robot.commands.ElevatorTestOFF;
+>>>>>>> eec7464 (Fixed drive constants for Marcus' preferences)
 import frc.robot.subsystems.CageClimber;
 import frc.robot.subsystems.Dealger;
 import frc.robot.subsystems.Elevator;
@@ -127,9 +136,23 @@ public class RobotContainer {
      */
     private void configureControllerBindings() {
 
+<<<<<<< HEAD
         // controller.getX().whileTrue(elevatorTestUP);
         // controller.getY().whileTrue(elevatorTestDOWN);
         // controller.getB().whileTrue(elevatorTestOFF);
+=======
+  /**
+   * Use whis method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * 
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
+   */
+  private void configureControllerBindings() {
+>>>>>>> eec7464 (Fixed drive constants for Marcus' preferences)
 
         sd.setDefaultCommand(
                 new RunCommand(() -> sd.drive(
@@ -199,9 +222,20 @@ public class RobotContainer {
          * controller.getB().whileTrue(elevatorTestOFF);
          */
 
+<<<<<<< HEAD
         controller.getBack().onTrue(
                 new InstantCommand(
                         () -> elevator.toggleAlgaeDown()));
+=======
+      teoController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
+        -MathUtil.applyDeadband(teoController.getLeftY() * -1, OperatorConstants.DEADBAND), 
+        -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
+        -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
+        true, 
+        true, 
+        true)
+      ,sd));
+>>>>>>> eec7464 (Fixed drive constants for Marcus' preferences)
 
         controller.getStart().onTrue(
                 new InstantCommand(
@@ -220,10 +254,24 @@ public class RobotContainer {
 
         // controller.getA().whileTrue(dealgerdown);
 
+<<<<<<< HEAD
         // end effector commands
         controller.getLeftTrigger().whileTrue(endEffectorGrab);
         controller.getRightTrigger().whileTrue(endEffectorDrop);
         controller.getLeft().whileTrue(endEffectorReverse);
+=======
+    flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
+        -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 
+        -MathUtil.applyDeadband(flightcont.getJoyY(), OperatorConstants.DEADBAND), 
+        -MathUtil.applyDeadband(flightcont.getTwist(), OperatorConstants.DEADBAND), 
+        true, 
+        true, 
+        true)
+      ,sd));
+
+    flightcont.getButton2().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+  }
+>>>>>>> eec7464 (Fixed drive constants for Marcus' preferences)
 
         controller.getUp().whileTrue(dealgerup);
         controller.getDown().whileTrue(dealgerdown);

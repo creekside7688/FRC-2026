@@ -20,7 +20,8 @@ public class DriveConstants {
 
     public static final double DIRECTION_SLEW_RATE = 8; // radians per second
     public static final double MAGNITUDE_SLEW_RATE = 8; // percent per second (1 = 100%)
-    public static final double ROTATION_SLEW_RATE = 2.0; // percent per second (1 = 100%)
+    public static final double ROTATION_SLEW_RATE = 7; // percent per second (1 = 100%), speed rotating starts and stops. Max is 7 for safety.
+    
 
     public static final double TRACK_WIDTH = Units.inchesToMeters(19.5); // Distance between left and right wheels on robot
     public static final double WHEEL_BASE = TRACK_WIDTH; // Distance between front and back wheels on robot
