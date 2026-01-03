@@ -18,7 +18,6 @@ import frc.robot.commands.ElevatorManualDown;
 =======
 import frc.robot.commands.ElevatorTestOFF;
 
-import frc.robot.commands.HexAlign;
 import frc.robot.commands.ElevatorTestDOWN;
 import frc.robot.commands.ElevatorTestUP;
 import frc.robot.commands.ElevatorTestOFF;
@@ -41,6 +40,8 @@ import frc.lib.FlightControl;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -63,7 +64,6 @@ public class RobotContainer {
     // private final ElevatorTestSubsystem m_ElevatorTestSubsystem = new
     // ElevatorTestSubsystem();
     private final Elevator elevator = new Elevator();
-    private final SwerveDrive sd = new SwerveDrive();
 
     private final Controller controller = new Controller(1);
     private final Controller teoController = new Controller(2);
@@ -80,6 +80,10 @@ public class RobotContainer {
     private final ElevatorManualDown manualDown = new ElevatorManualDown(elevator);
 
     private final Limelight cam = new Limelight();
+
+
+    private final SwerveDrive sd = new SwerveDrive(cam);
+
     private final FlightControl flightcont = new FlightControl(3);
 
     private final AutoAlign autoAlign = new AutoAlign(sd, cam);
@@ -298,6 +302,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
-        return ab;
+        return sd.followPath(new Pose2d(10, 6, new Rotation2d()));
     }
 }
