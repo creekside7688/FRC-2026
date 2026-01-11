@@ -6,7 +6,6 @@ package frc.robot;
 
 
 
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.RgbLEDs;
 import frc.robot.subsystems.SwerveDrive;
@@ -26,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import frc.robot.constants.OperatorConstants;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
 
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveDrive sd = new SwerveDrive();
 
   private final Controller controller = new Controller(1 );
@@ -149,8 +149,8 @@ public class RobotContainer {
    
     
     //example commands
-    controller.getLeftBumper().whileTrue();
-    controller.getRightBumper().onTrue();
+    //controller.getLeftBumper().whileTrue();
+    //controller.getRightBumper().onTrue();
     
 
   }
@@ -175,8 +175,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return ab;
+    return null;
   }
 }
