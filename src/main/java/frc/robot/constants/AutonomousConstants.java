@@ -17,11 +17,11 @@ public class AutonomousConstants {
     public static final double MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
     public static final double MAXIMUM_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 5;
 
-    public static final double PATH_TRANSLATION_P = 1;
+    public static final double PATH_TRANSLATION_P = 2;
     public static final double PATH_TRANSLATION_I = 0;
     public static final double PATH_TRANSLATION_D = 0;
 
-    public static final double PATH_THETA_P = 1;
+    public static final double PATH_THETA_P = 2;
     public static final double PATH_THETA_I = 0;
     public static final double PATH_THETA_D = 0;
 

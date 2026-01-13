@@ -3,13 +3,21 @@ package frc.robot.subsystems;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
 
+import java.util.List;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.simulation.SimCameraProperties;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,12 +28,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,57 +44,62 @@ import frc.lib.SwerveUtils;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.VisionConstants;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 //limit
 public class SwerveDrive extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
-        DriveConstants.FL_DRIVE_MOTOR,
-        DriveConstants.FL_TURN_MOTOR,
-        DriveConstants.FL_OFFSET
-    );
+            DriveConstants.FL_DRIVE_MOTOR,
+            DriveConstants.FL_TURN_MOTOR,
+            DriveConstants.FL_OFFSET);
 
     private final SwerveModule frontRight = new SwerveModule(
-        DriveConstants.FR_DRIVE_MOTOR,
-        DriveConstants.FR_TURN_MOTOR,
-        DriveConstants.FR_OFFSET
-    );
+            DriveConstants.FR_DRIVE_MOTOR,
+            DriveConstants.FR_TURN_MOTOR,
+            DriveConstants.FR_OFFSET);
 
     private final SwerveModule backLeft = new SwerveModule(
-        DriveConstants.BL_DRIVE_MOTOR,
-        DriveConstants.BL_TURN_MOTOR,
-        DriveConstants.BL_OFFSET
-    );
+            DriveConstants.BL_DRIVE_MOTOR,
+            DriveConstants.BL_TURN_MOTOR,
+            DriveConstants.BL_OFFSET);
 
     private final SwerveModule backRight = new SwerveModule(
-        DriveConstants.BR_DRIVE_MOTOR,
-        DriveConstants.BR_TURN_MOTOR,
-        DriveConstants.BR_OFFSET
-    );
- 
+            DriveConstants.BR_DRIVE_MOTOR,
+            DriveConstants.BR_TURN_MOTOR,
+            DriveConstants.BR_OFFSET);
+
     // Gyro
     private final AHRS gyro = new AHRS(NavXComType.kUSB1);
 
     /*
-     * Kalman Filter Configuration. These can be "tuned-to-taste" based on how much you trust your various sensors. Smaller numbers will cause the
-     * filter to "trust" the estimate from that particular component more than the others. This in turn means the particular component will have a
+     * Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
+     * you trust your various sensors. Smaller numbers will cause the
+     * filter to "trust" the estimate from that particular component more than the
+     * others. This in turn means the particular component will have a
      * stronger influence on the final pose estimate.
      */
 
     /**
-     * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This matrix is in the form [x, y,
+     * Standard deviations of model states. Increase these numbers to trust your
+     * model's state estimates less. This matrix is in the form [x, y,
      * theta]ᵀ, with units in meters and radians, then meters.
      */
-    private static final Vector<N3> stateDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
+    private static final Vector<N3> stateDeviations = VecBuilder.fill(1., 1., 1.);
 
     /**
-     * Standard deviations of the vision measurements. Increase these numbers to trust global measurements from vision less. This matrix is in the
+     * Standard deviations of the vision measurements. Increase these numbers to
+     * trust global measurements from vision less. This matrix is in the
      * form [x, y, theta]ᵀ, with units in meters and radians.
      */
-    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(1.5, 1.5, 1.5);
+
+    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(.5, .5, .5);
 
     private final SwerveDrivePoseEstimator poseEstimator;
 
-    private final Field2d field = new Field2d();    
+    private final Field2d field = new Field2d();
+
+    private final Limelight camera;
 
     private OriginPosition originPosition = kBlueAllianceWallRightSide;
     private boolean sawTag = false;
@@ -98,48 +114,44 @@ public class SwerveDrive extends SubsystemBase {
 
     private double previousTime = WPIUtilJNI.now() * 1e-6;
 
-    public SwerveDrive() {
+    public SwerveDrive(Limelight limelight) {
         this.zeroHeading();
         gyro.setAngleAdjustment(270);
-        
 
-       
+        camera = limelight;
 
         this.poseEstimator = new SwerveDrivePoseEstimator(
-            DriveConstants.SWERVE_KINEMATICS,
-            this.getRotation2d(),
-            this.getModulePositions(),
-            new Pose2d(),
-            stateDeviations,
-            visionMeasurementDeviations
-        );
+                DriveConstants.SWERVE_KINEMATICS,
+                this.getRotation2d(),
+                this.getModulePositions(),
+                new Pose2d(),
+                stateDeviations,
+                visionMeasurementDeviations);
 
         RobotConfig config;
-        try{
+        try {
             config = RobotConfig.fromGUISettings();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             config = null;
             e.printStackTrace();
         }
 
         AutoBuilder.configure(
-            this::getPose,
-            this::setPose,
-            this::getChassisSpeeds,
-            this::driveRelative,
-            AutonomousConstants.pfc,
-            config,
-            () -> {
-                var alliance = DriverStation.getAlliance();
-                if(alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
+                this::getPose,
+                this::setPose,
+                this::getChassisSpeeds,
+                this::driveRelative,
+                AutonomousConstants.pfc,
+                config,
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
 
-                return false;
-            },
-            this
-        );
+                    return false;
+                },
+                this);
 
         SimCameraProperties cameraProperties = new SimCameraProperties();
         cameraProperties.setCalibration(640, 480, Rotation2d.fromDegrees(75.76079874010732));
@@ -153,7 +165,8 @@ public class SwerveDrive extends SubsystemBase {
                 builder.addDoubleProperty("Front Left Velocity", () -> frontLeft.getState().speedMetersPerSecond, null);
 
                 builder.addDoubleProperty("Front Right Angle", () -> frontRight.getPosition().angle.getRadians(), null);
-                builder.addDoubleProperty("Front Right Velocity", () -> frontRight.getState().speedMetersPerSecond, null);
+                builder.addDoubleProperty("Front Right Velocity", () -> frontRight.getState().speedMetersPerSecond,
+                        null);
 
                 builder.addDoubleProperty("Back Left Angle", () -> backLeft.getPosition().angle.getRadians(), null);
                 builder.addDoubleProperty("Back Left Velocity", () -> backLeft.getState().speedMetersPerSecond, null);
@@ -173,49 +186,56 @@ public class SwerveDrive extends SubsystemBase {
         // Update pose estimator with encoder data
         poseEstimator.update(this.getRotation2d(), this.getModulePositions());
 
+        updateVisionPose();
+
         // Add the pose to the dashboard
         Pose2d dashboardPose = poseEstimator.getEstimatedPosition();
 
-        if(originPosition == kRedAllianceWallRightSide) {
+        if (originPosition == kRedAllianceWallRightSide) {
             dashboardPose = flipAlliance(dashboardPose);
         }
 
         // Update the pose on the field.
         field.setRobotPose(dashboardPose);
 
-       // SmartDashboard.putData("Field", field);
-       // SmartDashboard.putNumber("Heading", this.getRotation2d().getDegrees());
+        SmartDashboard.putData("Field", field);
+        SmartDashboard.putNumber("Heading", this.getRotation2d().getDegrees());
     }
 
     /**
      * Drives the robot using controller input.
      */
-    public void drive(double xSpeed, double ySpeed, double rSpeed, boolean limitSpeed, boolean fieldRelative, boolean rateLimit) {
+    public void drive(double xSpeed, double ySpeed, double rSpeed, boolean limitSpeed, boolean fieldRelative,
+            boolean rateLimit) {
 
         xSpeed = xSpeed * -1;
 
         // Cube the inputs for fine control at low speeds.
 
+        if (xSpeed < 0)
+            xSpeed = -Math.pow(Math.abs(xSpeed), 0.5);
+        else
+            xSpeed = Math.pow(Math.abs(xSpeed), 0.5);
 
-        if (xSpeed < 0) xSpeed = - Math.pow(Math.abs(xSpeed), 0.5); 
-        else xSpeed = Math.pow(Math.abs(xSpeed), 0.5);
+        if (ySpeed < 0)
+            ySpeed = -Math.pow(Math.abs(ySpeed), 0.5);
+        else
+            ySpeed = Math.pow(Math.abs(ySpeed), 0.5);
 
-        if (ySpeed < 0) ySpeed = - Math.pow(Math.abs(ySpeed), 0.5); 
-        else ySpeed = Math.pow(Math.abs(ySpeed), 0.5);
+        /*
+         * if (rSpeed < 0) rSpeed = - Math.pow(Math.abs(rSpeed), 0.5);
+         * else rSpeed = Math.pow(Math.abs(rSpeed), 0.5);
+         */
 
-        /*if (rSpeed < 0) rSpeed = - Math.pow(Math.abs(rSpeed), 0.5); 
-        else rSpeed = Math.pow(Math.abs(rSpeed), 0.5);*/
-
-        /* 
-        xSpeed = Math.pow(xSpeed, 1);
-        ySpeed = Math.pow(ySpeed, 1);
-        */
+        /*
+         * xSpeed = Math.pow(xSpeed, 1);
+         * ySpeed = Math.pow(ySpeed, 1);
+         */
         rSpeed = Math.pow(rSpeed, 1);
 
         SmartDashboard.putNumber("xTransformed", xSpeed);
         SmartDashboard.putNumber("yTransformed", ySpeed);
         SmartDashboard.putNumber("rTransformed", rSpeed);
-
 
         SmartDashboard.putNumber("yaw", gyro.getYaw());
 
@@ -223,7 +243,7 @@ public class SwerveDrive extends SubsystemBase {
         double ySpeedCommand;
 
         // If we want to ratelimit
-        if(rateLimit) {
+        if (rateLimit) {
             // Get the elapsed time since the last period
             double currentTime = WPIUtilJNI.now() * 1e-6;
             double elapsedTime = currentTime - previousTime;
@@ -235,7 +255,7 @@ public class SwerveDrive extends SubsystemBase {
             double directionSlewRate;
 
             // If we are moving
-            if(currentTranslationMagnitude != 0.0) {
+            if (currentTranslationMagnitude != 0.0) {
                 // Apply a slew rate.
                 directionSlewRate = Math.abs(DriveConstants.DIRECTION_SLEW_RATE / currentTranslationMagnitude);
 
@@ -249,18 +269,19 @@ public class SwerveDrive extends SubsystemBase {
             double angleDif = SwerveUtils.angleDifference(inputTranslationDirection, currentTranslationDirection);
 
             // If the difference is less than 0.45 radians
-            if(angleDif < (0.45 * Math.PI)) {
+            if (angleDif < (0.45 * Math.PI)) {
                 // Step towards the input direction
                 currentTranslationDirection = SwerveUtils
-                    .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection, directionSlewRate * elapsedTime);
+                        .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection,
+                                directionSlewRate * elapsedTime);
 
                 // Limit the magnitude
                 currentTranslationMagnitude = magnitudeLimiter.calculate(inputTranslationMagnitude);
 
                 // If the difference is greater than 0.85 radians
-            } else if(angleDif > 0.85 * Math.PI) {
+            } else if (angleDif > 0.85 * Math.PI) {
                 // If the robot is moving
-                if(currentTranslationMagnitude > 1e-4) {
+                if (currentTranslationMagnitude > 1e-4) {
                     // Remove the magnitude
                     currentTranslationMagnitude = magnitudeLimiter.calculate(0.0);
 
@@ -275,7 +296,8 @@ public class SwerveDrive extends SubsystemBase {
             } else {
                 // Step towards the input direction, but remove the magnitude.
                 currentTranslationDirection = SwerveUtils
-                    .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection, directionSlewRate * elapsedTime);
+                        .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection,
+                                directionSlewRate * elapsedTime);
                 currentTranslationMagnitude = magnitudeLimiter.calculate(0.0);
             }
 
@@ -294,20 +316,24 @@ public class SwerveDrive extends SubsystemBase {
 
         // Convert the speeds into percentages of the maximum speed.
         double xSpeedDelivered = xSpeedCommand
-            * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
+                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND
+                        : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
 
         double ySpeedDelivered = ySpeedCommand
-            * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
+                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND
+                        : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
 
-        double rotDelivered = currentRotation * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND
-            : DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
+        double rotDelivered = currentRotation
+                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND
+                        : DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
 
-        // Calculate the desired module states based on if we are driving field relative or not.
+        // Calculate the desired module states based on if we are driving field relative
+        // or not.
         SwerveModuleState[] swerveModuleStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, this.getRotation2d())
-                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
-        );
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+                                this.getRotation2d())
+                        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
 
         // Desaturate the wheel speeds to prevent any speeds from exceeding the maximum.
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
@@ -333,7 +359,8 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     /**
-     * Sets the wheels into an X formation to prevent movement. Use for defense or when the robot needs to be stationary.
+     * Sets the wheels into an X formation to prevent movement. Use for defense or
+     * when the robot needs to be stationary.
      */
     public void lockPosition() {
         frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -350,28 +377,29 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     /**
-     * Returns the current state of the swerve drive in the form of a chassis speeds object.
+     * Returns the current state of the swerve drive in the form of a chassis speeds
+     * object.
      */
     public ChassisSpeeds getChassisSpeeds() {
         return DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(
-            new SwerveModuleState[] {
-                frontLeft.getState(),
-                frontRight.getState(),
-                backLeft.getState(),
-                backRight.getState()
-            }
-        );
+                new SwerveModuleState[] {
+                        frontLeft.getState(),
+                        frontRight.getState(),
+                        backLeft.getState(),
+                        backRight.getState()
+                });
     }
 
     /**
-     * Returns the current state of the swerve drive in the form of a swerve module state array.
+     * Returns the current state of the swerve drive in the form of a swerve module
+     * state array.
      */
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-            frontLeft.getPosition(),
-            frontRight.getPosition(),
-            backLeft.getPosition(),
-            backRight.getPosition()
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition()
         };
     }
 
@@ -381,6 +409,12 @@ public class SwerveDrive extends SubsystemBase {
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
+
+    public void updatePoseEstimates(EstimatedRobotPose estimatedRobotPose, Matrix<N3, N1> VstdDevs) {
+        poseEstimator.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(),
+                estimatedRobotPose.timestampSeconds, VstdDevs);
+    }
+
 
     /**
      * Returns the current rotation of the robot.
@@ -403,11 +437,10 @@ public class SwerveDrive extends SubsystemBase {
         Pose2d pose = this.getPose();
 
         return String.format(
-            "(%.3f, %.3f) %.2f degrees",
-            pose.getX(),
-            pose.getY(),
-            pose.getRotation().getDegrees()
-        );
+                "(%.3f, %.3f) %.2f degrees",
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees());
     }
 
     /**
@@ -417,8 +450,17 @@ public class SwerveDrive extends SubsystemBase {
         poseEstimator.resetPosition(this.getRotation2d(), this.getModulePositions(), pose);
     }
 
+    private void updateVisionPose() {
+        var ePose = camera.getEstimatedPosition();
+        if (ePose.isPresent()) {
+            var pose = ePose.get();
+            poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+        }
+    }
+
     /**
-     * Resets the position on the field to 0, 0, 0-degrees, with forward being downfield. This resets what "forward" is for field oriented driving.
+     * Resets the position on the field to 0, 0, 0-degrees, with forward being
+     * downfield. This resets what "forward" is for field oriented driving.
      */
     public void resetPose() {
         this.setPose(new Pose2d());
@@ -454,7 +496,8 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     /**
-     * Transforms a pose to the opposite alliance's coordinate system. (0,0) is always on the right corner of your alliance wall, so for 2023, the
+     * Transforms a pose to the opposite alliance's coordinate system. (0,0) is
+     * always on the right corner of your alliance wall, so for 2023, the
      * field elements are at different coordinates for each alliance.
      * 
      * @param pose pose to transform to the other alliance
@@ -472,7 +515,7 @@ public class SwerveDrive extends SubsystemBase {
     public void setAlliance(Alliance alliance) {
         boolean allianceChanged = false;
 
-        switch(alliance) {
+        switch (alliance) {
             case Blue:
                 allianceChanged = (originPosition == kRedAllianceWallRightSide);
                 originPosition = kBlueAllianceWallRightSide;
@@ -486,7 +529,7 @@ public class SwerveDrive extends SubsystemBase {
         }
 
         // If the alliance was changed and we saw a tag
-        if(allianceChanged && sawTag) {
+        if (allianceChanged && sawTag) {
             // Flip the pose
             Pose2d newPose = flipAlliance(this.getPose());
             poseEstimator.resetPosition(this.getRotation2d(), this.getModulePositions(), newPose);
@@ -497,6 +540,25 @@ public class SwerveDrive extends SubsystemBase {
         tab.add("Field", field).withPosition(0, 0).withSize(6, 4);
         tab.addString("Pose", this::getFomattedPose).withPosition(6, 2).withSize(2, 1);
     }
-}
 
-//swerveDrive
+    public Command followPath(Pose2d endPose) {
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(getPose(), endPose);
+
+        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for
+                                                                                               // this path.
+
+        // Create the path using the waypoints created above
+        PathPlannerPath path = new PathPlannerPath(
+                waypoints,
+                constraints,
+                null, // The ideal starting state, this is only relevant for pre-planned paths, so can
+                      // be null for on-the-fly paths.
+                new GoalEndState(0.0,new Rotation2d())
+        );
+
+        // Prevent the path from being flipped if the coordinates are already correct
+        path.preventFlipping = true;
+
+        return AutoBuilder.followPath(path);
+    }
+}
