@@ -69,7 +69,7 @@ public class RobotContainer {
                                         Units.Volts.of(0.1),
                                         Units.Volts.of(0.1),
                                         Units.Meters.of(ModuleConstants.WHEEL_RADIUS_METRES),
-                                        Units.KilogramSquareMeters.of(0.01),
+                                        Units.KilogramSquareMeters.of(0.02),
                                         COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof))
                         .withBumperSize(Units.Inches.of(30), Units.Inches.of(30));
 

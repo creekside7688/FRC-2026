@@ -76,7 +76,7 @@ public class SwerveDrive extends SubsystemBase {
      * form [x, y, theta]ᵀ, with units in meters and radians.
      */
 
-    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(.5, .5, .5);
+    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(.9, .9, 1.5);
 
     private final SwerveDrivePoseEstimator poseEstimator;
 

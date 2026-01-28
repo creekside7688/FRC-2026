@@ -11,13 +11,13 @@ import edu.wpi.first.units.Units;
 import frc.robot.constants.ModuleConstants;
 
 public class ModuleIOMapleSim implements ModuleIO {
-    private static final double DRIVE_KP = 0.4;
+    private static final double DRIVE_KP = 0.5;
     private static final double DRIVE_KI = 0.0;
     private static final double DRIVE_KD = 0.0;
 
-    private static final double TURN_KP = 1.0;
+    private static final double TURN_KP = 7.0;
     private static final double TURN_KI = 0.0;
-    private static final double TURN_KD = 0.0;
+    private static final double TURN_KD = 0.5;
 
     private final SwerveModuleSimulation module;
     private final SimulatedMotorController.GenericMotorController driveMotor;
