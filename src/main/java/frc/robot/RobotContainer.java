@@ -36,6 +36,11 @@ import frc.robot.constants.OperatorConstants;
  */
 public class RobotContainer {
 
+  Intake intake = new Intake();
+  Intake_Cmds intake_cmds = new Intake_Cmds(intake);
+  Joystick joystick = new Joystick(0);
+  JoystickButton joystick_btn = new JoystickButton(joystick, 0);
+
   private final SwerveDrive sd = new SwerveDrive();
 
   private final Controller controller = new Controller(1 );
@@ -73,8 +78,10 @@ public class RobotContainer {
    */
   private void configureControllerBindings() {
 
-  
 
+    joystick_btn.whileTrue(intake_cmds);
+
+  
     cam.setDefaultCommand(
       new RunCommand(() -> cam.updatesd(), cam)
     );
