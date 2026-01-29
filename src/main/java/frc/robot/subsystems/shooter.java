@@ -34,8 +34,9 @@ public class shooter extends SubsystemBase {
   
   private final SparkMax hoodMotor;
   private final AbsoluteEncoder hoodMotorEncoder;
+  private final AbsoluteEncoder shootMotor1Encoder; 
 
-  private final TalonSRX feedControllerSrx = new TalonSRX(0); //I actually dunno this ID
+  private final TalonSRX feedControllerSrx = new TalonSRX(ShooterConstants.FEED_MOTOR_SRX_ID); //I actually dunno this ID
 
   
   
@@ -44,11 +45,13 @@ public class shooter extends SubsystemBase {
   
   
   @SuppressWarnings("removal")
-  public shooter(int hoodMotor, int shootMotor1) {
+  public shooter() {
     
-    this.hoodMotor = new SparkMax(hoodMotor, MotorType.kBrushless);
-    this.shootMotor1 = new SparkMax(shootMotor1, MotorType.kBrushless);
+    this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
+    this.shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
+
     this.hoodMotorEncoder = this.hoodMotor.getAbsoluteEncoder();
+    this.shootMotor1Encoder = this.hoodMotor.getAbsoluteEncoder();
 
     sm1_Controller = this.shootMotor1.getClosedLoopController();
     hood_Controller = this.hoodMotor.getClosedLoopController();
