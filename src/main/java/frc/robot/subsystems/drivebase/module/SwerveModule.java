@@ -10,36 +10,31 @@ public class SwerveModule {
 
   private final ModuleIO io;
   private final String descriptor;
-  private final double angularOffset; // radians
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
   private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
-  public SwerveModule(ModuleIO io, double angularOffset, String descriptor) {
+  public SwerveModule(ModuleIO io, String descriptor) {
     this.io = io;
-    this.angularOffset = angularOffset;
     this.descriptor = descriptor;
   }
 
 
   public void update() {
-      io.update();
       io.updateInputs(inputs);
-      Logger.processInputs("drive/module{descriptor}", inputs);
+      Logger.processInputs("Drive/Module".concat(descriptor), inputs);
   }
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(
         io.getDriveVelocity(),
-        io.getTurnAngle().minus(Rotation2d.fromRadians(angularOffset))
-    );
+        io.getTurnAngle());
   }
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
         io.getDrivePosition(),
-        io.getTurnAngle().minus(Rotation2d.fromRadians(angularOffset))
-    );
+        io.getTurnAngle());
   }
 
   public SwerveModuleState getDesiredState() {
@@ -49,7 +44,7 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState state) {
     SwerveModuleState correctedState = new SwerveModuleState(
         state.speedMetersPerSecond,
-        state.angle.plus(Rotation2d.fromRadians(angularOffset))
+        state.angle
     );
 
     correctedState.optimize(io.getTurnAngle());

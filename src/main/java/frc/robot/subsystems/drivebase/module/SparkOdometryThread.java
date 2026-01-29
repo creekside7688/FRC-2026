@@ -25,6 +25,7 @@ import com.revrobotics.spark.SparkBase;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.constants.DriveConstants;
+import frc.robot.subsystems.drivebase.SwerveDrive;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -56,20 +57,20 @@ public class SparkOdometryThread {
 
     public void start() {
         if (!timestampQueues.isEmpty()) {
-            notifier.startPeriodic(1.0 / DriveConstants.odometryFrequency);
+            notifier.startPeriodic(1.0 / DriveConstants.ODOMETRY_FREQUENCY);
         }
     }
 
     /** Registers a Spark signal to be read from the thread. */
     public Queue<Double> registerSignal(SparkBase spark, DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
-        Drive.odometryLock.lock();
+        SwerveDrive.odometryLock.lock();
         try {
             sparks.add(spark);
             sparkSignals.add(signal);
             sparkQueues.add(queue);
         } finally {
-            Drive.odometryLock.unlock();
+            SwerveDrive.odometryLock.unlock();
         }
         return queue;
     }
@@ -77,12 +78,12 @@ public class SparkOdometryThread {
     /** Registers a generic signal to be read from the thread. */
     public Queue<Double> registerSignal(DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
-        Drive.odometryLock.lock();
+        SwerveDrive.odometryLock.lock();
         try {
             genericSignals.add(signal);
             genericQueues.add(queue);
         } finally {
-            Drive.odometryLock.unlock();
+            SwerveDrive.odometryLock.unlock();
         }
         return queue;
     }
@@ -90,18 +91,18 @@ public class SparkOdometryThread {
     /** Returns a new queue that returns timestamp values for each sample. */
     public Queue<Double> makeTimestampQueue() {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
-        Drive.odometryLock.lock();
+        SwerveDrive.odometryLock.lock();
         try {
             timestampQueues.add(queue);
         } finally {
-            Drive.odometryLock.unlock();
+            SwerveDrive.odometryLock.unlock();
         }
         return queue;
     }
 
     private void run() {
         // Save new data to queues
-        Drive.odometryLock.lock();
+        SwerveDrive.odometryLock.lock();
         try {
             // Get sample timestamp
             double timestamp = RobotController.getFPGATime() / 1e6;
@@ -129,7 +130,7 @@ public class SparkOdometryThread {
                 }
             }
         } finally {
-            Drive.odometryLock.unlock();
+            SwerveDrive.odometryLock.unlock();
         }
     }
 }

@@ -38,7 +38,5 @@ public interface ModuleIO {
   public void setTurnPosition(Rotation2d angle);
 
   public void resetDriveEncoder();
-
-  public void update();
 }
 

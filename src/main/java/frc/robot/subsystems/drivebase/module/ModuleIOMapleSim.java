@@ -1,5 +1,8 @@
 package frc.robot.subsystems.drivebase.module;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
@@ -50,41 +53,32 @@ public class ModuleIOMapleSim implements ModuleIO {
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
+        updateSimulation();
         inputs.driveConnected = true;
-        inputs.driveAppliedVolts = module.getDriveMotorAppliedVoltage().in(Units.Volts);
-        inputs.driveCurrentAmps = module.getDriveMotorSupplyCurrent().in(Units.Amps);
         inputs.drivePositionMeters = getDrivePosition();
         inputs.driveVelocityMetersPerSec = getDriveVelocity();
+        inputs.driveAppliedVolts = driveAppliedVoltage;
+        inputs.driveCurrentAmps = Math.abs(module.getDriveMotorStatorCurrent().in(Amps));
     
         inputs.turnConnected = true;
-        inputs.turnAppliedVolts = module.getSteerMotorAppliedVoltage().in(Units.Volts);
-        inputs.turnCurrentAmps = module.getSteerMotorSupplyCurrent().in(Units.Amps);
         inputs.turnPosition = getTurnAngle();
-        inputs.turnVelocityRadPerSec = module.getSteerRelativeEncoderVelocity().in(Units.RadiansPerSecond);
+        inputs.turnVelocityRadPerSec = module.getSteerAbsoluteEncoderSpeed().in(Units.RadiansPerSecond);
+        inputs.turnAppliedVolts = turnAppliedVoltage;
+        inputs.turnCurrentAmps = Math.abs(module.getSteerMotorStatorCurrent().in(Amps));
 
         inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
         inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePositionMeters};
         inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
     }
 
-    private void calculateDriveControlLoop() {
+    public void updateSimulation() {
         driveAppliedVoltage = driveController.calculate(
             module.getDriveWheelFinalSpeed().in(Units.RadiansPerSecond), desiredVelocityRadPerSec
         );
-    }
 
-    private void calculateTurnControlLoop() {
         turnAppliedVoltage = turnController.calculate(
             module.getSteerAbsoluteFacing().getRadians(), desiredPositionRad
         );
-    }
-
-    @Override
-    public void update() {
-        calculateDriveControlLoop();
-        calculateTurnControlLoop();
-
-        // System.out.println(driveMotor.getAppliedVoltage() + "||" + driveAppliedVoltage);
 
         driveMotor.requestVoltage(Units.Volts.of(driveAppliedVoltage));
         turnMotor.requestVoltage(Units.Volts.of(turnAppliedVoltage));
@@ -102,7 +96,7 @@ public class ModuleIOMapleSim implements ModuleIO {
 
     @Override
     public double getDriveVelocity() {
-        return module.getCurrentState().speedMetersPerSecond;
+        return module.getDriveWheelFinalSpeed().in(RotationsPerSecond) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
     }
 
     @Override
@@ -112,7 +106,7 @@ public class ModuleIOMapleSim implements ModuleIO {
 
     @Override
     public Rotation2d getTurnAngle() {
-        return module.getCurrentState().angle;
+        return module.getSteerAbsoluteFacing();
     }
 
     @Override

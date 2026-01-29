@@ -6,9 +6,13 @@ import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAlli
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.VecBuilder;
@@ -39,25 +43,24 @@ import frc.robot.Robot;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.VisionConstants;
-import frc.robot.subsystems.drivebase.gyro.GyroIO;
+import frc.robot.subsystems.drivebase.GyroIO.GyroIOInputs;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
+import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.drivebase.vision.VisionIOLimelight;
 
 public class SwerveDrive extends SubsystemBase {
-    static final Lock odometryLock = new ReentrantLock();
+    public static final Lock odometryLock = new ReentrantLock();
 
     private final SwerveModule frontLeft;
-
     private final SwerveModule frontRight;
-
     private final SwerveModule backLeft;
-
     private final SwerveModule backRight;
 
-    // Gyro
     private final GyroIO gyro;
+    private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
+    private final VisionIOLimelight camera;
     /*
      * Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
      * you trust your various sensors. Smaller numbers will cause the
@@ -85,7 +88,6 @@ public class SwerveDrive extends SubsystemBase {
 
     private final Field2d field = new Field2d();
 
-    private final VisionIOLimelight camera;
 
     private OriginPosition originPosition = kBlueAllianceWallRightSide;
     private boolean sawTag = false;
@@ -107,20 +109,19 @@ public class SwerveDrive extends SubsystemBase {
             .getStructArrayTopic("desired states", SwerveModuleState.struct).publish();
 
     public SwerveDrive(VisionIOLimelight limelight, GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
-        // frontLeft = new SwerveModule(fl, DriveConstants.FL_OFFSET);
-        // frontRight = new SwerveModule(fr, DriveConstants.FR_OFFSET);
-        // backLeft = new SwerveModule(bl, DriveConstants.BL_OFFSET);
-        // backRight = new SwerveModule(br, DriveConstants.BR_OFFSET);
-        frontLeft = new SwerveModule(fl, Robot.isReal() ? DriveConstants.FL_OFFSET : 0, "FL");
-        frontRight = new SwerveModule(fr, Robot.isReal() ? DriveConstants.FR_OFFSET : 0, "FR");
-        backLeft = new SwerveModule(bl, Robot.isReal() ? DriveConstants.BL_OFFSET : 0 , "BL");
-        backRight = new SwerveModule(br, Robot.isReal() ? DriveConstants.BR_OFFSET : 0 , "BR");
+        frontLeft = new SwerveModule(fl, "FL");
+        frontRight = new SwerveModule(fr,"FR");
+        backLeft = new SwerveModule(bl, "BL");
+        backRight = new SwerveModule(br,"BR");
 
         this.gyro = gyro;
 
         this.zeroHeading();
 
         camera = limelight;
+
+
+        SparkOdometryThread.getInstance().start();
 
         this.poseEstimator = new SwerveDrivePoseEstimator(
                 DriveConstants.SWERVE_KINEMATICS,
@@ -154,56 +155,31 @@ public class SwerveDrive extends SubsystemBase {
                     return false;
                 },
                 this);
+            PathPlannerLogging.setLogActivePathCallback((path) -> {
+                Logger.recordOutput("Odometry/Trajectory", path.toArray(new Pose2d[path.size()]));
+            });
+            PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+                Logger.recordOutput("Odometry/TrajectorySetpoint", pose);
+            });
+        }
 
-        SmartDashboard.putData("Swerve", new Sendable() {
-            @Override
-            public void initSendable(SendableBuilder builder) {
-                builder.setSmartDashboardType("SwerveDrive");
-
-                builder.addDoubleProperty("Front Left Angle", () -> frontLeft.getPosition().angle.getRadians(), null);
-                builder.addDoubleProperty("Front Left Velocity", () -> frontLeft.getState().speedMetersPerSecond, null);
-
-                builder.addDoubleProperty("Front Right Angle", () -> frontRight.getPosition().angle.getRadians(), null);
-                builder.addDoubleProperty("Front Right Velocity", () -> frontRight.getState().speedMetersPerSecond,
-                        null);
-
-                builder.addDoubleProperty("Back Left Angle", () -> backLeft.getPosition().angle.getRadians(), null);
-                builder.addDoubleProperty("Back Left Velocity", () -> backLeft.getState().speedMetersPerSecond, null);
-
-                builder.addDoubleProperty("Back Right Angle", () -> backRight.getPosition().angle.getRadians(), null);
-                builder.addDoubleProperty("Back Right Velocity", () -> backRight.getState().speedMetersPerSecond, null);
-
-                builder.addDoubleProperty("Robot Angle", () -> getRotation2d().getRadians(), null);
-            }
-        });
-    }
 
     @Override
-    public void simulationPeriodic() {
+    public void periodic() {
+        odometryLock.lock();
+        gyro.updateInputs(gyroInputs);
+        Logger.processInputs("Drive/Gyro", gyroInputs);
+
         frontLeft.update();
         frontRight.update();
         backLeft.update();
         backRight.update();
-    }
 
-    @Override
-    public void periodic() {
+        odometryLock.unlock();
+
         poseEstimator.update(this.getRotation2d(), this.getModulePositions());
 
         updateVisionPose();
-
-        // Add the pose to the dashboard
-        Pose2d dashboardPose = poseEstimator.getEstimatedPosition();
-
-        if (originPosition == kRedAllianceWallRightSide) {
-            dashboardPose = flipAlliance(dashboardPose);
-        }
-
-        // Update the pose on the field.
-        field.setRobotPose(dashboardPose);
-
-        SmartDashboard.putData("Field", field);
-        SmartDashboard.putNumber("Heading", this.getRotation2d().getDegrees());
 
         SwerveModuleState[] states = new SwerveModuleState[] {
                 frontLeft.getState(),
@@ -400,6 +376,7 @@ public class SwerveDrive extends SubsystemBase {
      * Returns the current state of the swerve drive in the form of a chassis speeds
      * object.
      */
+    @AutoLogOutput(key = "SwerveStates/MeasuredChassisSpeeds")
     public ChassisSpeeds getChassisSpeeds() {
         return DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(
                 new SwerveModuleState[] {
@@ -408,6 +385,26 @@ public class SwerveDrive extends SubsystemBase {
                         backLeft.getState(),
                         backRight.getState()
                 });
+    }
+
+    @AutoLogOutput(key = "SwerveStates/MeasuredModuleStates")
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            frontLeft.getState(),
+            frontRight.getState(),
+            backLeft.getState(),
+            backRight.getState()
+        };
+    }
+
+    @AutoLogOutput(key = "SwerveStates/DesiredModuleStates")
+    public SwerveModuleState[] getDesiredStates() {
+        return new SwerveModuleState[] {
+            frontLeft.getDesiredState(),
+            frontRight.getDesiredState(),
+            backLeft.getDesiredState(),
+            backRight.getDesiredState()
+        };
     }
 
     /**
@@ -426,6 +423,7 @@ public class SwerveDrive extends SubsystemBase {
     /**
      * Returns the estimated position.
      */
+    @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }

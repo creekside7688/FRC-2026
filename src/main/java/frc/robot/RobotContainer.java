@@ -29,10 +29,10 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.OperatorConstants;
 import frc.robot.constants.VisionConstants;
+import frc.robot.subsystems.drivebase.GyroIO;
+import frc.robot.subsystems.drivebase.GyroIONavX;
+import frc.robot.subsystems.drivebase.GyroIOSim;
 import frc.robot.subsystems.drivebase.SwerveDrive;
-import frc.robot.subsystems.drivebase.gyro.GyroIO;
-import frc.robot.subsystems.drivebase.gyro.GyroIONavX;
-import frc.robot.subsystems.drivebase.gyro.GyroIOSim;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
@@ -83,25 +83,21 @@ public class RobotContainer {
                 ModuleIO fl, fr, bl, br;
                 GyroIO gyro;
                 if (RobotBase.isReal()) {
-                        fl = new ModuleIOSparkMax(DriveConstants.FL_DRIVE_MOTOR, DriveConstants.FL_TURN_MOTOR);
-                        fr = new ModuleIOSparkMax(DriveConstants.FR_DRIVE_MOTOR, DriveConstants.FR_TURN_MOTOR);
-                        bl = new ModuleIOSparkMax(DriveConstants.BL_DRIVE_MOTOR, DriveConstants.BL_TURN_MOTOR);
-                        br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR);
+
+                        /*
+                         * REAL HARDWARE IO
+                         */
+
+                        fl = new ModuleIOSparkMax(DriveConstants.FL_DRIVE_MOTOR, DriveConstants.FL_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.FL_OFFSET));
+                        fr = new ModuleIOSparkMax(DriveConstants.FR_DRIVE_MOTOR, DriveConstants.FR_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.FR_OFFSET));
+                        bl = new ModuleIOSparkMax(DriveConstants.BL_DRIVE_MOTOR, DriveConstants.BL_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.BL_OFFSET));
+                        br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
                         gyro = new GyroIONavX(NavXComType.kUSB1);
                         cam = new VisionIOLimelight(VisionConstants.ROBOT_TO_CAM);
                 } else {
                         
-                       //  fl = new ModuleIOSSparkMaxSim(DriveConstants.FL_DRIVE_MOTOR,
-                       //  DriveConstants.FL_TURN_MOTOR);
-                       //  fr = new ModuleIOSSparkMaxSim(DriveConstants.FR_DRIVE_MOTOR,
-                       //  DriveConstants.FR_TURN_MOTOR);
-                       //  bl = new ModuleIOSSparkMaxSim(DriveConstants.BL_DRIVE_MOTOR,
-                       //  DriveConstants.BL_TURN_MOTOR);
-                       //  br = new ModuleIOSSparkMaxSim(DriveConstants.BR_DRIVE_MOTOR,
-                       //  DriveConstants.BR_TURN_MOTOR);
-
                         /*
-                         * MAPLESIM SIMULATION
+                         * MAPLESIM SIMULATION IO
                          */
 
                         fl = new ModuleIOMapleSim(driveSimulation.getModules()[0]);
@@ -196,7 +192,6 @@ public class RobotContainer {
         }
 
         
-
         public Pose2d getSimPose() {
                 return driveSimulation.getSimulatedDriveTrainPose();
         }

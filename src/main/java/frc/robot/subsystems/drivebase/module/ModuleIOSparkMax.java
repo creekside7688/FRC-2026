@@ -3,6 +3,8 @@ package frc.robot.subsystems.drivebase.module;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
+import static frc.lib.SparkUtils.*;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -16,7 +18,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.constants.ModuleConstants;
-import frc.lib.SparkUtils;
 
 public class ModuleIOSparkMax implements ModuleIO {
 
@@ -36,9 +37,13 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
-  public ModuleIOSparkMax(int driveMotorID, int turnMotorID) {
+  private final Rotation2d zeroRotation;
+
+  public ModuleIOSparkMax(int driveMotorID, int turnMotorID, Rotation2d zeroRotation) {
     driveMotor = new SparkMax(driveMotorID, MotorType.kBrushless);
     turnMotor = new SparkMax(turnMotorID, MotorType.kBrushless);
+
+    this.zeroRotation = zeroRotation;
 
     SparkMaxConfig driveConfig = new SparkMaxConfig();
     SparkMaxConfig turnConfig = new SparkMaxConfig();
@@ -98,32 +103,31 @@ public class ModuleIOSparkMax implements ModuleIO {
 
 
 
-  @Override
-  public void updateInputs(ModuleIOInputs inputs, Rotation2d zeroRotation) {
- // Update drive inputs
-        SparkUtils.sparkStickyFault = false;
-        SparkUtils.ifOk(driveMotor, driveEncoder::getPosition, (value) -> inputs.drivePositionMeters= value);
-        SparkUtils.ifOk(driveMotor, driveEncoder::getVelocity, (value) -> inputs.driveVelocityMetersPerSec = value);
-        SparkUtils.ifOk(
+  public void updateInputs(ModuleIOInputs inputs) {
+        // Update drive inputs
+        sparkStickyFault = false;
+        ifOk(driveMotor, driveEncoder::getPosition, (value) -> inputs.drivePositionMeters = value);
+        ifOk(driveMotor, driveEncoder::getVelocity, (value) -> inputs.driveVelocityMetersPerSec = value);
+        ifOk(
                 driveMotor,
                 new DoubleSupplier[] {driveMotor::getAppliedOutput, driveMotor::getBusVoltage},
                 (values) -> inputs.driveAppliedVolts = values[0] * values[1]);
-        SparkUtils.ifOk(driveMotor, driveMotor::getOutputCurrent, (value) -> inputs.driveCurrentAmps = value);
-        inputs.driveConnected = driveConnectedDebounce.calculate(!SparkUtils.sparkStickyFault);
+        ifOk(driveMotor, driveMotor::getOutputCurrent, (value) -> inputs.driveCurrentAmps = value);
+        inputs.driveConnected = driveConnectedDebounce.calculate(!sparkStickyFault);
 
         // Update turn inputs
-        SparkUtils.sparkStickyFault = false;
-        SparkUtils.ifOk(
+        sparkStickyFault = false;
+        ifOk(
                 turnMotor,
                 turnEncoder::getPosition,
                 (value) -> inputs.turnPosition = new Rotation2d(value).minus(zeroRotation));
-        SparkUtils.ifOk(turnMotor, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
-        SparkUtils.ifOk(
+        ifOk(turnMotor, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
+        ifOk(
                 turnMotor,
                 new DoubleSupplier[] {turnMotor::getAppliedOutput, turnMotor::getBusVoltage},
                 (values) -> inputs.turnAppliedVolts = values[0] * values[1]);
-        SparkUtils.ifOk(turnMotor, turnMotor::getOutputCurrent, (value) -> inputs.turnCurrentAmps = value);
-        inputs.turnConnected = turnConnectedDebounce.calculate(!SparkUtils.sparkStickyFault);
+        ifOk(turnMotor, turnMotor::getOutputCurrent, (value) -> inputs.turnCurrentAmps = value);
+        inputs.turnConnected = turnConnectedDebounce.calculate(!sparkStickyFault);
 
         // Update odometry inputs
         inputs.odometryTimestamps =
@@ -136,7 +140,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         timestampQueue.clear();
         drivePositionQueue.clear();
         turnPositionQueue.clear();
-  }
+    }
 
   @Override
   public double getDriveVelocity() {
@@ -150,7 +154,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public Rotation2d getTurnAngle() {
-    return new Rotation2d(turnEncoder.getPosition());
+    return new Rotation2d(turnEncoder.getPosition()).minus(zeroRotation);
   }
 
   @Override
@@ -160,17 +164,12 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setTurnPosition(Rotation2d angle) {
-    turnPID.setSetpoint(angle.getRadians(), SparkMax.ControlType.kPosition);
+    turnPID.setSetpoint(angle.minus(zeroRotation).getRadians(), SparkMax.ControlType.kPosition);
   }
 
   @Override
   public void resetDriveEncoder() {
     driveEncoder.setPosition(0);
-  }
-
-
-  @Override
-  public void update() {
   }
 }
 
