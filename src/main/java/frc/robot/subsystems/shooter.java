@@ -24,10 +24,12 @@ import frc.robot.constants.ShooterConstants;
 
 public class shooter extends SubsystemBase {
   /** Creates a new shooter. */
-
+  private SparkMaxConfig config1;
+  private SparkMaxConfig config2;
+  private SparkMaxConfig configHood;
   
   
-  private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
+  private final SparkMax shootMotor1;
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
   
   private final SparkMax hoodMotor;
@@ -37,45 +39,49 @@ public class shooter extends SubsystemBase {
 
   
   
-  private final SparkClosedLoopController sm1_Controller = shootMotor1.getClosedLoopController();
-
-  //private final SparkClosedLoopController hood_Controller = hoodMotor.getClosedLoopController();
+  private final SparkClosedLoopController sm1_Controller; 
+  private final SparkClosedLoopController hood_Controller;
   
   
   @SuppressWarnings("removal")
   public shooter(int hoodMotor, int shootMotor1) {
     
     this.hoodMotor = new SparkMax(hoodMotor, MotorType.kBrushless);
+    this.shootMotor1 = new SparkMax(shootMotor1, MotorType.kBrushless);
     this.hoodMotorEncoder = this.hoodMotor.getAbsoluteEncoder();
-    
-    SparkMaxConfig config1 = new SparkMaxConfig();
-    SparkMaxConfig config2 = new SparkMaxConfig();
-    
-    SparkMaxConfig configHood = new SparkMaxConfig();
+
+    sm1_Controller = this.shootMotor1.getClosedLoopController();
+    hood_Controller = this.hoodMotor.getClosedLoopController();
+
+    config1 = new SparkMaxConfig();
+    config2 = new SparkMaxConfig();
+    configHood = new SparkMaxConfig();
     
 
 
-    double kP = 0.0001; 
+    double kP = 0.0001; //??
     double kF = 1.0 / 5676.0;
     config1
         .closedLoop
-            .p(0)
-            .i(0)
-            .d(0)
+            .p(ShooterConstants.SHOOTER_P)
+            .i(ShooterConstants.SHOOTER_I)
+            .d(ShooterConstants.SHOOTER_D)
 
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
             .feedForward
-                .kV(1)
-                .kA(0)
-                .kS(0);
+                .kV(ShooterConstants.SHOOTER_KV)
+                .kA(ShooterConstants.SHOOTER_KA)
+                .kS(ShooterConstants.SHOOTER_KS);
 
     
     config2
         .inverted(true)
         .follow(shootMotor1);
 
-      this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-      shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+
+    this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         
     
 
@@ -86,15 +92,15 @@ public class shooter extends SubsystemBase {
   }
 
   public void RunIdle() {
-    SetRPM(500);
+    SetRPM(ShooterConstants.IDLE_RPM);
   }
 
   public void RunFeeder() {
-    feedControllerSrx.set(ControlMode.PercentOutput, 0.5);
+    feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
   }
 
   public void setHoodMotorPosition(int setPoint) {
-     //hoodMotor.setSetpoint(setPoint, ControlType.kPosition);
+     hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
   }
 
   @Override
