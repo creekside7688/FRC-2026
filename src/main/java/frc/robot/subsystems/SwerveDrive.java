@@ -451,11 +451,14 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     private void updateVisionPose() {
+       if(camera.getLatestResult() != null)
+       {
         var ePose = camera.getEstimatedPosition();
         if (ePose.isPresent()) {
             var pose = ePose.get();
             poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
         }
+    }
     }
 
     /**
