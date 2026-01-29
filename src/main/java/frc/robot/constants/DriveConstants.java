@@ -8,7 +8,7 @@ public class DriveConstants {
     public static final String SHUFFLEBOARD_TABLE = "Info";
 
     // Maximum allowed speeds.
-    public static final double MAXIMUM_SPEED_METRES_PER_SECOND = 4.8;
+    public static final double MAXIMUM_SPEED_METRES_PER_SECOND = 2.5;
     public static final double MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
 
     public static final double MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND = 0.5;
@@ -61,4 +61,6 @@ public class DriveConstants {
     public static final double FLIP_P = 0.01;
     public static final double FLIP_I = 0;
     public static final double FLIP_D = 0;
+
+    public static final double odometryFrequency = 100.0; // Hz
 }

@@ -1,44 +1,41 @@
 package frc.robot.subsystems.drivebase.module;
 
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
+import org.ironmaple.simulation.seasonspecific.rebuilt2026.RebuiltFuelOnFly;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.Timer;
+import frc.lib.SimUtils.*;
 import frc.robot.constants.ModuleConstants;
 
-public class ModuleIOMapleSim implements ModuleIO {
-    private static final double DRIVE_KP = 0.5;
-    private static final double DRIVE_KI = 0.0;
-    private static final double DRIVE_KD = 0.0;
-
-    private static final double TURN_KP = 7.0;
-    private static final double TURN_KI = 0.0;
-    private static final double TURN_KD = 0.5;
+public class ModuleIOMapleSim extends ModuleIOSparkMax {
 
     private final SwerveModuleSimulation module;
-    private final SimulatedMotorController.GenericMotorController driveMotor;
-    private final SimulatedMotorController.GenericMotorController turnMotor;
-
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
-        0, 1 / (DCMotor.getNEO(1).withReduction(ModuleConstants.DRIVE_MOTOR_REDUCTION).KvRadPerSecPerVolt * ModuleConstants.WHEEL_RADIUS_METRES));
-
-    private final PIDController driveController;
-    private final PIDController turnController;
 
     private double driveAppliedVoltage, turnAppliedVoltage;
 
     private double desiredVelocityRadPerSec, desiredPositionRad;
 
-    public ModuleIOMapleSim(SwerveModuleSimulation module) {
+    private final SimulatedDriveSparkMaxController s_driveController;
+    private final SimulatedTurnSparkMaxController s_turnController;
+
+    public ModuleIOMapleSim(SwerveModuleSimulation module, int driveID, int turnID) {
+        super(driveID, turnID);
+        
         this.module = module;
-        this.driveMotor = module.useGenericMotorControllerForDrive()
-                .withCurrentLimit(Units.Amps.of(ModuleConstants.DRIVE_MOTOR_CURRENT_LIMIT));
-        this.turnMotor = module.useGenericControllerForSteer()
+
+        s_driveController = new SimulatedDriveSparkMaxController(driveMotor, this::getDriveVelocity, this::getDrivePosition);
+        s_turnController = new SimulatedTurnSparkMaxController(turnMotor, this::getTurnVelocity, this::getTurnAngle);
+
+
+        SimulatedArena.getInstance().addGamePieceProjectile(new RebuiltFuelOnFly(null, null, null, getTurnAngle(), null, null, null));
+        module.useDriveMotorController(s_driveController);
+        module.useSteerMotorController(s_turnController);
                 .withCurrentLimit(Units.Amps.of(ModuleConstants.TURN_MOTOR_CURRENT_LIMIT));
 
 
@@ -47,26 +44,6 @@ public class ModuleIOMapleSim implements ModuleIO {
 
         turnController.enableContinuousInput(-Math.PI, Math.PI);
     }
-
-    @Override
-    public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveConnected = true;
-        inputs.driveAppliedVolts = module.getDriveMotorAppliedVoltage().in(Units.Volts);
-        inputs.driveCurrentAmps = module.getDriveMotorSupplyCurrent().in(Units.Amps);
-        inputs.drivePositionMeters = getDrivePosition();
-        inputs.driveVelocityMetersPerSec = getDriveVelocity();
-    
-        inputs.turnConnected = true;
-        inputs.turnAppliedVolts = module.getSteerMotorAppliedVoltage().in(Units.Volts);
-        inputs.turnCurrentAmps = module.getSteerMotorSupplyCurrent().in(Units.Amps);
-        inputs.turnPosition = getTurnAngle();
-        inputs.turnVelocityRadPerSec = module.getSteerRelativeEncoderVelocity().in(Units.RadiansPerSecond);
-
-        inputs.odometryTimestamps = new double[] {Timer.getFPGATimestamp()};
-        inputs.odometryDrivePositionsMeters = new double[] {inputs.drivePositionMeters};
-        inputs.odometryTurnPositions = new Rotation2d[] {inputs.turnPosition};
-    }
-
     private void calculateDriveControlLoop() {
         driveAppliedVoltage = driveController.calculate(
             module.getDriveWheelFinalSpeed().in(Units.RadiansPerSecond), desiredVelocityRadPerSec
@@ -113,6 +90,10 @@ public class ModuleIOMapleSim implements ModuleIO {
     @Override
     public Rotation2d getTurnAngle() {
         return module.getCurrentState().angle;
+    }
+
+    private double getTurnVelocity() {
+        return module.getEncoderVeloc
     }
 
     @Override

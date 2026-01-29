@@ -3,8 +3,9 @@ package frc.robot.subsystems.drivebase;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
 
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
@@ -31,6 +32,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.SwerveUtils;
 import frc.robot.Robot;
 import frc.robot.constants.AutonomousConstants;
@@ -40,10 +43,10 @@ import frc.robot.subsystems.drivebase.gyro.GyroIO;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.drivebase.vision.VisionIOLimelight;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDrive extends SubsystemBase {
+    static final Lock odometryLock = new ReentrantLock();
+
     private final SwerveModule frontLeft;
 
     private final SwerveModule frontRight;
@@ -108,10 +111,10 @@ public class SwerveDrive extends SubsystemBase {
         // frontRight = new SwerveModule(fr, DriveConstants.FR_OFFSET);
         // backLeft = new SwerveModule(bl, DriveConstants.BL_OFFSET);
         // backRight = new SwerveModule(br, DriveConstants.BR_OFFSET);
-        frontLeft = new SwerveModule(fl, 0);
-        frontRight = new SwerveModule(fr, 0);
-        backLeft = new SwerveModule(bl, 0);
-        backRight = new SwerveModule(br, 0);
+        frontLeft = new SwerveModule(fl, Robot.isReal() ? DriveConstants.FL_OFFSET : 0, "FL");
+        frontRight = new SwerveModule(fr, Robot.isReal() ? DriveConstants.FR_OFFSET : 0, "FR");
+        backLeft = new SwerveModule(bl, Robot.isReal() ? DriveConstants.BL_OFFSET : 0 , "BL");
+        backRight = new SwerveModule(br, Robot.isReal() ? DriveConstants.BR_OFFSET : 0 , "BR");
 
         this.gyro = gyro;
 

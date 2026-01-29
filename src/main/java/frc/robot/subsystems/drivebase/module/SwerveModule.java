@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drivebase.module;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -7,18 +9,23 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class SwerveModule {
 
   private final ModuleIO io;
+  private final String descriptor;
   private final double angularOffset; // radians
+  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
   private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
-  public SwerveModule(ModuleIO io, double angularOffset) {
+  public SwerveModule(ModuleIO io, double angularOffset, String descriptor) {
     this.io = io;
     this.angularOffset = angularOffset;
+    this.descriptor = descriptor;
   }
 
 
   public void update() {
       io.update();
+      io.updateInputs(inputs);
+      Logger.processInputs("drive/module{descriptor}", inputs);
   }
 
   public SwerveModuleState getState() {

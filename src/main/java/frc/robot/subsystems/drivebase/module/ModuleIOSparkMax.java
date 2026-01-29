@@ -1,18 +1,22 @@
 package frc.robot.subsystems.drivebase.module;
 
-import frc.robot.constants.ModuleConstants;
+import java.util.Queue;
+import java.util.function.DoubleSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.constants.ModuleConstants;
+import frc.lib.SparkUtils;
 
 public class ModuleIOSparkMax implements ModuleIO {
 
@@ -24,6 +28,13 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   private final SparkClosedLoopController drivePID;
   private final SparkClosedLoopController turnPID;
+  
+  private final Queue<Double> timestampQueue;
+  private final Queue<Double> drivePositionQueue;
+  private final Queue<Double> turnPositionQueue;
+
+  private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
+  private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
   public ModuleIOSparkMax(int driveMotorID, int turnMotorID) {
     driveMotor = new SparkMax(driveMotorID, MotorType.kBrushless);
@@ -79,8 +90,53 @@ public class ModuleIOSparkMax implements ModuleIO {
     turnMotor.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     driveEncoder.setPosition(0);
+
+    timestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
+    drivePositionQueue = SparkOdometryThread.getInstance().registerSignal(driveMotor, driveEncoder::getPosition);
+    turnPositionQueue = SparkOdometryThread.getInstance().registerSignal(turnMotor, turnEncoder::getPosition);
   }
 
+
+
+  @Override
+  public void updateInputs(ModuleIOInputs inputs, Rotation2d zeroRotation) {
+ // Update drive inputs
+        SparkUtils.sparkStickyFault = false;
+        SparkUtils.ifOk(driveMotor, driveEncoder::getPosition, (value) -> inputs.drivePositionMeters= value);
+        SparkUtils.ifOk(driveMotor, driveEncoder::getVelocity, (value) -> inputs.driveVelocityMetersPerSec = value);
+        SparkUtils.ifOk(
+                driveMotor,
+                new DoubleSupplier[] {driveMotor::getAppliedOutput, driveMotor::getBusVoltage},
+                (values) -> inputs.driveAppliedVolts = values[0] * values[1]);
+        SparkUtils.ifOk(driveMotor, driveMotor::getOutputCurrent, (value) -> inputs.driveCurrentAmps = value);
+        inputs.driveConnected = driveConnectedDebounce.calculate(!SparkUtils.sparkStickyFault);
+
+        // Update turn inputs
+        SparkUtils.sparkStickyFault = false;
+        SparkUtils.ifOk(
+                turnMotor,
+                turnEncoder::getPosition,
+                (value) -> inputs.turnPosition = new Rotation2d(value).minus(zeroRotation));
+        SparkUtils.ifOk(turnMotor, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
+        SparkUtils.ifOk(
+                turnMotor,
+                new DoubleSupplier[] {turnMotor::getAppliedOutput, turnMotor::getBusVoltage},
+                (values) -> inputs.turnAppliedVolts = values[0] * values[1]);
+        SparkUtils.ifOk(turnMotor, turnMotor::getOutputCurrent, (value) -> inputs.turnCurrentAmps = value);
+        inputs.turnConnected = turnConnectedDebounce.calculate(!SparkUtils.sparkStickyFault);
+
+        // Update odometry inputs
+        inputs.odometryTimestamps =
+                timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryDrivePositionsMeters =
+                drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryTurnPositions = turnPositionQueue.stream()
+                .map((Double value) -> new Rotation2d(value).minus(zeroRotation))
+                .toArray(Rotation2d[]::new);
+        timestampQueue.clear();
+        drivePositionQueue.clear();
+        turnPositionQueue.clear();
+  }
 
   @Override
   public double getDriveVelocity() {

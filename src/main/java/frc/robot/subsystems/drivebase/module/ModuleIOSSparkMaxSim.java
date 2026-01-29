@@ -102,6 +102,11 @@ public class ModuleIOSSparkMaxSim implements ModuleIO {
     }
 
     @Override
+    public void updateInputs(ModuleIOInputs inputs) {
+
+    }
+
+    @Override
     public void update() {
 
         double driveAppliedVoltage = driveSim.getAppliedOutput() * 12;
