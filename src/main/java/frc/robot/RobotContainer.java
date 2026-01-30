@@ -19,6 +19,7 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
@@ -208,12 +209,11 @@ public class RobotContainer {
                                 "FieldSimulation/Fuel",
                                 SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
                 
-                SwerveModuleSimulation[] modules = driveSimulation.getModules();
-                Logger.recordOutput("FieldSimulation/SwerveModuleStates", new SwerveModuleState[] {
-                        modules[0].getCurrentState(),
-                        modules[1].getCurrentState(),
-                        modules[2].getCurrentState(),
-                        modules[3].getCurrentState(),
-                });
+                Logger.recordOutput("FieldSimulation/SwerveModuleStates",
+                        DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative())
+                );
+                Logger.recordOutput("FieldSimulation/SwerveModuleSpeeds", driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative());
+
+                
         }
 }
