@@ -6,6 +6,7 @@ package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.ConsoleSource;
+import org.littletonrobotics.urcl.URCL;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -58,12 +59,11 @@ public class Robot extends LoggedRobot {
 
     // Real 
     if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 
     // Simulation
     } else if (isSimulation()) {
-      Logger.addDataReceiver(new WPILOGWriter());
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 
     // Replay
@@ -74,6 +74,7 @@ public class Robot extends LoggedRobot {
       Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
 
+    // Logger.registerURCL(URCL.startExternal());
 
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
                     // be added.
@@ -167,22 +168,9 @@ public class Robot extends LoggedRobot {
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
-  StructArrayPublisher<Pose2d> pubPose = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("simulated pose", Pose2d.struct).publish();
-  StructArrayPublisher<Pose3d> pubPieces = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("gamepieces pose", Pose3d.struct).publish();
-  StructArrayPublisher<SwerveModuleState> pubStates = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("simulated states", SwerveModuleState.struct).publish();
-
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    SimulatedArena.getInstance().simulationPeriodic();
-    pubPose.set(new Pose2d[] { m_robotContainer.getSimPose() });
-
-    pubStates.set(m_robotContainer.getSimStates());
-    Pose3d[] gamePiecePoses = SimulatedArena.getInstance()
-        .getGamePiecesArrayByType("Fuel");
-    pubPieces.set(gamePiecePoses);
+    m_robotContainer.updateSimulation();
   }
 }

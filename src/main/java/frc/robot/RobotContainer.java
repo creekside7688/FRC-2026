@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -11,6 +13,7 @@ import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
+import com.google.flatbuffers.Constants;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.MathUtil;
@@ -36,6 +39,7 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
+import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.drivebase.vision.VisionIOLimelight;
 import frc.robot.subsystems.drivebase.vision.VisionIOSim;
 
@@ -59,7 +63,8 @@ public class RobotContainer {
 
         private final DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
                         .withGyro(COTS.ofNav2X())
-                        .withTrackLengthTrackWidth(Units.Meters.of(DriveConstants.TRACK_WIDTH), Units.Meters.of(DriveConstants.TRACK_WIDTH))
+                        .withTrackLengthTrackWidth(Units.Meters.of(DriveConstants.TRACK_WIDTH),
+                                        Units.Meters.of(DriveConstants.TRACK_WIDTH))
                         .withRobotMass(Units.Kilograms.of(50))
                         .withSwerveModule(new SwerveModuleSimulationConfig(
                                         DCMotor.getNEO(1),
@@ -88,14 +93,18 @@ public class RobotContainer {
                          * REAL HARDWARE IO
                          */
 
-                        fl = new ModuleIOSparkMax(DriveConstants.FL_DRIVE_MOTOR, DriveConstants.FL_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.FL_OFFSET));
-                        fr = new ModuleIOSparkMax(DriveConstants.FR_DRIVE_MOTOR, DriveConstants.FR_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.FR_OFFSET));
-                        bl = new ModuleIOSparkMax(DriveConstants.BL_DRIVE_MOTOR, DriveConstants.BL_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.BL_OFFSET));
-                        br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR, Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
+                        fl = new ModuleIOSparkMax(DriveConstants.FL_DRIVE_MOTOR, DriveConstants.FL_TURN_MOTOR,
+                                        Rotation2d.fromRadians(DriveConstants.FL_OFFSET));
+                        fr = new ModuleIOSparkMax(DriveConstants.FR_DRIVE_MOTOR, DriveConstants.FR_TURN_MOTOR,
+                                        Rotation2d.fromRadians(DriveConstants.FR_OFFSET));
+                        bl = new ModuleIOSparkMax(DriveConstants.BL_DRIVE_MOTOR, DriveConstants.BL_TURN_MOTOR,
+                                        Rotation2d.fromRadians(DriveConstants.BL_OFFSET));
+                        br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR,
+                                        Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
                         gyro = new GyroIONavX(NavXComType.kUSB1);
                         cam = new VisionIOLimelight(VisionConstants.ROBOT_TO_CAM);
                 } else {
-                        
+
                         /*
                          * MAPLESIM SIMULATION IO
                          */
@@ -106,7 +115,8 @@ public class RobotContainer {
                         br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
 
                         gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
-                        cam = new VisionIOSim(driveSimulation::getSimulatedDriveTrainPose, VisionConstants.ROBOT_TO_CAM);
+                        cam = new VisionIOSim(driveSimulation::getSimulatedDriveTrainPose,
+                                        VisionConstants.ROBOT_TO_CAM);
 
                         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 }
@@ -191,18 +201,19 @@ public class RobotContainer {
                 return sd.followPath(new Pose2d(10, 6, new Rotation2d()));
         }
 
-        
-        public Pose2d getSimPose() {
-                return driveSimulation.getSimulatedDriveTrainPose();
-        }
-
-        public SwerveModuleState[] getSimStates() {
+        public void updateSimulation() {
+                SimulatedArena.getInstance().simulationPeriodic();
+                Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+                Logger.recordOutput(
+                                "FieldSimulation/Fuel",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+                
                 SwerveModuleSimulation[] modules = driveSimulation.getModules();
-                return new SwerveModuleState[] {
-                                modules[0].getCurrentState(),
-                                modules[1].getCurrentState(),
-                                modules[2].getCurrentState(),
-                                modules[3].getCurrentState()
-                };
+                Logger.recordOutput("FieldSimulation/SwerveModuleStates", new SwerveModuleState[] {
+                        modules[0].getCurrentState(),
+                        modules[1].getCurrentState(),
+                        modules[2].getCurrentState(),
+                        modules[3].getCurrentState(),
+                });
         }
 }
