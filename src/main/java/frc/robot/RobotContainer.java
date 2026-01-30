@@ -9,6 +9,7 @@ package frc.robot;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.RgbLEDs;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.shooter;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
 
@@ -24,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.OperatorConstants;
 
 
@@ -47,6 +48,8 @@ public class RobotContainer {
   private final FlightControl flightcont = new FlightControl(3);
 
   private final RgbLEDs rgbLeds = new RgbLEDs();
+
+  private final shooter Shooter = new shooter();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -152,6 +155,10 @@ public class RobotContainer {
     //example commands
     //controller.getLeftBumper().whileTrue();
     //controller.getRightBumper().onTrue();
+    controller.getY().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    controller.getA().whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    controller.getX().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    controller.getB().whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     
 
   }

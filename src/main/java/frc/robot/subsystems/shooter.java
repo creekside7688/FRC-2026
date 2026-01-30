@@ -16,10 +16,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 
+import static edu.wpi.first.units.Units.Volt;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
 
 public class shooter extends SubsystemBase {
@@ -28,7 +31,9 @@ public class shooter extends SubsystemBase {
   private SparkMaxConfig config2;
   private SparkMaxConfig configHood;
   
-  
+  private final SysIdRoutine routine;
+
+
   private final SparkMax shootMotor1;
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
   
@@ -85,8 +90,11 @@ public class shooter extends SubsystemBase {
 
     this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
-    
+      
+    this.routine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this)
+    );
 
   }
 
@@ -98,9 +106,16 @@ public class shooter extends SubsystemBase {
     SetRPM(ShooterConstants.IDLE_RPM);
   }
 
+  public void setShooterMotor1Voltage(double volts) {
+    shootMotor1.setVoltage(volts);
+  }
+
+
   public void RunFeeder() {
     feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
   }
+  
+
 
   public void setHoodMotorPosition(int setPoint) {
      hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
@@ -110,4 +125,19 @@ public class shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+      return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
+  }
+  /**
+   * Returns a command that will execute a dynamic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+
 }
