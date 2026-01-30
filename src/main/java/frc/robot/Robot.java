@@ -61,12 +61,10 @@ public class Robot extends LoggedRobot {
     // Real 
     switch (RobotConstants.CURRENT_MODE) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         break;
     
       case SIM:
-        Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         break;
       

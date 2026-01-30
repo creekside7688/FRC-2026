@@ -48,14 +48,14 @@ public class SwerveModule {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        io.getDriveVelocity(),
-        io.getTurnAngle());
+        inputs.driveVelocityMetersPerSec,
+        inputs.turnPosition);
   }
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        io.getDrivePosition(),
-        io.getTurnAngle());
+        inputs.drivePositionMeters,
+        inputs.turnPosition);
   }
 
   public SwerveModuleState getDesiredState() {
