@@ -2,8 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.Intake;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -17,7 +22,19 @@ public class Intake extends SubsystemBase {
   SparkMax intake = new SparkMax(Constants.Intake_MotorID, MotorType.kBrushless);
   SparkMaxConfig intake_config = new SparkMaxConfig();
   SparkClosedLoopController intake_closedloopcontroller = intake.getClosedLoopController();
-  TalonSRX
+  TalonSRX intake_TalonSRX = new TalonSRX(Constants.Intake_TalonSRXID);
+
+  public void SetFeedBack() {
+
+  }
+
+  public void SetTalonSRXOutput() {
+    intake_TalonSRX.set(ControlMode.PercentOutput, Constants.Intake_TalonSRX_OutputValue);
+  }
+
+  public void StopTalonSRX() {
+    intake_TalonSRX.set(ControlMode.PercentOutput, 0);
+  }
 
   public void GoToAngle(double Angle) {
     intake_closedloopcontroller.setSetpoint(Angle, ControlType.kPosition);
@@ -38,6 +55,9 @@ public class Intake extends SubsystemBase {
     .kS(Constants.Intake_SVA_S)
     .kV(Constants.Intake_SVA_V)
     .kA(Constants.Intake_SVA_A);
+    intake.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intake_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
   }
 
   @Override

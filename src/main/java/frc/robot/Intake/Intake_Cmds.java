@@ -7,9 +7,14 @@ package frc.robot.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class cmds extends Command {
+public class Intake_Cmds extends Command {
+  Intake a;
+  double motorinput;
+
   /** Creates a new cmds. */
-  public cmds() {
+  public Intake_Cmds(Intake inputIntake) {
+    a = inputIntake;
+    addRequirements(inputIntake);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -19,11 +24,15 @@ public class cmds extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    a.SetTalonSRXOutput();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    a.StopTalonSRX();
+  }
 
   // Returns true when the command should end.
   @Override

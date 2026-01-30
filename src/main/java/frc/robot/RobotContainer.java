@@ -18,13 +18,16 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.Intake.Intake;
+import frc.robot.Intake.Intake_Cmds;
 import frc.robot.constants.OperatorConstants;
 
 
@@ -77,11 +80,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureControllerBindings() {
-
-
     joystick_btn.whileTrue(intake_cmds);
 
-  
     cam.setDefaultCommand(
       new RunCommand(() -> cam.updatesd(), cam)
     );
