@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.AHRS.NavXUpdateRate;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -17,7 +18,7 @@ public class GyroIONavX implements GyroIO {
     private final Queue<Double> yawTimestampQueue;
 
     public GyroIONavX(NavXComType port) {
-        gyro = new AHRS(port, (byte) DriveConstants.ODOMETRY_FREQUENCY);
+        gyro = new AHRS(port);
         gyro.setAngleAdjustment(270);
 
         yawTimestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();

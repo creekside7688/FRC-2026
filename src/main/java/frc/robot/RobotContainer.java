@@ -4,23 +4,18 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
-import com.google.flatbuffers.Constants;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -40,9 +35,10 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
-import frc.robot.subsystems.drivebase.module.SwerveModule;
-import frc.robot.subsystems.drivebase.vision.VisionIOLimelight;
-import frc.robot.subsystems.drivebase.vision.VisionIOSim;
+import frc.robot.subsystems.drivebase.vision.Vision;
+import frc.robot.subsystems.drivebase.vision.VisionIO;
+import frc.robot.subsystems.drivebase.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.drivebase.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -58,7 +54,7 @@ public class RobotContainer {
         private final Controller operatorController = new Controller(1);
         private final Controller driveController = new Controller(2);
 
-        private final VisionIOLimelight cam;
+        private final Vision cam;
 
         private final SwerveDrive sd;
 
@@ -88,6 +84,7 @@ public class RobotContainer {
         public RobotContainer() {
                 ModuleIO fl, fr, bl, br;
                 GyroIO gyro;
+                VisionIO camIO1, camIO2;
                 if (RobotBase.isReal()) {
 
                         /*
@@ -103,7 +100,8 @@ public class RobotContainer {
                         br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR,
                                         Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
                         gyro = new GyroIONavX(NavXComType.kUSB1);
-                        cam = new VisionIOLimelight(VisionConstants.ROBOT_TO_CAM);
+                        camIO1 = new VisionIOPhotonVision("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM);
+                        camIO2 = new VisionIOPhotonVision("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM);
                 } else {
 
                         /*
@@ -116,13 +114,16 @@ public class RobotContainer {
                         br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
 
                         gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
-                        cam = new VisionIOSim(driveSimulation::getSimulatedDriveTrainPose,
-                                        VisionConstants.ROBOT_TO_CAM);
+                        camIO1 = new VisionIOPhotonVisionSim("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM, driveSimulation::getSimulatedDriveTrainPose);
+                        camIO2 = new VisionIOPhotonVisionSim("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM, driveSimulation::getSimulatedDriveTrainPose);
 
                         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 }
 
-                sd = new SwerveDrive(cam, gyro, fl, fr, bl, br);
+
+
+                sd = new SwerveDrive(gyro, fl, fr, bl, br);
+                cam = new Vision(sd, camIO1, camIO2);
 
                 configureControllerBindings();
                 configureOperatorBindings();
@@ -212,8 +213,7 @@ public class RobotContainer {
                 Logger.recordOutput("FieldSimulation/SwerveModuleStates",
                                 DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(
                                                 driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative()));
-                Logger.recordOutput("FieldSimulation/SwerveModuleSpeeds",
+                Logger.recordOutput("FieldSimulation/SwerveChassisSpeeds",
                                 driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative());
-
         }
 }

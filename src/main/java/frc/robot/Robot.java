@@ -5,7 +5,6 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.littletonrobotics.junction.ConsoleSource;
 import org.littletonrobotics.urcl.URCL;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;

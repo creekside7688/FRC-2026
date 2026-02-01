@@ -62,5 +62,5 @@ public class DriveConstants {
     public static final double FLIP_I = 0;
     public static final double FLIP_D = 0;
 
-    public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
+    public static final double ODOMETRY_FREQUENCY = 50.0; // Hz
 }

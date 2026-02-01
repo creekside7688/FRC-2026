@@ -16,7 +16,7 @@ import frc.lib.SparkUtils;
 import frc.robot.constants.ModuleConstants;
 
 public class ModuleIOMapleSim implements ModuleIO {
-    private static final double DRIVE_KP = 0.5;
+    private static final double DRIVE_KP = 13.0;
     private static final double DRIVE_KI = 0.0;
     private static final double DRIVE_KD = 0.0;
 

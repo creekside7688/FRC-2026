@@ -41,13 +41,11 @@ import frc.lib.LocalADStarAK;
 import frc.lib.SwerveUtils;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DriveConstants;
-import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
-import frc.robot.subsystems.drivebase.vision.VisionIOLimelight;
-
-public class SwerveDrive extends SubsystemBase {
+import frc.robot.subsystems.drivebase.vision.Vision;
+public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer {
     public static final Lock odometryLock = new ReentrantLock();
 
     private final GyroIO gyroIO;
@@ -55,8 +53,6 @@ public class SwerveDrive extends SubsystemBase {
     private final Alert gyroDisconnectedAlert = new Alert("Gyro disconnected, using kinematics as fallback.", Alert.AlertType.kError);
 
     private final SwerveModule[] modules;
-
-    private final VisionIOLimelight camera;
 
     private SwerveModulePosition[] lastModulePositions =
     new SwerveModulePosition[] {
@@ -87,7 +83,7 @@ public class SwerveDrive extends SubsystemBase {
     
         private Rotation2d rawGyroRotation = Rotation2d.kZero;
     
-        public SwerveDrive(VisionIOLimelight limelight, GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
+        public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
     
             modules = new SwerveModule[] {
                 new SwerveModule(fl, "FL"),
@@ -99,8 +95,6 @@ public class SwerveDrive extends SubsystemBase {
             this.gyroIO = gyro;
     
             this.zeroHeading();
-    
-            camera = limelight;
     
             SparkOdometryThread.getInstance().start();
     
@@ -423,19 +417,6 @@ public class SwerveDrive extends SubsystemBase {
         return gyroInputs.yawVelocityDegreesPerSec;
     }
 
-    /*
-     * Returns a formatted string of the current pose of the robot.
-     */
-    public String getFomattedPose() {
-        Pose2d pose = this.getPose();
-
-        return String.format(
-                "(%.3f, %.3f) %.2f degrees",
-                pose.getX(),
-                pose.getY(),
-                pose.getRotation().getDegrees());
-    }
-
     /**
      * Resets odometry to a specified pose.
      */
@@ -451,10 +432,6 @@ public class SwerveDrive extends SubsystemBase {
     // pose.timestampSeconds, vStdDevs);
     // }
     // }
-
-    private void addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3, N1> visionStdDevs) {
-            poseEstimator.addVisionMeasurement(visionPose, timestamp, visionStdDevs);
-        }
 
     /**
      * Resets the position on the field to 0, 0, 0-degrees, with forward being
@@ -499,44 +476,17 @@ public class SwerveDrive extends SubsystemBase {
      * @param pose pose to transform to the other alliance
      * @return pose relative to the other alliance's coordinate system
      */
-    private Pose2d flipAlliance(Pose2d pose) {
-        return pose.relativeTo(VisionConstants.FLIPPING_POSE);
-    }
-
-    /**
-     * Sets the alliance. This is used to configure the origin of the AprilTag map
-     * 
-     * @param alliance alliance
-     */
-    public void setAlliance(Alliance alliance) {
-        boolean allianceChanged = false;
-
-        switch (alliance) {
-            case Blue:
-                allianceChanged = (originPosition == kRedAllianceWallRightSide);
-                originPosition = kBlueAllianceWallRightSide;
-                break;
-            case Red:
-                allianceChanged = (originPosition == kBlueAllianceWallRightSide);
-                originPosition = kRedAllianceWallRightSide;
-                break;
-            default:
-                // Something went wrong
-        }
-
-        // If the alliance was changed and we saw a tag
-        if (allianceChanged && sawTag) {
-            // Flip the pose
-            Pose2d newPose = flipAlliance(this.getPose());
-            poseEstimator.resetPosition(this.getRotation2d(), this.getModulePositions(), newPose);
-        }
-    }
 
     public Command followPath(Pose2d endPose) {
         PathConstraints constraints = new PathConstraints(DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND, 3.0,
                 2 * Math.PI, 4 * Math.PI); // The constraints for
 
         return AutoBuilder.pathfindToPose(endPose, constraints);
+    }
+
+    @Override
+    public void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
+        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 }
 
