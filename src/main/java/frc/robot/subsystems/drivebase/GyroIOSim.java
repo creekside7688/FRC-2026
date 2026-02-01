@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivebase;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import org.ironmaple.simulation.drivesims.GyroSimulation;
@@ -20,29 +21,17 @@ public class GyroIOSim implements GyroIO {
     }
 
     @Override
-    public Rotation2d getRotation() {
-        return gyro.getGyroReading().plus(Rotation2d.fromDegrees(angleOffset));
-    }
+    public void updateInputs(GyroIOInputs inputs) {
+        inputs.connected = true;
+        inputs.yawPosition = gyro.getGyroReading().plus(Rotation2d.fromDegrees(angleOffset));
+        inputs.yawVelocityDegreesPerSec = gyro.getMeasuredAngularVelocity().in(DegreesPerSecond) * (DriveConstants.GYRO_INVERTED ? -1 : 1);
 
-    @Override
-    // degrees per sec
-    public double getAngularVelocity() {
-        return gyro.getMeasuredAngularVelocity().magnitude() * (DriveConstants.GYRO_INVERTED ? -1 : 1) * 180 / Math.PI;
+        inputs.odometryYawTimestamps = SparkUtils.getSimulationOdometryTimeStamps();
+        inputs.odometryYawPositions = gyro.getCachedGyroReadings();
     }
 
     @Override
     public void reset() {
         gyro.setRotation(Rotation2d.kZero);
-    }
-
-    @Override
-    public void updateInputs(GyroIOInputs inputs) {
-        inputs.connected = true;
-        inputs.yawPositionDegrees = gyro.getGyroReading();
-        inputs.yawVelocityDegreesPerSec = Units.degreesToRadians(
-                gyro.getMeasuredAngularVelocity().in(RadiansPerSecond));
-
-        inputs.odometryYawTimestamps = SparkUtils.getSimulationOdometryTimeStamps();
-        inputs.odometryYawPositions = gyro.getCachedGyroReadings();
     }
 }

@@ -13,12 +13,11 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 public class SwerveModule {
 
   private final ModuleIO io;
-  private final String descriptor;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  private final String descriptor;
 
   private final Alert driveDisconnected;
   private final Alert turnDisconnected;
-
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
   private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -33,29 +32,32 @@ public class SwerveModule {
                   new Alert("Disconnected turn motor on " + descriptor + " module.", AlertType.kError);
   }
 
-  public void update() {
+  public void updateInputs() {
     io.updateInputs(inputs);
     Logger.processInputs("Drive/Module" + descriptor, inputs);
 
-    int numSamples = inputs.odometryTimestamps.length;
-    odometryPositions = new SwerveModulePosition[numSamples];
-    for (int i = 0; i < numSamples; i++) {
+    int sampleCount = inputs.odometryTimestamps.length;
+    odometryPositions = new SwerveModulePosition[sampleCount];
+    for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsMeters[i];
-      Rotation2d angle = inputs.odometryTurnPositions[i];
+      Rotation2d angle = inputs.odometryTurnPositionsRad[i];
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
+
+    driveDisconnected.set(!inputs.driveConnected);
+    turnDisconnected.set(!inputs.turnConnected);
   }
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(
         inputs.driveVelocityMetersPerSec,
-        inputs.turnPosition);
+        inputs.turnPositionRad);
   }
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
         inputs.drivePositionMeters,
-        inputs.turnPosition);
+        inputs.turnPositionRad);
   }
 
   public SwerveModuleState getDesiredState() {
@@ -67,8 +69,8 @@ public class SwerveModule {
         state.speedMetersPerSecond,
         state.angle);
 
-    correctedState.optimize(io.getTurnAngle());
-    correctedState.cosineScale(io.getTurnAngle());
+    correctedState.optimize(inputs.turnPositionRad);
+    correctedState.cosineScale(inputs.turnPositionRad);
 
     io.setDriveVelocity(correctedState.speedMetersPerSecond);
     io.setTurnPosition(correctedState.angle);

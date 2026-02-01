@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 
 public final class RobotConstants {
-    public static final Mode SIM_MODE = Mode.REPLAY;
+    public static final Mode SIM_MODE = Mode.SIM;
     public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : SIM_MODE;
 
     public static enum Mode {

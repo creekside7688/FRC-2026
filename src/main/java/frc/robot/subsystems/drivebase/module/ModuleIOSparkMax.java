@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.SwerveUtils;
 import frc.robot.constants.ModuleConstants;
 
 public class ModuleIOSparkMax implements ModuleIO {
@@ -70,18 +71,18 @@ public class ModuleIOSparkMax implements ModuleIO {
         .p(ModuleConstants.DRIVE_P)
         .i(ModuleConstants.DRIVE_I)
         .d(ModuleConstants.DRIVE_D)
-        .velocityFF(ModuleConstants.DRIVE_FF)
-        .outputRange(ModuleConstants.DRIVE_MINIMUM_OUTPUT, ModuleConstants.DRIVE_MAXIMUM_OUTPUT);
+        .outputRange(ModuleConstants.DRIVE_MINIMUM_OUTPUT, ModuleConstants.DRIVE_MAXIMUM_OUTPUT)
+        .feedForward.kV(ModuleConstants.DRIVE_FF);
 
     turnConfig.closedLoop
         .p(ModuleConstants.TURN_P)
         .i(ModuleConstants.TURN_I)
         .d(ModuleConstants.TURN_D)
-        .velocityFF(ModuleConstants.TURN_FF)
         .outputRange(ModuleConstants.TURN_MINIMUM_OUTPUT, ModuleConstants.TURN_MAXIMUM_OUTPUT)
         .positionWrappingEnabled(true)
         .positionWrappingMinInput(ModuleConstants.TURN_PID_MINIMUM_INPUT)
-        .positionWrappingMaxInput(ModuleConstants.TURN_PID_MAXIMUM_INPUT);
+        .positionWrappingMaxInput(ModuleConstants.TURN_PID_MAXIMUM_INPUT)
+        .feedForward.kV(ModuleConstants.TURN_FF);
 
     driveConfig
         .idleMode(ModuleConstants.DRIVE_IDLE_MODE)
@@ -120,7 +121,7 @@ public class ModuleIOSparkMax implements ModuleIO {
         ifOk(
                 turnMotor,
                 turnEncoder::getPosition,
-                (value) -> inputs.turnPosition = new Rotation2d(value).minus(zeroRotation));
+                (value) -> inputs.turnPositionRad = new Rotation2d(value).plus(zeroRotation));
         ifOk(turnMotor, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
         ifOk(
                 turnMotor,
@@ -134,8 +135,8 @@ public class ModuleIOSparkMax implements ModuleIO {
                 timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryDrivePositionsMeters =
                 drivePositionQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryTurnPositions = turnPositionQueue.stream()
-                .map((Double value) -> new Rotation2d(value).minus(zeroRotation))
+        inputs.odometryTurnPositionsRad = turnPositionQueue.stream()
+                .map((Double value) -> new Rotation2d(value).plus(zeroRotation))
                 .toArray(Rotation2d[]::new);
         timestampQueue.clear();
         drivePositionQueue.clear();
@@ -143,18 +144,13 @@ public class ModuleIOSparkMax implements ModuleIO {
     }
 
   @Override
-  public double getDriveVelocity() {
-    return driveEncoder.getVelocity();
+  public void setDriveOpenLoop(double voltage) {
+    driveMotor.setVoltage(voltage);
   }
 
   @Override
-  public double getDrivePosition() {
-    return driveEncoder.getPosition();
-  }
-
-  @Override
-  public Rotation2d getTurnAngle() {
-    return new Rotation2d(turnEncoder.getPosition()).minus(zeroRotation);
+  public void setTurnOpenLoop(double voltage) {
+    turnMotor.setVoltage(voltage);
   }
 
   @Override
@@ -164,7 +160,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
   @Override
   public void setTurnPosition(Rotation2d angle) {
-    turnPID.setSetpoint(angle.minus(zeroRotation).getRadians(), SparkMax.ControlType.kPosition);
+    turnPID.setSetpoint(SwerveUtils.wrapAngle(angle.minus(zeroRotation).getRadians()), SparkMax.ControlType.kPosition);
   }
 
   @Override

@@ -15,27 +15,25 @@ public interface ModuleIO {
     public double driveCurrentAmps = 0.0;
 
     public boolean turnConnected = false;
-    public Rotation2d turnPosition = new Rotation2d();
+    public Rotation2d turnPositionRad = new Rotation2d();
     public double turnVelocityRadPerSec = 0.0;
     public double turnAppliedVolts = 0.0;
     public double turnCurrentAmps = 0.0;
 
     public double[] odometryTimestamps = new double[] {};
     public double[] odometryDrivePositionsMeters = new double[] {};
-    public Rotation2d[] odometryTurnPositions = new Rotation2d[] {};
+    public Rotation2d[] odometryTurnPositionsRad = new Rotation2d[] {};
   }
 
   public void updateInputs(ModuleIOInputs inputs);
 
-  public double getDriveVelocity();
-
-  public double getDrivePosition();
-
-  public Rotation2d getTurnAngle();
-
   public void setDriveVelocity(double velocityMetersPerSecond);
 
   public void setTurnPosition(Rotation2d angle);
+
+  public void setDriveOpenLoop(double voltage);
+
+  public void setTurnOpenLoop(double voltage);
 
   public void resetDriveEncoder();
 }

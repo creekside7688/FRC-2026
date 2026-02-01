@@ -208,12 +208,12 @@ public class RobotContainer {
                 Logger.recordOutput(
                                 "FieldSimulation/Fuel",
                                 SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-                
-                Logger.recordOutput("FieldSimulation/SwerveModuleStates",
-                        DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative())
-                );
-                Logger.recordOutput("FieldSimulation/SwerveModuleSpeeds", driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative());
 
-                
+                Logger.recordOutput("FieldSimulation/SwerveModuleStates",
+                                DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(
+                                                driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative()));
+                Logger.recordOutput("FieldSimulation/SwerveModuleSpeeds",
+                                driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative());
+
         }
 }
