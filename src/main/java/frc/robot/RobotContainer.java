@@ -6,6 +6,7 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.SimulatedArena.FieldMap;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -178,6 +179,7 @@ public class RobotContainer {
                                 true,
                                 true), sd));
 
+                driveController.getA().whileTrue(sd.followPath(new Pose2d(10.0, 6.0, Rotation2d.kZero)));
         }
 
         public void configureOperatorBindings() {

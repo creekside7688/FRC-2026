@@ -14,7 +14,10 @@ import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -461,20 +464,11 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         gyroIO.reset();
     }
 
-    /**
-     * Transforms a pose to the opposite alliance's coordinate system. (0,0) is
-     * always on the right corner of your alliance wall, so for 2023, the
-     * field elements are at different coordinates for each alliance.
-     * 
-     * @param pose pose to transform to the other alliance
-     * @return pose relative to the other alliance's coordinate system
-     */
-
     public Command followPath(Pose2d endPose) {
         PathConstraints constraints = new PathConstraints(1.93, 9.5,
                 2 * Math.PI, RadiansPerSecond.convertFrom(2152, DegreesPerSecond)); // The constraints for
 
-        return AutoBuilder.pathfindToPose(endPose, constraints);
+        return AutoBuilder.pathfindToPose(endPose, constraints, 1.50);
     }
 
     @Override

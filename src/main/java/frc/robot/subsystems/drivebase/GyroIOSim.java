@@ -17,7 +17,7 @@ public class GyroIOSim implements GyroIO {
 
     public GyroIOSim(GyroSimulation gyro) {
         this.gyro = gyro;
-        angleOffset = 90; //degrees
+        angleOffset = 00; //degrees
     }
 
     @Override
