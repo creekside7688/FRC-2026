@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drivebase.vision;
+package frc.robot.subsystems.vision;
 
 import static frc.robot.constants.VisionConstants.APRIL_TAG_FIELD_LAYOUT;
 
@@ -7,8 +7,12 @@ import java.util.function.Supplier;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.simulation.VisionTargetSim;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 
 /** IO implementation for physics sim using PhotonVision simulator. */
@@ -29,14 +33,13 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
     super(name, robotToCamera);
     this.poseSupplier = poseSupplier;
 
-    // Initialize vision sim
     if (visionSim == null) {
       visionSim = new VisionSystemSim("main");
       visionSim.addAprilTags(APRIL_TAG_FIELD_LAYOUT);
+      
     }
 
-    // Add sim camera
-    var cameraProperties = SimCameraProperties.LL2_1280_720();
+    var cameraProperties = SimCameraProperties.LL2_1280_720().setCalibration(1280, 720, Rotation2d.fromDegrees(79.1));
     cameraSim = new PhotonCameraSim(camera, cameraProperties, APRIL_TAG_FIELD_LAYOUT);
     cameraSim.enableDrawWireframe(true);
     visionSim.addCamera(cameraSim, robotToCamera);

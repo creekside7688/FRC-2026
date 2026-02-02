@@ -4,12 +4,17 @@
       "visible": false
     }
   },
+  "Keyboard 0 Settings": {
+    "window": {
+      "visible": true
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
         {
-          "decKey": 65,
-          "incKey": 68
+          "decKey": 322,
+          "incKey": 328
         },
         {
           "decKey": 87,
@@ -39,9 +44,7 @@
         {
           "key0": 56,
           "key135": 323,
-          "key180": 322,
           "key225": 321,
-          "key270": 324,
           "key315": 327,
           "key45": 329,
           "key90": 326

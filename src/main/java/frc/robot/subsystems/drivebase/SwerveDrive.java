@@ -2,6 +2,8 @@ package frc.robot.subsystems.drivebase;
 
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,7 +46,7 @@ import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
-import frc.robot.subsystems.drivebase.vision.Vision;
+import frc.robot.subsystems.vision.Vision;
 public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer {
     public static final Lock odometryLock = new ReentrantLock();
 
@@ -62,9 +64,9 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         new SwerveModulePosition()
     };
 
-    private static final Vector<N3> stateDeviations = VecBuilder.fill(1., 1., 1.);
+    private static final Vector<N3> stateDeviations = VecBuilder.fill(1.0, 1.0, 1.0);
 
-    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(.9, .9, 1.5);
+    private static final Vector<N3> visionMeasurementDeviations = VecBuilder.fill(1.0, 1.0, 1.0);
 
     private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -424,15 +426,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         poseEstimator.resetPosition(this.getRotation2d(), this.getModulePositions(), pose);
     }
 
-    // private void updateVisionPose(Matrix<N3, N1> vStdDevs) {
-    // var ePose = camera.getEstimatedPosition();
-    // if (ePose.isPresent()) {
-    // var pose = ePose.get();
-    // poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-    // pose.timestampSeconds, vStdDevs);
-    // }
-    // }
-
     /**
      * Resets the position on the field to 0, 0, 0-degrees, with forward being
      * downfield. This resets what "forward" is for field oriented driving.
@@ -478,8 +471,8 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
      */
 
     public Command followPath(Pose2d endPose) {
-        PathConstraints constraints = new PathConstraints(DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND, 3.0,
-                2 * Math.PI, 4 * Math.PI); // The constraints for
+        PathConstraints constraints = new PathConstraints(1.93, 9.5,
+                2 * Math.PI, RadiansPerSecond.convertFrom(2152, DegreesPerSecond)); // The constraints for
 
         return AutoBuilder.pathfindToPose(endPose, constraints);
     }

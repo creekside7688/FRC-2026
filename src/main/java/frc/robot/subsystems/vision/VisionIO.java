@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drivebase.vision;
+package frc.robot.subsystems.vision;
 
 import org.littletonrobotics.junction.AutoLog;
 

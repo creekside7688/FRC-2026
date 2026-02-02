@@ -39,7 +39,7 @@ public class VisionConstants {
             Degrees.of(15), 
             Degrees.of(0)));
 
-    public static final double HIGHEST_AMBIGUITY = 0.3;
+    public static final double HIGHEST_AMBIGUITY = 0.2;
     public static final double MAX_Z_ERROR = 0.75;
 
     public static double LINEAR_STDDEV_BASE = 0.02; //Meters

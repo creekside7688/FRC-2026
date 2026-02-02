@@ -35,10 +35,10 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
-import frc.robot.subsystems.drivebase.vision.Vision;
-import frc.robot.subsystems.drivebase.vision.VisionIO;
-import frc.robot.subsystems.drivebase.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.drivebase.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,7 +62,7 @@ public class RobotContainer {
                         .withGyro(COTS.ofNav2X())
                         .withTrackLengthTrackWidth(Units.Meters.of(DriveConstants.TRACK_WIDTH),
                                         Units.Meters.of(DriveConstants.TRACK_WIDTH))
-                        .withRobotMass(Units.Kilograms.of(50))
+                        .withRobotMass(Units.Pounds.of(130))
                         .withSwerveModule(new SwerveModuleSimulationConfig(
                                         DCMotor.getNEO(1),
                                         DCMotor.getNeo550(1),
@@ -72,8 +72,8 @@ public class RobotContainer {
                                         Units.Volts.of(0.1),
                                         Units.Meters.of(ModuleConstants.WHEEL_RADIUS_METRES),
                                         Units.KilogramSquareMeters.of(0.02),
-                                        COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof))
-                        .withBumperSize(Units.Inches.of(30), Units.Inches.of(30));
+                                        1.2))
+                        .withBumperSize(Units.Inches.of(33), Units.Inches.of(33));
 
         private final SwerveDriveSimulation driveSimulation = new SwerveDriveSimulation(simulationConfig,
                         new Pose2d(3, 3, new Rotation2d()));

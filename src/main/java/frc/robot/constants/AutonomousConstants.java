@@ -16,7 +16,7 @@ public class AutonomousConstants {
     public static final double MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
     public static final double MAXIMUM_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 5;
 
-    public static final double PATH_TRANSLATION_P = 2.5;
+    public static final double PATH_TRANSLATION_P = 5.0;
     public static final double PATH_TRANSLATION_I = 0;
     public static final double PATH_TRANSLATION_D = 0;
 
@@ -24,20 +24,8 @@ public class AutonomousConstants {
     public static final double PATH_THETA_I = 0;
     public static final double PATH_THETA_D = 0;
 
-    public static final double X_P = 5;
-    public static final double X_I = 0;
-    public static final double X_D = 0;
-
-    public static final double Y_P = X_P;
-    public static final double Y_I = X_I;
-    public static final double Y_D = X_D;
-
-    public static final double THETA_P = 5;
-    public static final double THETA_I = 0;
-    public static final double THETA_D = 0;
-
     public static final double TRANSLATION_TOLERANCE = 0.02;
-    public static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
+    public static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
 
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(

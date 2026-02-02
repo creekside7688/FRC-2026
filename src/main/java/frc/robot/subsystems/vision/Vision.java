@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drivebase.vision;
+package frc.robot.subsystems.vision;
 
 import static frc.robot.constants.VisionConstants.*;
 
@@ -17,7 +17,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drivebase.vision.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.VisionIOInputsAutoLogged;
+import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
