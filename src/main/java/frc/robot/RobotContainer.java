@@ -90,10 +90,12 @@ public class RobotContainer {
   private void configureControllerBindings() {
 
   
-    b1.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    b2.whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    b3.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    b4.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    b1.whileTrue(new RunCommand(() -> Shooter.runVariableVoltage(), Shooter));
+    //b2.whileTrue(new RunCommand(() -> Shooter.stopSystem(), Shooter));
+    //b1.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //b2.whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    //b3.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //b4.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     /*cam.setDefaultCommand(
       new RunCommand(() -> cam.updatesd(), cam)

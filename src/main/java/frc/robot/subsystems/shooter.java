@@ -20,6 +20,9 @@ import static edu.wpi.first.units.Units.Volt;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,7 +35,8 @@ public class shooter extends SubsystemBase {
   private SparkMaxConfig config2;
   private SparkMaxConfig configHood;
   
-  
+  private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
+  private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
 
   private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);;
@@ -55,7 +59,7 @@ public class shooter extends SubsystemBase {
   
   @SuppressWarnings("removal")
   public shooter() {
-    SmartDashboard.putBoolean("trigger", false);  
+    SmartDashboard.putBoolean("t", false);  
     
     this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
 
@@ -91,6 +95,9 @@ public class shooter extends SubsystemBase {
     config1.signals.primaryEncoderVelocityAlwaysOn(true);
     config1.signals.primaryEncoderPositionAlwaysOn(true);
 
+    config1.smartCurrentLimit(50);
+    config2.smartCurrentLimit(50);
+
     config1.idleMode(IdleMode.kCoast);
     config2.idleMode(IdleMode.kCoast);
 
@@ -117,12 +124,30 @@ public class shooter extends SubsystemBase {
     shootMotor1.setVoltage(volts);
   }
 
+  public void runVariableVoltage()
+  {
+    RunFeeder();
+    SmartDashboard.putBoolean("t", true);
+    double retrievedVoltage = voltage.getDouble(0);
+    shootMotor1.setVoltage(retrievedVoltage);
+    SmartDashboard.putNumber("set voltage", retrievedVoltage);
+  }
 
   public void RunFeeder() {
     feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
   }
   
 
+  public void stopSystem()
+  {
+    stopFeeder();
+    shootMotor1.setVoltage(0);
+  }
+
+  public void stopFeeder()
+  {
+    feedControllerSrx.set(ControlMode.PercentOutput, 0);
+  }
 
   public void setHoodMotorPosition(int setPoint) {
      hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
@@ -134,8 +159,7 @@ public class shooter extends SubsystemBase {
   }
 
 
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    SmartDashboard.putBoolean("trigger", true);  
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {      
     return routine.quasistatic(direction);
   }
 

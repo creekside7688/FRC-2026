@@ -16,5 +16,5 @@ public class ShooterConstants {
 
     public static final int IDLE_RPM = 500;
 
-    public static final double RUN_FEEDER_OUTPUT = -0.5;
+    public static final double RUN_FEEDER_OUTPUT = -1.0;
 }
