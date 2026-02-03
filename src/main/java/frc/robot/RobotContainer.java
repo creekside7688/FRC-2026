@@ -15,15 +15,19 @@ import frc.lib.FlightControl;
 
 import java.util.PrimitiveIterator;
 
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.OperatorConstants;
@@ -38,12 +42,18 @@ import frc.robot.constants.OperatorConstants;
 public class RobotContainer {
 
   
-  private final Controller controller = new Controller(1 );
+  private final Controller controller = new Controller(5 );
   private final Controller teoController = new Controller(2);
+  private final Joystick joystick = new Joystick(1);
+  private final JoystickButton b1 = new JoystickButton(joystick, 1);
+  private final JoystickButton b2 = new JoystickButton(joystick, 2);
+  private final JoystickButton b3 = new JoystickButton(joystick, 3);
+  private final JoystickButton b4 = new JoystickButton(joystick, 4);
   
   private final Limelight cam =  new Limelight();
   
-  private final SwerveDrive sd = new SwerveDrive(cam);
+  //private final SwerveDrive sd = new SwerveDrive(cam);
+
 
   private final FlightControl flightcont = new FlightControl(3);
 
@@ -55,6 +65,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     CameraServer.startAutomaticCapture();
+
+    //Shooter.setDefaultCommand(new RunCommand(()-> Shooter.RunFeeder(), Shooter));
     configureControllerBindings();
     //configureJoystickBindings();
     configureOperatorBindings();
@@ -78,44 +90,48 @@ public class RobotContainer {
   private void configureControllerBindings() {
 
   
+    b1.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    b2.whileTrue(Shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    b3.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    b4.whileTrue(Shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     /*cam.setDefaultCommand(
       new RunCommand(() -> cam.updatesd(), cam)
     );*/
 
     
-    sd.setDefaultCommand(
-      new RunCommand(() -> sd.drive(
-        -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getLeftY(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
-        false, 
-        true, 
-        true)
-      ,sd)
-    );
+    // sd.setDefaultCommand(
+    //   new RunCommand(() -> sd.drive(
+    //     -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getLeftY(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
+    //     false, 
+    //     true, 
+    //     true)
+    //   ,sd)
+    // );
 
 
 
 
-    teoController.getRightTrigger().whileTrue(new RunCommand(() -> sd.drive(
-        -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getLeftY(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
-        true, 
-        true, 
-        true)
-      ,sd));
+    // teoController.getRightTrigger().whileTrue(new RunCommand(() -> sd.drive(
+    //     -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getLeftY(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
+    //     true, 
+    //     true, 
+    //     true)
+    //   ,sd));
 
 
-      teoController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
-        -MathUtil.applyDeadband(teoController.getLeftY() * -1, OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
-        true, 
-        true, 
-        true)
-      ,sd));
+    //   teoController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
+    //     -MathUtil.applyDeadband(teoController.getLeftY() * -1, OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getLeftX(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(teoController.getRightX(), OperatorConstants.DEADBAND), 
+    //     true, 
+    //     true, 
+    //     true)
+    //   ,sd));
 
 
     
@@ -123,29 +139,29 @@ public class RobotContainer {
 
   public void configureJoystickBindings(){
      
-    sd.setDefaultCommand(
-      new RunCommand(() -> sd.drive(
-        -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(flightcont.getJoyY(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(flightcont.getTwist(), OperatorConstants.DEADBAND), 
-        false, 
-        true, 
-        true)
-      ,sd)
-    );
+    // sd.setDefaultCommand(
+    //   new RunCommand(() -> sd.drive(
+    //     -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(flightcont.getJoyY(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(flightcont.getTwist(), OperatorConstants.DEADBAND), 
+    //     false, 
+    //     true, 
+    //     true)
+    //   ,sd)
+    // );
 
 
 
-    flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
-        -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(flightcont.getJoyY(), OperatorConstants.DEADBAND), 
-        -MathUtil.applyDeadband(flightcont.getTwist(), OperatorConstants.DEADBAND), 
-        true, 
-        true, 
-        true)
-      ,sd));
+    // flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
+    //     -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(flightcont.getJoyY(), OperatorConstants.DEADBAND), 
+    //     -MathUtil.applyDeadband(flightcont.getTwist(), OperatorConstants.DEADBAND), 
+    //     true, 
+    //     true, 
+    //     true)
+    //   ,sd));
 
-    flightcont.getButton2().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+    // flightcont.getButton2().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
   }
 
 
@@ -166,13 +182,13 @@ public class RobotContainer {
 
 
   private void configureSwerveDriveCommands() {
-    teoController.getDown()
-        .whileTrue(
-            new RunCommand(
-                () -> sd.zeroHeading(),
-                sd
-            )
-        );
+    // teoController.getDown()
+    //     .whileTrue(
+    //         new RunCommand(
+    //             () -> sd.zeroHeading(),
+    //             sd
+    //         )
+    //     );
 
 
 }

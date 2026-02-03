@@ -12,7 +12,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 
@@ -20,6 +20,7 @@ import static edu.wpi.first.units.Units.Volt;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -31,10 +32,10 @@ public class shooter extends SubsystemBase {
   private SparkMaxConfig config2;
   private SparkMaxConfig configHood;
   
-  private final SysIdRoutine routine;
+  
 
 
-  private final SparkMax shootMotor1;
+  private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);;
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
   
   private final SparkMax hoodMotor;
@@ -43,7 +44,10 @@ public class shooter extends SubsystemBase {
 
   private final TalonSRX feedControllerSrx = new TalonSRX(ShooterConstants.FEED_MOTOR_SRX_ID); //I actually dunno this ID
 
-  
+  private final SysIdRoutine routine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this)
+    );
   
   private final SparkClosedLoopController sm1_Controller; 
   private final SparkClosedLoopController hood_Controller;
@@ -51,9 +55,10 @@ public class shooter extends SubsystemBase {
   
   @SuppressWarnings("removal")
   public shooter() {
+    SmartDashboard.putBoolean("trigger", false);  
     
     this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
-    this.shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
+
 
     this.hoodMotorEncoder = this.hoodMotor.getAbsoluteEncoder();
     this.shootMotor1Encoder = this.hoodMotor.getAbsoluteEncoder();
@@ -75,26 +80,28 @@ public class shooter extends SubsystemBase {
             .i(ShooterConstants.SHOOTER_I)
             .d(ShooterConstants.SHOOTER_D)
 
-            .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .feedForward
                 .kV(ShooterConstants.SHOOTER_KV)
                 .kA(ShooterConstants.SHOOTER_KA)
                 .kS(ShooterConstants.SHOOTER_KS);
 
     
-    config2
-        .inverted(true)
-        .follow(shootMotor1);
+    config1.encoder.velocityConversionFactor(1);
+    config1.signals.primaryEncoderVelocityAlwaysOn(true);
+    config1.signals.primaryEncoderPositionAlwaysOn(true);
+
+    config1.idleMode(IdleMode.kCoast);
+    config2.idleMode(IdleMode.kCoast);
+
+    config2.follow(shootMotor1, true);
 
 
 
     this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
       
-    this.routine = new SysIdRoutine(
-      new SysIdRoutine.Config(),
-      new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this)
-    );
+    
 
   }
 
@@ -128,7 +135,8 @@ public class shooter extends SubsystemBase {
 
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-      return routine.quasistatic(direction);
+    SmartDashboard.putBoolean("trigger", true);  
+    return routine.quasistatic(direction);
   }
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
