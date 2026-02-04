@@ -44,6 +44,11 @@ public class RgbLEDs extends SubsystemBase {
     led.setData(ledBuffer);
     }
 
+     public void rgbSolid(int r, int g, int b) {
+    LEDPattern color = LEDPattern.solid(Color.fromRGB(r, g, b));
+    color.applyTo(ledBuffer);
+    led.setData(ledBuffer);
+     }
  
 
   public Command runPattern(LEDPattern pattern) {
