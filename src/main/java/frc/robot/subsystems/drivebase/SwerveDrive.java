@@ -194,11 +194,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
      */
     public void drive(double xSpeed, double ySpeed, double rSpeed, boolean limitSpeed, boolean fieldRelative,
             boolean rateLimit) {
-
-        xSpeed = xSpeed * -1;
-
-        // Cube the inputs for fine control at low speeds.
-
         if (xSpeed < 0)
             xSpeed = -Math.pow(Math.abs(xSpeed), 0.5);
         else
@@ -218,7 +213,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
          * xSpeed = Math.pow(xSpeed, 1);
          * ySpeed = Math.pow(ySpeed, 1);
          */
-        rSpeed = Math.pow(rSpeed, 1);
+        // rSpeed = Math.pow(rSpeed, 1);
 
         SmartDashboard.putNumber("xTransformed", xSpeed);
         SmartDashboard.putNumber("yTransformed", ySpeed);

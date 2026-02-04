@@ -153,9 +153,9 @@ public class RobotContainer {
 
                 sd.setDefaultCommand(
                                 new RunCommand(() -> sd.drive(
-                                                -MathUtil.applyDeadband(driveController.getLeftX(),
-                                                                OperatorConstants.DEADBAND),
                                                 -MathUtil.applyDeadband(driveController.getLeftY(),
+                                                                OperatorConstants.DEADBAND),
+                                                -MathUtil.applyDeadband(driveController.getLeftX(),
                                                                 OperatorConstants.DEADBAND),
                                                 -MathUtil.applyDeadband(driveController.getRightX(),
                                                                 OperatorConstants.DEADBAND),
