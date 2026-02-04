@@ -18,7 +18,7 @@ public class GyroIONavX implements GyroIO {
     private final Queue<Double> yawTimestampQueue;
 
     public GyroIONavX(NavXComType port) {
-        gyro = new AHRS(port);
+        gyro = new AHRS(port, (byte) DriveConstants.ODOMETRY_FREQUENCY);
         gyro.setAngleAdjustment(270);
 
         yawTimestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
