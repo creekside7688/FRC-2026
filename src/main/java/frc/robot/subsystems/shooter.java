@@ -29,43 +29,40 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
 
-public class shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase {
   /** Creates a new shooter. */
   private SparkMaxConfig config1;
   private SparkMaxConfig config2;
   private SparkMaxConfig configHood;
-  
+
   private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
   private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
   private ShuffleboardTab tab2 = Shuffleboard.getTab("shooter");
   private GenericEntry feederSpeed = tab2.add("shooterVoltage", 0).getEntry();
 
-
   private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);;
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
-  
+
   private final SparkMax hoodMotor;
   private final AbsoluteEncoder hoodMotorEncoder;
-  private final AbsoluteEncoder shootMotor1Encoder; 
+  private final AbsoluteEncoder shootMotor1Encoder;
 
-  private final TalonSRX feedControllerSrx = new TalonSRX(ShooterConstants.FEED_MOTOR_SRX_ID); //I actually dunno this ID
+  private final TalonSRX feedControllerSrx = new TalonSRX(ShooterConstants.FEED_MOTOR_SRX_ID); // I actually dunno this
+                                                                                               // ID
 
   private final SysIdRoutine routine = new SysIdRoutine(
       new SysIdRoutine.Config(),
-      new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this)
-    );
-  
-  private final SparkClosedLoopController sm1_Controller; 
-  private final SparkClosedLoopController hood_Controller;
-  
-  
-  @SuppressWarnings("removal")
-  public shooter() {
-    SmartDashboard.putBoolean("t", false);  
-    
-    this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
+      new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this));
 
+  private final SparkClosedLoopController sm1_Controller;
+  private final SparkClosedLoopController hood_Controller;
+
+  @SuppressWarnings("removal")
+  public Shooter() {
+    SmartDashboard.putBoolean("t", false);
+
+    this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
 
     this.hoodMotorEncoder = this.hoodMotor.getAbsoluteEncoder();
     this.shootMotor1Encoder = this.hoodMotor.getAbsoluteEncoder();
@@ -76,24 +73,19 @@ public class shooter extends SubsystemBase {
     config1 = new SparkMaxConfig();
     config2 = new SparkMaxConfig();
     configHood = new SparkMaxConfig();
-    
 
-
-    double kP = 0.0001; //??
+    double kP = 0.0001; // ??
     double kF = 1.0 / 5676.0;
-    config1
-        .closedLoop
-            .p(ShooterConstants.SHOOTER_P)
-            .i(ShooterConstants.SHOOTER_I)
-            .d(ShooterConstants.SHOOTER_D)
+    config1.closedLoop
+        .p(ShooterConstants.SHOOTER_P)
+        .i(ShooterConstants.SHOOTER_I)
+        .d(ShooterConstants.SHOOTER_D)
 
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .feedForward
-                .kV(ShooterConstants.SHOOTER_KV)
-                .kA(ShooterConstants.SHOOTER_KA)
-                .kS(ShooterConstants.SHOOTER_KS);
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder).feedForward
+        .kV(ShooterConstants.SHOOTER_KV)
+        .kA(ShooterConstants.SHOOTER_KA)
+        .kS(ShooterConstants.SHOOTER_KS);
 
-    
     config1.encoder.velocityConversionFactor(1);
     config1.signals.primaryEncoderVelocityAlwaysOn(true);
     config1.signals.primaryEncoderPositionAlwaysOn(true);
@@ -106,12 +98,8 @@ public class shooter extends SubsystemBase {
 
     config2.follow(shootMotor1, true);
 
-
-
     this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-      
-    
 
   }
 
@@ -127,8 +115,7 @@ public class shooter extends SubsystemBase {
     shootMotor1.setVoltage(volts);
   }
 
-  public void runVariableVoltage()
-  {
+  public void runVariableVoltage() {
     RunFeeder();
     SmartDashboard.putBoolean("t", true);
     double retrievedVoltage = voltage.getDouble(0);
@@ -139,21 +126,18 @@ public class shooter extends SubsystemBase {
   public void RunFeeder() {
     feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
   }
-  
 
-  public void stopSystem()
-  {
+  public void stopSystem() {
     stopFeeder();
     shootMotor1.setVoltage(0);
   }
 
-  public void stopFeeder()
-  {
+  public void stopFeeder() {
     feedControllerSrx.set(ControlMode.PercentOutput, 0);
   }
 
   public void setHoodMotorPosition(int setPoint) {
-     hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
+    hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
   }
 
   public void runVariableMotorFeeder() {
@@ -166,8 +150,7 @@ public class shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {      
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return routine.quasistatic(direction);
   }
 
