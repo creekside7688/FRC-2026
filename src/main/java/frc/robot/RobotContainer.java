@@ -36,14 +36,13 @@ import frc.robot.constants.OperatorConstants;
  */
 public class RobotContainer {
 
-  private final SwerveDrive sd = new SwerveDrive();
-
-  private final Controller controller = new Controller(1 );
+  private final Controller controller = new Controller(3);
   private final Controller teoController = new Controller(2);
 
   private final Limelight cam =  new Limelight();
+  private final SwerveDrive sd = new SwerveDrive(cam);
 
-  private final FlightControl flightcont = new FlightControl(3);
+  private final FlightControl flightcont = new FlightControl(1);
 
   private final RgbLEDs rgbLeds = new RgbLEDs();
 
@@ -51,8 +50,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     CameraServer.startAutomaticCapture();
-    configureControllerBindings();
-    //configureJoystickBindings();
+    //configureControllerBindings();
+    configureJoystickBindings();
     configureOperatorBindings();
     //configureSubsystemCommands();
     configureSwerveDriveCommands();
@@ -75,9 +74,7 @@ public class RobotContainer {
 
   
 
-    cam.setDefaultCommand(
-      new RunCommand(() -> cam.updatesd(), cam)
-    );
+    
 
     
     sd.setDefaultCommand(
