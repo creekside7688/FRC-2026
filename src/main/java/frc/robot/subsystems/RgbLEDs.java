@@ -51,14 +51,15 @@ public class RgbLEDs extends SubsystemBase {
      }
  
      public void ledBlink(LEDPattern pattern, double delay) {
-    LEDPattern color = pattern.blink(Seconds.of(delay));
-    color.applyTo(ledBuffer);
+    LEDPattern blink = pattern.blink(Seconds.of(delay));
+    blink.applyTo(ledBuffer);
     led.setData(ledBuffer);
      }
 
   public Command runPattern(LEDPattern pattern) {
   return run(() -> pattern.applyTo(ledBuffer));
   }
+  
   public void RGBflash(){
   LEDPattern white = LEDPattern.solid(Color.kWhite);
   LEDPattern pattern = white.blink(Seconds.of(1.5));
