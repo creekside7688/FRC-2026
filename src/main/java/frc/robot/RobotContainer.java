@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.runShooter;
 import frc.robot.constants.OperatorConstants;
 
 
@@ -60,6 +61,9 @@ public class RobotContainer {
   private final RgbLEDs rgbLeds = new RgbLEDs();
 
   private final shooter Shooter = new shooter();
+  
+
+  private final runShooter runshooter = new runShooter(Shooter);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -152,7 +156,7 @@ public class RobotContainer {
     //   ,sd)
     // );
 
-
+    flightcont.getButton1().whileTrue(runshooter);
 
     // flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
     //     -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND), 

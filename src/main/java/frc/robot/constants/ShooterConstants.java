@@ -15,6 +15,7 @@ public class ShooterConstants {
     public static final double SHOOTER_D = 0;
 
     public static final int IDLE_RPM = 500;
+    public static final int SHOOTING_RPM = 2000;
 
     public static final double RUN_FEEDER_OUTPUT = -1.0;
 }
