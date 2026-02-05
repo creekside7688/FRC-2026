@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.lang.model.util.ElementScanner14;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -46,25 +48,27 @@ import frc.lib.LocalADStarAK;
 import frc.lib.SwerveUtils;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.constants.DriveConstants;
+import frc.robot.constants.AutonomousConstants.PATHNAME;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.vision.Vision;
+
 public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer {
     public static final Lock odometryLock = new ReentrantLock();
 
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-    private final Alert gyroDisconnectedAlert = new Alert("Gyro disconnected, using kinematics as fallback.", Alert.AlertType.kError);
+    private final Alert gyroDisconnectedAlert = new Alert("Gyro disconnected, using kinematics as fallback.",
+            Alert.AlertType.kError);
 
     private final SwerveModule[] modules;
 
-    private SwerveModulePosition[] lastModulePositions =
-    new SwerveModulePosition[] {
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition()
+    private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[] {
+            new SwerveModulePosition(),
+            new SwerveModulePosition(),
+            new SwerveModulePosition(),
+            new SwerveModulePosition()
     };
 
     private static final Vector<N3> stateDeviations = VecBuilder.fill(1.0, 1.0, 1.0);
@@ -85,104 +89,102 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
     private SlewRateLimiter rotationLimiter = new SlewRateLimiter(DriveConstants.ROTATION_SLEW_RATE);
 
     private double previousTime = WPIUtilJNI.now() * 1e-6;
-    
-        private Rotation2d rawGyroRotation = Rotation2d.kZero;
-    
-        public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
-    
-            modules = new SwerveModule[] {
+
+    private Rotation2d rawGyroRotation = Rotation2d.kZero;
+
+    public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
+
+        modules = new SwerveModule[] {
                 new SwerveModule(fl, "FL"),
                 new SwerveModule(fr, "FR"),
                 new SwerveModule(bl, "BL"),
                 new SwerveModule(br, "BR")
-            };
-    
-            this.gyroIO = gyro;
-    
-            this.zeroHeading();
-    
-            SparkOdometryThread.getInstance().start();
-    
-            this.poseEstimator = new SwerveDrivePoseEstimator(
-                    DriveConstants.SWERVE_KINEMATICS,
-                    rawGyroRotation,
-                    lastModulePositions,
-                    Pose2d.kZero,
-                    stateDeviations,
-                    visionMeasurementDeviations);
-    
-            RobotConfig config;
-            try {
-                config = RobotConfig.fromGUISettings();
-            } catch (Exception e) {
-                config = null;
-                e.printStackTrace();
-            }
-    
-            AutoBuilder.configure(
-                    this::getPose,
-                    this::setPose,
-                    this::getChassisSpeeds,
-                    this::driveRelative,
-                    AutonomousConstants.pfc,
-                    config,
-                    () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-                    this);
-    
-            Pathfinding.setPathfinder(new LocalADStarAK());
-            PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-                Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-            });
-            PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
-                Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-            });
-            PathPlannerLogging.setLogCurrentPoseCallback((currentPose) -> {
-                Logger.recordOutput("Odometry/TrajectoryCurrentPose", currentPose);
-            });
+        };
+
+        this.gyroIO = gyro;
+
+        this.zeroHeading();
+
+        SparkOdometryThread.getInstance().start();
+
+        this.poseEstimator = new SwerveDrivePoseEstimator(
+                DriveConstants.SWERVE_KINEMATICS,
+                rawGyroRotation,
+                lastModulePositions,
+                Pose2d.kZero,
+                stateDeviations,
+                visionMeasurementDeviations);
+
+        RobotConfig config;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            config = null;
+            e.printStackTrace();
         }
-    
-        @Override
-        public void periodic() {
-            odometryLock.lock();
-    
-            gyroIO.updateInputs(gyroInputs);
-            Logger.processInputs("Drive/Gyro", gyroInputs);
-    
-            for(SwerveModule module : modules) {
-                module.updateInputs();
-            }
-    
-            odometryLock.unlock();
-    
-            double[] sampleTimestamps =
-                modules[0].getOdometryTimestamps(); // All signals are sampled together
-            int sampleCount = sampleTimestamps.length;
-            for (int i = 0; i < sampleCount; i++) {
+
+        AutoBuilder.configure(
+                this::getPose,
+                this::setPose,
+                this::getChassisSpeeds,
+                this::driveRelative,
+                AutonomousConstants.pfc,
+                config,
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this);
+
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+            Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+        PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
+        PathPlannerLogging.setLogCurrentPoseCallback((currentPose) -> {
+            Logger.recordOutput("Odometry/TrajectoryCurrentPose", currentPose);
+        });
+    }
+
+    @Override
+    public void periodic() {
+        odometryLock.lock();
+
+        gyroIO.updateInputs(gyroInputs);
+        Logger.processInputs("Drive/Gyro", gyroInputs);
+
+        for (SwerveModule module : modules) {
+            module.updateInputs();
+        }
+
+        odometryLock.unlock();
+
+        double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
+        int sampleCount = sampleTimestamps.length;
+        for (int i = 0; i < sampleCount; i++) {
             // Read wheel positions and deltas from each module
             SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
             SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
             for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
                 modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-                moduleDeltas[moduleIndex] =
-                    new SwerveModulePosition(
+                moduleDeltas[moduleIndex] = new SwerveModulePosition(
                         modulePositions[moduleIndex].distanceMeters
-                            - lastModulePositions[moduleIndex].distanceMeters,
+                                - lastModulePositions[moduleIndex].distanceMeters,
                         modulePositions[moduleIndex].angle);
                 lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
             }
-    
+
             // Update gyro angle
             if (gyroInputs.connected) {
                 // Use the real gyro angle
                 rawGyroRotation = gyroInputs.odometryYawPositions[i];
-        } else {
-            // Use the angle delta from the kinematics and module deltas
-            Twist2d twist = DriveConstants.SWERVE_KINEMATICS.toTwist2d(moduleDeltas);
-            rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
-        }
+            } else {
+                // Use the angle delta from the kinematics and module deltas
+                Twist2d twist = DriveConstants.SWERVE_KINEMATICS.toTwist2d(moduleDeltas);
+                rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
+            }
 
-        // Apply update
-        poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+            // Apply update
+            poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
         }
 
         // Update gyro alert
@@ -459,11 +461,30 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         gyroIO.reset();
     }
 
-    public Command followPath(Pose2d endPose) {
-        PathConstraints constraints = new PathConstraints(1.93, 9.5,
-                2 * Math.PI, RadiansPerSecond.convertFrom(2152, DegreesPerSecond)); // The constraints for
+    private final PathConstraints constraints = new PathConstraints(1.93, 9.5,
+            2 * Math.PI, RadiansPerSecond.convertFrom(2152, DegreesPerSecond));
 
-        return AutoBuilder.pathfindToPose(endPose, constraints, 1.50);
+    public Command followPath(Pose2d endPose) {
+        return AutoBuilder.pathfindToPose(endPose, constraints, 0);
+
+    }
+
+    public Command pathFindToPath() {
+        try {
+            String pathString;
+            if (DriveConstants.BLUE_TOP_FIELD_TRIGGER.contains(getPose().getTranslation()))
+                pathString = AutonomousConstants.GET_PATH(PATHNAME.TOP_BLUE_TO_CENTER);
+            else if (DriveConstants.BLUE_BOTTOM_FIELD_TRIGGER.contains(getPose().getTranslation()))
+                pathString = AutonomousConstants.GET_PATH(PATHNAME.BOTTOM_BLUE_TO_CENTER);
+            else {System.out.println("failed to get path"); pathString = "";}
+            PathPlannerPath path = PathPlannerPath.fromPathFile(pathString);
+            return AutoBuilder.pathfindThenFollowPath(path, constraints);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Command() {
+                
+            };
+        }
     }
 
     @Override

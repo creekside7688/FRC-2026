@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -63,4 +66,7 @@ public class DriveConstants {
     public static final double FLIP_D = 0;
 
     public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
+
+    public static final Rectangle2d BLUE_TOP_FIELD_TRIGGER = new Rectangle2d(new Translation2d(Inches.of(0), Inches.of( 158.4)), new Translation2d(Inches.of(182.11), Inches.of(158.84)));
+    public static final Rectangle2d BLUE_BOTTOM_FIELD_TRIGGER = new Rectangle2d(Translation2d.kZero, new Translation2d(Inches.of(182.11), Inches.of(317.69)));
 }

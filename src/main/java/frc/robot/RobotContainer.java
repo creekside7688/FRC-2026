@@ -5,6 +5,9 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
+
+import java.util.function.BooleanSupplier;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.SimulatedArena.FieldMap;
 import org.ironmaple.simulation.drivesims.COTS;
@@ -83,6 +86,11 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+
+                Logger.recordOutput("SwerveStates/Fields/UpperRectangle", DriveConstants.BLUE_TOP_FIELD_TRIGGER);
+                Logger.recordOutput("SwerveStates/Fields/LowerRectangle", DriveConstants.BLUE_BOTTOM_FIELD_TRIGGER);
+
+
                 ModuleIO fl, fr, bl, br;
                 GyroIO gyro;
                 VisionIO camIO1, camIO2;
@@ -178,8 +186,7 @@ public class RobotContainer {
                                 true,
                                 true,
                                 true), sd));
-
-                driveController.getA().whileTrue(sd.followPath(new Pose2d(10.0, 6.0, Rotation2d.kZero)));
+                driveController.getA().whileTrue(sd.pathFindToPath());
         }
 
         public void configureOperatorBindings() {
