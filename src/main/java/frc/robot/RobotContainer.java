@@ -137,9 +137,11 @@ public class RobotContainer {
         true)
       ,sd));
 
-    flightcont.getButton2().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+    // flightcont.getButton2().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
 
     flightcont.getButton1().whileTrue(rgbLeds.ledBlink(LEDPattern.solid(Color.kAqua), 1));
+
+    flightcont.getButton2().whileTrue(rgbLeds.rgbRainbow());
   
   }
 

@@ -28,6 +28,7 @@ public class RgbLEDs extends SubsystemBase {
   final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
   final Distance kLedSpacing = Meters.of(1 / 30.0);
   final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), kLedSpacing);
+  final LEDPattern black = LEDPattern.solid(Color.kBlack);
 
   /**
    * Creates a new RGBLEDs.
@@ -44,12 +45,16 @@ public class RgbLEDs extends SubsystemBase {
     led.start();
 
     // RgbSolidRed();
-    setDefaultCommand(runPattern(scrollingRainbow).withName("Off"));
+    setDefaultCommand(runPattern(black).withName("Off"));
   }
 
   public Command RgbSolidRed() {
     LEDPattern red = LEDPattern.solid(Color.kRed);
     return runPattern(red);
+  }
+
+  public Command rgbRainbow() {
+    return runPattern(scrollingRainbow);
   }
 
   public Command rgbSolid(int r, int g, int b) {
