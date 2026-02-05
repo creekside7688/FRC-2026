@@ -15,6 +15,8 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,6 +25,18 @@ public class Intake extends SubsystemBase {
   SparkMaxConfig intake_config = new SparkMaxConfig();
   SparkClosedLoopController intake_closedloopcontroller = intake.getClosedLoopController();
   TalonSRX intake_TalonSRX = new TalonSRX(Constants.Intake_TalonSRXID);
+  SysIdRoutine routine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(intake::setVoltage, null, this)
+  );
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+   return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+   return routine.dynamic(direction);
+  }
 
   public void SetFeedBack() {
 

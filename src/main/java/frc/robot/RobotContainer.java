@@ -14,6 +14,7 @@ import frc.lib.FlightControl;
 
 import java.util.PrimitiveIterator;
 
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Intake_Cmds;
 import frc.robot.constants.OperatorConstants;
@@ -42,7 +44,11 @@ public class RobotContainer {
   Intake intake = new Intake();
   Intake_Cmds intake_cmds = new Intake_Cmds(intake);
   Joystick joystick = new Joystick(0);
-  JoystickButton joystick_btn = new JoystickButton(joystick, 0);
+  JoystickButton joystick_btn1 = new JoystickButton(joystick, 1);
+  JoystickButton joystick_btn2 = new JoystickButton(joystick, 2);
+  JoystickButton joystick_btn3 = new JoystickButton(joystick, 3);
+  JoystickButton joystick_btn4 = new JoystickButton(joystick, 4);
+  JoystickButton joystick_btn5 = new JoystickButton(joystick, 5);
 
   private final SwerveDrive sd = new SwerveDrive();
 
@@ -80,7 +86,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureControllerBindings() {
-    joystick_btn.whileTrue(intake_cmds);
+    joystick_btn5.whileTrue(intake_cmds);
+    joystick_btn1.whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    joystick_btn2.whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    joystick_btn3.whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    joystick_btn4.whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
 
     cam.setDefaultCommand(
       new RunCommand(() -> cam.updatesd(), cam)
