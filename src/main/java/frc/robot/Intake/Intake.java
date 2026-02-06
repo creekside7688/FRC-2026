@@ -23,17 +23,29 @@ public class Intake extends SubsystemBase {
   SparkMax intake_roller = new SparkMax(Constants.Intake_RollerID, MotorType.kBrushless);
   SparkMaxConfig intake_config = new SparkMaxConfig();
   SparkClosedLoopController intake_closedloopcontroller = intake.getClosedLoopController();
-  SysIdRoutine routine = new SysIdRoutine(
+  SysIdRoutine intake_routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(intake::setVoltage, null, this)
   );
+  SysIdRoutine intake_roller_routine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(intake_roller::setVoltage, null, this)
+  );
 
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-   return routine.quasistatic(direction);
+  public Command sysIdQuasistatic_intake(SysIdRoutine.Direction direction) {
+   return intake_routine.quasistatic(direction);
   }
 
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-   return routine.dynamic(direction);
+  public Command sysIdDynamic_intake(SysIdRoutine.Direction direction) {
+   return intake_routine.dynamic(direction);
+  }
+
+  public Command sysIdQuasistatic_intake_roller(SysIdRoutine.Direction direction) {
+   return intake_roller_routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic_intake_roller(SysIdRoutine.Direction direction) {
+   return intake_roller_routine.dynamic(direction);
   }
 
   public void GoToAngle(double Angle) {
