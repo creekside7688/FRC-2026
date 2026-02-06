@@ -38,8 +38,7 @@ public class Shooter extends SubsystemBase {
   private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
   private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
-  private ShuffleboardTab tab2 = Shuffleboard.getTab("shooter");
-  private GenericEntry feederSpeed = tab2.add("shooterVoltage", 0).getEntry();
+  private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
 
   private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);;
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
@@ -116,7 +115,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runVariableVoltage() {
-    RunFeeder();
     SmartDashboard.putBoolean("t", true);
     double retrievedVoltage = voltage.getDouble(0);
     shootMotor1.setVoltage(retrievedVoltage);
@@ -142,6 +140,7 @@ public class Shooter extends SubsystemBase {
 
   public void runVariableMotorFeeder() {
     double retriedFS = feederSpeed.getDouble(0);
+    SmartDashboard.putNumber("m", retriedFS);
     feedControllerSrx.set(ControlMode.PercentOutput, retriedFS);
   }
 

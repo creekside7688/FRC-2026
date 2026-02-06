@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.runShooter;
+import frc.robot.commands.runVariableShooter;
 import frc.robot.constants.OperatorConstants;
 
 /**
@@ -61,6 +62,8 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
 
   private final runShooter runshooter = new runShooter(shooter);
+
+  private final runVariableShooter runshooterV = new runVariableShooter(shooter);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -95,8 +98,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureControllerBindings() {
+    b1.whileTrue(runshooterV);
 
-    b1.whileTrue(new RunCommand(() -> shooter.runVariableVoltage(), shooter));
+    //b1.whileTrue(new RunCommand(() -> shooter.runVariableVoltage(), shooter));
     // b2.whileTrue(new RunCommand(() -> shooter.stopSystem(), shooter));
     // b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     // b2.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
@@ -162,7 +166,8 @@ public class RobotContainer {
     // ,sd)
     // );
 
-    flightcont.getButton1().whileTrue(runshooter);
+    //flightcont.getButton1().whileTrue(runshooter);
+    //flightcont.getButton1().whileTrue(new RunCommand(() -> shooter.runVariableMotorFeeder(), shooter));
 
     // flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
     // -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND),
