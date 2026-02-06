@@ -4,8 +4,6 @@
 
 package frc.robot.Intake;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
@@ -22,9 +20,9 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   SparkMax intake = new SparkMax(Constants.Intake_MotorID, MotorType.kBrushless);
+  SparkMax intake_roller = new SparkMax(Constants.Intake_RollerID, MotorType.kBrushless);
   SparkMaxConfig intake_config = new SparkMaxConfig();
   SparkClosedLoopController intake_closedloopcontroller = intake.getClosedLoopController();
-  TalonSRX intake_TalonSRX = new TalonSRX(Constants.Intake_TalonSRXID);
   SysIdRoutine routine = new SysIdRoutine(
     new SysIdRoutine.Config(),
     new SysIdRoutine.Mechanism(intake::setVoltage, null, this)
@@ -38,27 +36,23 @@ public class Intake extends SubsystemBase {
    return routine.dynamic(direction);
   }
 
-  public void SetFeedBack() {
-
-  }
-
-  public void SetTalonSRXOutput() {
-    intake_TalonSRX.set(ControlMode.PercentOutput, Constants.Intake_TalonSRX_OutputValue);
-  }
-
-  public void StopTalonSRX() {
-    intake_TalonSRX.set(ControlMode.PercentOutput, 0);
-  }
-
   public void GoToAngle(double Angle) {
     intake_closedloopcontroller.setSetpoint(Angle, ControlType.kPosition);
   }
 
-  public void SetSpeed(double Speed) {
+  public void SetSpeedIntakeRoller(double Speed) {
+    intake_roller.set(Speed);
+  }
+
+  public void StopIntakeRoller() {
+    intake_roller.set(0);
+  }
+
+  public void SetSpeedIntake(double Speed) {
     intake.set(Speed);
   }
 
-  public void Stop() {
+  public void StopIntake() {
     intake.set(0);
   }
 

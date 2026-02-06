@@ -24,7 +24,6 @@ public static double Intake_PID_D = 0;
 public static double Intake_SVA_S = 0;
 public static double Intake_SVA_V = 0;
 public static double Intake_SVA_A = 0;
-public static int Intake_TalonSRXID = 0;
-public static double Intake_TalonSRX_OutputValue = 0;
+public static int Intake_RollerID = 0;
 
 }

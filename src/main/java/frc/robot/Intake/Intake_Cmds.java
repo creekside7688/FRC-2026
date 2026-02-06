@@ -25,13 +25,11 @@ public class Intake_Cmds extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    a.SetTalonSRXOutput();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    a.StopTalonSRX();
   }
 
   // Returns true when the command should end.
