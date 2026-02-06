@@ -42,7 +42,7 @@ public class DriveConstants {
     public static final double FL_OFFSET = -Math.PI / 2;
     public static final double FR_OFFSET = 0;
     public static final double BL_OFFSET = Math.PI;
-    public static final double BR_OFFSET = Math.PI / 2;
+    public static final double BR_OFFSET = Math.PI/2;
 
 
     public static final int FL_DRIVE_MOTOR = 1;
