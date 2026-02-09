@@ -40,7 +40,12 @@ public class Shooter extends SubsystemBase {
 
   private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
 
-  private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);;
+  private GenericEntry hoodVoltage = tab.add("hoodVoltage", 0).getEntry();
+
+  private GenericEntry hoodPos = tab.add("hoodPos", 60).getEntry();
+
+
+  private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
   private final SparkMax hoodMotor;
@@ -57,7 +62,6 @@ public class Shooter extends SubsystemBase {
   private final SparkClosedLoopController sm1_Controller;
   private final SparkClosedLoopController hood_Controller;
 
-  @SuppressWarnings("removal")
   public Shooter() {
     SmartDashboard.putBoolean("t", false);
 
@@ -73,8 +77,7 @@ public class Shooter extends SubsystemBase {
     config2 = new SparkMaxConfig();
     configHood = new SparkMaxConfig();
 
-    double kP = 0.0001; // ??
-    double kF = 1.0 / 5676.0;
+ 
     config1.closedLoop
         .p(ShooterConstants.SHOOTER_P)
         .i(ShooterConstants.SHOOTER_I)
@@ -97,10 +100,37 @@ public class Shooter extends SubsystemBase {
 
     config2.follow(shootMotor1, true);
 
+    configHood.closedLoop
+      .p(0.1)
+      .i(0)
+      .d(0);
+
+    configHood.encoder
+            .positionConversionFactor(ShooterConstants.ANGLECHANGE_PER_ROTATION);
+
+        // Soft Limits: Prevent the hood from slamming into the frame
+    configHood.softLimit
+        .forwardSoftLimit(75) // Max angle
+        .reverseSoftLimit(45) // Min angle
+        .forwardSoftLimitEnabled(true)
+        .reverseSoftLimitEnabled(true);
+
+    configHood.idleMode(IdleMode.kBrake);
+
+
+
+    hoodMotor.getEncoder().setPosition(60);
+
     this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
   }
+
+
+
+
 
   public void SetRPM(int rpm) {
     sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
@@ -113,6 +143,8 @@ public class Shooter extends SubsystemBase {
   public void setShooterMotor1Voltage(double volts) {
     shootMotor1.setVoltage(volts);
   }
+
+
 
   public void runVariableVoltage() {
     SmartDashboard.putBoolean("t", true);
@@ -130,12 +162,43 @@ public class Shooter extends SubsystemBase {
     shootMotor1.setVoltage(0);
   }
 
-  public void stopFeeder() {
-    feedControllerSrx.set(ControlMode.PercentOutput, 0);
+
+
+
+
+  public void resetHoodEncoder(double currentActualAngle) {
+    hoodMotor.getEncoder().setPosition(currentActualAngle);
   }
 
   public void setHoodMotorPosition(int setPoint) {
     hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
+  }
+
+  public void setVariableMotorPosition() {
+    int setPoint = (int) (hoodPos.getDouble(0));
+    setHoodMotorPosition(setPoint);
+  }
+  
+  public void setHoodMotorVoltage(double volts) {
+    hoodMotor.setVoltage(volts);
+  }
+
+  public void setVariableHMVoltage(boolean inverted) {
+    double hoodMVolts = hoodVoltage.getDouble(0);
+    if (inverted) hoodMVolts *= -1;
+    setHoodMotorVoltage(hoodMVolts);
+  }
+
+  /* 
+
+  */
+
+
+
+
+
+  public void stopFeeder() {
+    feedControllerSrx.set(ControlMode.PercentOutput, 0);
   }
 
   public void runVariableMotorFeeder() {

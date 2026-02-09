@@ -3,7 +3,7 @@ package frc.robot.constants;
 public class ShooterConstants {
     public static final int BALL_SHOOTING_MOTOR_ID1 = 11; //"leader" motor
     public static final int BALL_SHOOTING_MOTOR_ID2 = 12; //all placeholder values
-    public static final int BALL_HOOD_MOTOR = 20;
+    public static final int BALL_HOOD_MOTOR = 120;
     public static final int FEED_MOTOR_SRX_ID = 6;
 
     public static final double SHOOTER_KV = 1;
@@ -18,4 +18,6 @@ public class ShooterConstants {
     public static final int SHOOTING_RPM = 2000;
 
     public static final double RUN_FEEDER_OUTPUT = -1.0;
+
+    public static final double ANGLECHANGE_PER_ROTATION = 360.0 / 1300.0;
 }

@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.runShooter;
+import frc.robot.commands.runShooterHoodBack;
+import frc.robot.commands.runShooterHoodForward;
 import frc.robot.commands.runVariableShooter;
 import frc.robot.constants.OperatorConstants;
 
@@ -62,6 +64,9 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
 
   private final runShooter runshooter = new runShooter(shooter);
+
+  private final runShooterHoodForward runshooterhoodforward = new runShooterHoodForward(shooter);
+  private final runShooterHoodBack runshooterhoodback = new runShooterHoodBack(shooter);
 
   private final runVariableShooter runshooterV = new runVariableShooter(shooter);
 
@@ -100,9 +105,9 @@ public class RobotContainer {
   private void configureControllerBindings() {
     b1.whileTrue(runshooterV);
 
-    //b1.whileTrue(new RunCommand(() -> shooter.runVariableVoltage(), shooter));
-    // b2.whileTrue(new RunCommand(() -> shooter.stopSystem(), shooter));
-    // b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    //b2.whileTrue(runshooterhoodback);
+    //b3.whileTrue(runshooterhoodforward);
     // b2.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     // b3.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     // b4.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
