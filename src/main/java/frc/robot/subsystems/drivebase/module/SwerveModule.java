@@ -1,9 +1,6 @@
 package frc.robot.subsystems.drivebase.module;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -26,13 +23,11 @@ public class SwerveModule {
     this.io = io;
     this.descriptor = descriptor;
 
-    driveDisconnected =
-                  new Alert("Disconnected drive motor on " + descriptor + " module.", AlertType.kError);
-    turnDisconnected =
-                  new Alert("Disconnected turn motor on " + descriptor + " module.", AlertType.kError);
+    driveDisconnected = new Alert("Disconnected drive motor on " + descriptor + " module.", AlertType.kError);
+    turnDisconnected = new Alert("Disconnected turn motor on " + descriptor + " module.", AlertType.kError);
   }
 
-  public void updateInputs() {
+  public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Drive/Module" + descriptor, inputs);
 
@@ -64,16 +59,15 @@ public class SwerveModule {
     return desiredState;
   }
 
+  /**
+   * *Mutates the Swerve Module State parameter!
+   */
   public void setDesiredState(SwerveModuleState state) {
-    SwerveModuleState correctedState = new SwerveModuleState(
-        state.speedMetersPerSecond,
-        state.angle);
+    state.optimize(inputs.turnPositionRad);
+    state.cosineScale(inputs.turnPositionRad);
 
-    correctedState.optimize(inputs.turnPositionRad);
-    correctedState.cosineScale(inputs.turnPositionRad);
-
-    io.setDriveVelocity(correctedState.speedMetersPerSecond);
-    io.setTurnPosition(correctedState.angle);
+    io.setDriveVelocity(state.speedMetersPerSecond);
+    io.setTurnPosition(state.angle);
 
     desiredState = state;
   }

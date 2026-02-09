@@ -25,6 +25,8 @@ public class ModuleIOMapleSim implements ModuleIO {
     private static final double TURN_KD = 0.5;
 
     private boolean driveClosedLoop, turnClosedLoop;
+    private double desiredVelocityMetersPerSec;
+    private double desiredAngleRadians;
 
     private final SwerveModuleSimulation module;
     private final SimulatedMotorController.GenericMotorController driveMotor;
@@ -33,7 +35,7 @@ public class ModuleIOMapleSim implements ModuleIO {
     private final PIDController driveController;
     private final PIDController turnController;
 
-    private double driveAppliedVoltage, turnAppliedVoltage, driveFFVoltage;
+    private double driveAppliedVoltage, turnAppliedVoltage;
 
     public ModuleIOMapleSim(SwerveModuleSimulation module) {
         this.module = module;
@@ -56,13 +58,13 @@ public class ModuleIOMapleSim implements ModuleIO {
         inputs.driveConnected = true;
         inputs.drivePositionMeters = module.getDriveWheelFinalPosition().in(Rotations) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
         inputs.driveVelocityMetersPerSec = module.getDriveWheelFinalSpeed().in(RotationsPerSecond) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
-        inputs.driveAppliedVolts = driveAppliedVoltage;
+        inputs.driveAppliedVolts = module.getDriveMotorAppliedVoltage().in(Volts);
         inputs.driveCurrentAmps = Math.abs(module.getDriveMotorStatorCurrent().in(Amps));
     
         inputs.turnConnected = true;
         inputs.turnPositionRad = module.getSteerAbsoluteFacing();
         inputs.turnVelocityRadPerSec = module.getSteerAbsoluteEncoderSpeed().in(RadiansPerSecond);
-        inputs.turnAppliedVolts = turnAppliedVoltage;
+        inputs.turnAppliedVolts = module.getSteerMotorAppliedVoltage().in(Volts);
         inputs.turnCurrentAmps = Math.abs(module.getSteerMotorStatorCurrent().in(Amps));
 
         inputs.odometryTimestamps = SparkUtils.getSimulationOdometryTimeStamps();
@@ -74,34 +76,21 @@ public class ModuleIOMapleSim implements ModuleIO {
     }
 
     public void updateSimulation() {
-        if (driveClosedLoop) {
-            driveAppliedVoltage = driveController.calculate(
-                module.getDriveWheelFinalSpeed().in(RotationsPerSecond) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES);
-        } else {
-            driveController.reset();
-        }
+            driveMotor.requestVoltage(module.config.driveMotorConfigs.calculateVoltage(
+                    Amps.of(0), RadiansPerSecond.of(desiredVelocityMetersPerSec / ModuleConstants.WHEEL_RADIUS_METRES)));
 
-        if (turnClosedLoop) {
-            turnAppliedVoltage = turnController.calculate(
-                module.getSteerAbsoluteFacing().getRadians());
-        } else {
-            turnController.reset();
-        }
-
-        driveMotor.requestVoltage(Volts.of(driveAppliedVoltage));
-        turnMotor.requestVoltage(Volts.of(turnAppliedVoltage));
+            turnMotor.requestVoltage(Volts.of(turnController.calculate(
+                    module.getSteerAbsoluteFacing().getRadians(), desiredAngleRadians)));
     }
 
     @Override
     public void setDriveVelocity(double velocityMetersPerSecond) {
-        driveClosedLoop = true;
-        driveController.setSetpoint(velocityMetersPerSecond);
+        desiredVelocityMetersPerSec = velocityMetersPerSecond;
     }
 
     @Override
     public void setTurnPosition(Rotation2d angle) {
-        turnClosedLoop = true;
-        turnController.setSetpoint(angle.getRadians());
+        desiredAngleRadians = angle.getRadians();
     }
 
     @Override

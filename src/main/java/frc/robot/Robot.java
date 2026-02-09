@@ -6,6 +6,10 @@ package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.urcl.URCL;
+
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -14,13 +18,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.RobotConstants;
+import frc.lib.LocalADStarAK;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
     }
 
     // Real 
-    switch (RobotConstants.CURRENT_MODE) {
+    switch (RobotState.CURRENT_MODE) {
       case REAL:
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         break;
@@ -80,6 +80,16 @@ public class Robot extends LoggedRobot {
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
                     // be added.
 
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+            Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+        PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
+        PathPlannerLogging.setLogCurrentPoseCallback((currentPose) -> {
+            Logger.recordOutput("Odometry/TrajectoryCurrentPose", currentPose);
+        });
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.

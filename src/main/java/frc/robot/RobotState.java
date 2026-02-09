@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * the value of "simMode" to switch between "sim" (physics sim) and "replay" (log replay from a file).
  */
 
-public final class RobotConstants {
+public final class RobotState {
     public static final Mode SIM_MODE = Mode.SIM;
     public static final Mode CURRENT_MODE = RobotBase.isReal() ? Mode.REAL : SIM_MODE;
 

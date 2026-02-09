@@ -6,10 +6,8 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.util.function.BooleanSupplier;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.SimulatedArena.FieldMap;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -87,10 +85,6 @@ public class RobotContainer {
          */
         public RobotContainer() {
 
-                Logger.recordOutput("SwerveStates/Fields/UpperRectangle", DriveConstants.BLUE_TOP_FIELD_TRIGGER);
-                Logger.recordOutput("SwerveStates/Fields/LowerRectangle", DriveConstants.BLUE_BOTTOM_FIELD_TRIGGER);
-
-
                 ModuleIO fl, fr, bl, br;
                 GyroIO gyro;
                 VisionIO camIO1, camIO2;
@@ -108,7 +102,7 @@ public class RobotContainer {
                                         Rotation2d.fromRadians(DriveConstants.BL_OFFSET));
                         br = new ModuleIOSparkMax(DriveConstants.BR_DRIVE_MOTOR, DriveConstants.BR_TURN_MOTOR,
                                         Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
-                        gyro = new GyroIONavX(NavXComType.kUSB1);
+                        gyro = new GyroIONavX(NavXComType.kUSB2);
                         camIO1 = new VisionIOPhotonVision("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM);
                         camIO2 = new VisionIOPhotonVision("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM);
                 } else {
@@ -123,13 +117,15 @@ public class RobotContainer {
                         br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
 
                         gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
-                        camIO1 = new VisionIOPhotonVisionSim("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM, driveSimulation::getSimulatedDriveTrainPose);
-                        camIO2 = new VisionIOPhotonVisionSim("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM, driveSimulation::getSimulatedDriveTrainPose);
+                        camIO1 = new VisionIOPhotonVisionSim("SWERVE_CAM",
+                                        VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM,
+                                        driveSimulation::getSimulatedDriveTrainPose);
+                        camIO2 = new VisionIOPhotonVisionSim("HOPPER_CAM",
+                                        VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM,
+                                        driveSimulation::getSimulatedDriveTrainPose);
 
                         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 }
-
-
 
                 sd = new SwerveDrive(gyro, fl, fr, bl, br);
                 cam = new Vision(sd, camIO1, camIO2);
@@ -159,34 +155,48 @@ public class RobotContainer {
          */
         private void configureControllerBindings() {
 
+                // Default driving command
                 sd.setDefaultCommand(
-                                new RunCommand(() -> sd.drive(
-                                                -MathUtil.applyDeadband(driveController.getLeftY(),
-                                                                OperatorConstants.DEADBAND),
-                                                -MathUtil.applyDeadband(driveController.getLeftX(),
-                                                                OperatorConstants.DEADBAND),
-                                                -MathUtil.applyDeadband(driveController.getRightX(),
-                                                                OperatorConstants.DEADBAND),
-                                                false,
-                                                true,
-                                                true), sd));
+                                new RunCommand(() -> sd.joystickDrive(
+                                                -driveController.getLeftY(),
+                                                -driveController.getLeftX(),
+                                                -driveController.getRightX()), sd));
+
 
                 driveController.getRightTrigger().whileTrue(new RunCommand(() -> sd.drive(
-                                -MathUtil.applyDeadband(driveController.getLeftX(), OperatorConstants.DEADBAND),
-                                -MathUtil.applyDeadband(driveController.getLeftY(), OperatorConstants.DEADBAND),
-                                -MathUtil.applyDeadband(driveController.getRightX(), OperatorConstants.DEADBAND),
-                                true,
-                                true,
-                                true), sd));
+                -MathUtil.applyDeadband(driveController.getLeftY(),
+                OperatorConstants.DEADBAND),
+                -MathUtil.applyDeadband(driveController.getLeftX(),
+                OperatorConstants.DEADBAND),
+                -MathUtil.applyDeadband(driveController.getRightX(),
+                 OperatorConstants.DEADBAND),
+                 false,
+                 true,
+                 true), sd));
+
 
                 driveController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
-                                -MathUtil.applyDeadband(driveController.getLeftY() * -1, OperatorConstants.DEADBAND),
-                                -MathUtil.applyDeadband(driveController.getLeftX(), OperatorConstants.DEADBAND),
-                                -MathUtil.applyDeadband(driveController.getRightX(), OperatorConstants.DEADBAND),
-                                true,
-                                true,
-                                true), sd));
-                driveController.getA().whileTrue(sd.pathFindToPath());
+                -MathUtil.applyDeadband(driveController.getLeftY(),
+                OperatorConstants.DEADBAND),
+                -MathUtil.applyDeadband(driveController.getLeftX(),
+                OperatorConstants.DEADBAND),
+                -MathUtil.applyDeadband(driveController.getRightX(),
+                 OperatorConstants.DEADBAND),
+                 false,
+                 true,
+                 false), sd));
+
+                // driveController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
+                // -MathUtil.applyDeadband(driveController.getLeftY() * -1,
+                // OperatorConstants.DEADBAND),
+                // -MathUtil.applyDeadband(driveController.getLeftX(),
+                // OperatorConstants.DEADBAND),
+                // -MathUtil.applyDeadband(driveController.getRightX(),
+                // OperatorConstants.DEADBAND),
+                // true,
+                // true,
+                // true), sd));
+                // driveController.getA().whileTrue(sd.pathFindToPath());
         }
 
         public void configureOperatorBindings() {
@@ -209,7 +219,9 @@ public class RobotContainer {
          */
         public Command getAutonomousCommand() {
                 // An example command will be run in autonomous
-                return sd.followPath(new Pose2d(10, 6, new Rotation2d()));
+                return new Command() {
+                        
+                };
         }
 
         public void updateSimulation() {
@@ -218,11 +230,5 @@ public class RobotContainer {
                 Logger.recordOutput(
                                 "FieldSimulation/Fuel",
                                 SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
-
-                Logger.recordOutput("FieldSimulation/SwerveModuleStates",
-                                DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(
-                                                driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative()));
-                Logger.recordOutput("FieldSimulation/SwerveChassisSpeeds",
-                                driveSimulation.getDriveTrainSimulatedChassisSpeedsRobotRelative());
         }
 }

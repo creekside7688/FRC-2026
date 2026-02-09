@@ -1,24 +1,16 @@
 package frc.robot.constants;
 
-import static edu.wpi.first.units.Units.Inches;
-
-import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
-    public static final String SHUFFLEBOARD_TABLE = "Info";
-
     // Maximum allowed speeds.
     public static final double MAXIMUM_SPEED_METRES_PER_SECOND = 2.5;
     public static final double MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
 
     public static final double MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND = 0.5;
     public static final double MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND = 0.5 * Math.PI;
-
-    public static final double MAXIMUM_ELEVATOR_DRIVE_SPEED = 2;
-    public static final double MAXIMUM_ELEVATOR_ROTATION_SPEED = 1.5 * Math.PI;
 
     public static final double DIRECTION_SLEW_RATE = 8; // radians per second
     public static final double MAGNITUDE_SLEW_RATE = 8; // percent per second (1 = 100%)
@@ -57,16 +49,5 @@ public class DriveConstants {
 
     public static final boolean GYRO_INVERTED = true;
 
-    public static final double SNAP_P = 0.01;
-    public static final double SNAP_I = 0;
-    public static final double SNAP_D = 0;
-
-    public static final double FLIP_P = 0.01;
-    public static final double FLIP_I = 0;
-    public static final double FLIP_D = 0;
-
     public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
-
-    public static final Rectangle2d BLUE_TOP_FIELD_TRIGGER = new Rectangle2d(new Translation2d(Inches.of(0), Inches.of( 158.4)), new Translation2d(Inches.of(182.11), Inches.of(158.84)));
-    public static final Rectangle2d BLUE_BOTTOM_FIELD_TRIGGER = new Rectangle2d(Translation2d.kZero, new Translation2d(Inches.of(182.11), Inches.of(317.69)));
 }

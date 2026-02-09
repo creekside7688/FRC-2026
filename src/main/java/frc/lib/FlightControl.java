@@ -1,7 +1,6 @@
 package frc.lib;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -44,7 +43,6 @@ public class FlightControl {
     }
 
     public Trigger getButton1() {
-        SmartDashboard.putBoolean("button one get", true);
         return button1;
     }
     public Trigger getButton2() {

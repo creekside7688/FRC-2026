@@ -1,5 +1,12 @@
 package frc.lib;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.constants.OperatorConstants;
+
 public class SwerveUtils {
 
     /**
@@ -8,7 +15,7 @@ public class SwerveUtils {
      * @param current  The current or starting value. Can be positive or negative.
      * @param target   The target value the algorithm will step towards. Can be positive or negative.
      * @param stepsize The maximum step size that can be taken.
-     * @return The new value for {@code _current} after performing the specified step towards the specified target.
+     * @return The new value for {@code current} after performing the specified step towards the specified target.
      */
     public static double stepTowards(double current, double target, double stepsize) {
         if(Math.abs(current - target) <= stepsize) {
@@ -82,5 +89,18 @@ public class SwerveUtils {
         } else {
             return angle;
         }
+    }
+
+    public static Translation2d GetLinearVelocityFromRawJoysticks(double x, double y) {
+        double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.DEADBAND);
+        Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+
+        // Square magnitude for more precise control
+        linearMagnitude = linearMagnitude * linearMagnitude;
+
+        // Return new linear velocity
+        return new Pose2d(new Translation2d(), linearDirection)
+                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                .getTranslation();
     }
 }
