@@ -13,6 +13,7 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.MAXMotionConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.Debouncer;
@@ -22,8 +23,8 @@ import frc.robot.constants.ModuleConstants;
 
 public class ModuleIOSparkMax implements ModuleIO {
 
-  private final SparkMax driveMotor;
-  private final SparkMax turnMotor;
+  protected final SparkMax driveMotor;
+  protected final SparkMax turnMotor;
 
   private final RelativeEncoder driveEncoder;
   private final AbsoluteEncoder turnEncoder;

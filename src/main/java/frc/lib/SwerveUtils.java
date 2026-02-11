@@ -103,4 +103,9 @@ public class SwerveUtils {
                 .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                 .getTranslation();
     }
+
+
+    public static Rotation2d lookAtPoint(Translation2d lookAt, Translation2d robotPose) {
+        return lookAt.minus(robotPose).getAngle();
+    }
 }

@@ -31,10 +31,10 @@ public class DriveConstants {
             new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2));
 
     // Angular offset relative to chassis in radians.
-    public static final double FL_OFFSET = -Math.PI / 2;
+    public static final double FL_OFFSET = Math.PI / 2;
     public static final double FR_OFFSET = 0;
-    public static final double BL_OFFSET = Math.PI;
-    public static final double BR_OFFSET = Math.PI/2;
+    public static final double BL_OFFSET = -Math.PI;
+    public static final double BR_OFFSET = -Math.PI / 2;
 
 
     public static final int FL_DRIVE_MOTOR = 1;
@@ -50,4 +50,6 @@ public class DriveConstants {
     public static final boolean GYRO_INVERTED = true;
 
     public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
+
+    public static final Translation2d BLUE_HUB_CENTER_POINT = new Translation2d(edu.wpi.first.units.Units.Inches.of(182.11), edu.wpi.first.units.Units.Inches.of(158.84));
 }

@@ -12,6 +12,7 @@ import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import org.ironmaple.simulation.gamepieces.GamePiece;
 
 import com.studica.frc.AHRS.NavXComType;
 
@@ -23,6 +24,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -185,6 +187,12 @@ public class RobotContainer {
                  false,
                  true,
                  false), sd));
+
+                driveController.getB().whileTrue(
+                        new RunCommand(() -> sd.enableRotationOverride(DriveConstants.BLUE_HUB_CENTER_POINT)));
+
+                
+
 
                 // driveController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
                 // -MathUtil.applyDeadband(driveController.getLeftY() * -1,
