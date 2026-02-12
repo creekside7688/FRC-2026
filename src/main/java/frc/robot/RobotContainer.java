@@ -87,10 +87,10 @@ public class RobotContainer {
    */
   private void configureControllerBindings() {
     joystick_btn5.whileTrue(intake_cmds);
-    joystick_btn1.whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    joystick_btn2.whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    joystick_btn3.whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    joystick_btn4.whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    joystick_btn1.whileTrue(intake.sysIdQuasistatic_intake(SysIdRoutine.Direction.kForward));
+    joystick_btn2.whileTrue(intake.sysIdQuasistatic_intake(SysIdRoutine.Direction.kReverse));
+    joystick_btn3.whileTrue(intake.sysIdDynamic_intake_roller(SysIdRoutine.Direction.kForward));
+    joystick_btn4.whileTrue(intake.sysIdDynamic_intake_roller(SysIdRoutine.Direction.kReverse));
 
 
     cam.setDefaultCommand(

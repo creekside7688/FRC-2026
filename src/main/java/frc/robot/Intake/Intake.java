@@ -48,6 +48,10 @@ public class Intake extends SubsystemBase {
    return intake_roller_routine.dynamic(direction);
   }
 
+  public void SetPositionConversionFactor() {
+    intake_config.encoder.positionConversionFactor(Constants.PositionConversionFactor);
+  }
+
   public void GoToAngle(double Angle) {
     intake_closedloopcontroller.setSetpoint(Angle, ControlType.kPosition);
   }
@@ -77,7 +81,7 @@ public class Intake extends SubsystemBase {
     .kA(Constants.Intake_SVA_A);
     intake.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intake_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-
+    SetPositionConversionFactor();
   }
 
   @Override
