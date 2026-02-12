@@ -188,9 +188,6 @@ public class RobotContainer {
                  true,
                  false), sd));
 
-                driveController.getB().whileTrue(
-                        new RunCommand(() -> sd.enableRotationOverride(DriveConstants.BLUE_HUB_CENTER_POINT)));
-
                 
 
 
