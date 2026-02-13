@@ -195,7 +195,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         Logger.recordOutput("SwerveStates/Unoptimized/RawYLinearVelocity", linearVelocity.getY());
 
         if (rotationOverride) {
-        rInput = rotationOverrideController.calculate(SwerveUtils.wrapAngle(SwerveUtils.lookAtPoint(rotationOverridePoint, this.getPose().getTranslation()).getRadians()), SwerveUtils.wrapAngle(getRotation2d().getRadians())) / Math.PI;
+        rInput = -rotationOverrideController.calculate(SwerveUtils.wrapAngle(SwerveUtils.lookAtPoint(rotationOverridePoint, this.getPose().getTranslation()).getRadians()), SwerveUtils.wrapAngle(getRotation2d().getRadians())) / Math.PI;
         } else {
             rInput = MathUtil.applyDeadband(rInput, OperatorConstants.DEADBAND);
             rInput = Math.copySign(rInput * rInput, rInput);
