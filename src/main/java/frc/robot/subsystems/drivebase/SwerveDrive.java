@@ -81,11 +81,22 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
     private LoggedNetworkNumber aimPoseX = new LoggedNetworkNumber("Tuning/Drive/AimX", Units.inchesToMeters(182.11));
     private LoggedNetworkNumber aimPoseY = new LoggedNetworkNumber("Tuning/Drive/AimY", Units.inchesToMeters(158.84));
-    private LoggedNetworkNumber controllerP = new LoggedNetworkNumber("Tuning/Drive/ControllerP", 0);
-    private LoggedNetworkNumber controllerI = new LoggedNetworkNumber("Tuning/Drive/ControllerI", 0);
-    private LoggedNetworkNumber controllerD = new LoggedNetworkNumber("Tuning/Drive/ControllerD", 0);
+    private LoggedNetworkNumber controllerP = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerP", 20);
+    private LoggedNetworkNumber controllerI = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerI", 0);
+    private LoggedNetworkNumber controllerD = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerD", 0);
 
     private Translation2d rotationOverridePoint;
+
+    private LoggedNetworkBoolean translationOverrideNT = new LoggedNetworkBoolean("Tuning/Drive/TranslationOverride", false);
+
+    private LoggedNetworkNumber desiredTranslationY = new LoggedNetworkNumber("Tuning/Drive/TranslationY", Units.inchesToMeters(20));
+    private LoggedNetworkNumber tcontrollerP = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerP", 0);
+    private LoggedNetworkNumber tcontrollerI = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerI", 0);
+    private LoggedNetworkNumber tcontrollerD = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerD", 0);
+
+    private boolean translationOverride = false;
+
+    private final PIDController translationOverrideController = new PIDController(0, 0,0);
 
     public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
         modules = new SwerveModule[] {
@@ -111,7 +122,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
         rotationOverrideController.enableContinuousInput(0, 2 * Math.PI);
         rotationOverrideController.setTolerance(0.3);
-
+        translationOverrideController.setTolerance(0.05);
         AutoBuilder.configure(
                 this::getPose,
                 this::setPose,
@@ -132,6 +143,13 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         rotationOverrideController.setP(controllerP.get());
         rotationOverrideController.setI(controllerI.get());
         rotationOverrideController.setD(controllerD.get());
+        rotationOverridePoint = new Translation2d(aimPoseX.get(), aimPoseY.get());
+        rotationOverride = rotationOverrideNT.get();
+
+        translationOverrideController.setP(tcontrollerP.get());
+        translationOverrideController.setI(tcontrollerI.get());
+        translationOverrideController.setD(tcontrollerD.get());
+        translationOverride = translationOverrideNT.get();
 
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
@@ -168,8 +186,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-            rotationOverridePoint = new Translation2d(aimPoseX.get(), aimPoseY.get());
-            rotationOverride = rotationOverrideNT.get();
         }
 
         // Update gyro alert
@@ -191,6 +207,12 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
     public void joystickDrive(double xInput, double yInput, double rInput) {
         Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(xInput, yInput);
+        xInput = linearVelocity.getX() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND;
+        yInput = linearVelocity.getY() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND;
+
+        if (translationOverride) {
+            yInput = translationOverrideController.calculate(getPose().getY(), desiredTranslationY.get());
+        }
         Logger.recordOutput("SwerveStates/Unoptimized/RawXLinearVelocity", linearVelocity.getX());
         Logger.recordOutput("SwerveStates/Unoptimized/RawYLinearVelocity", linearVelocity.getY());
 
@@ -198,15 +220,14 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         rInput = -rotationOverrideController.calculate(SwerveUtils.wrapAngle(SwerveUtils.lookAtPoint(rotationOverridePoint, this.getPose().getTranslation()).getRadians()), SwerveUtils.wrapAngle(getRotation2d().getRadians())) / Math.PI;
         } else {
             rInput = MathUtil.applyDeadband(rInput, OperatorConstants.DEADBAND);
-            rInput = Math.copySign(rInput * rInput, rInput);
+            rInput = Math.copySign(rInput * rInput, rInput) * DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND;
         }
 
         Logger.recordOutput("SwerveStates/Unoptimized/RawRotationalVelocity", rInput);
 
-        // Inputs are [-1, 1] - scale the percentages by max speed to get speeds
-        ChassisSpeeds speeds = new ChassisSpeeds(linearVelocity.getX() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                linearVelocity.getY() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                rInput * (!rotationOverride ? DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND : 1));
+        ChassisSpeeds speeds = new ChassisSpeeds(xInput,
+                yInput,
+                rInput);
 
         boolean isFlipped = DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red;
