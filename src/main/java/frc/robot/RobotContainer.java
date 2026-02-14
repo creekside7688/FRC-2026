@@ -33,6 +33,7 @@ import frc.robot.commands.runShooterHoodBack;
 import frc.robot.commands.runShooterHoodForward;
 import frc.robot.commands.runVariableShooter;
 import frc.robot.constants.OperatorConstants;
+import frc.robot.constants.ShooterLookup;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -83,7 +84,7 @@ public class RobotContainer {
     configureOperatorBindings();
     // configureSubsystemCommands();
     configureSwerveDriveCommands();
-
+    ShooterLookup.initializeTable();
     // rgbLeds.RgbSolidRed();
   }
 
@@ -106,12 +107,12 @@ public class RobotContainer {
     b1.whileTrue(runshooterV);
     b2.onTrue(runshooter);
 
-    //b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    //b2.whileTrue(runshooterhoodback);
-    //b3.whileTrue(runshooterhoodforward);
-    //b2.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    //b3.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    //b4.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // b2.whileTrue(runshooterhoodback);
+    // b3.whileTrue(runshooterhoodforward);
+    // b2.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // b3.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // b4.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     /*
      * cam.setDefaultCommand(
@@ -172,8 +173,9 @@ public class RobotContainer {
     // ,sd)
     // );
 
-    //flightcont.getButton1().whileTrue(runshooter);
-    //flightcont.getButton1().whileTrue(new RunCommand(() -> shooter.runVariableMotorFeeder(), shooter));
+    // flightcont.getButton1().whileTrue(runshooter);
+    // flightcont.getButton1().whileTrue(new RunCommand(() ->
+    // shooter.runVariableMotorFeeder(), shooter));
 
     // flightcont.getButton1().whileTrue(new RunCommand(() -> sd.drive(
     // -MathUtil.applyDeadband(flightcont.getJoyX(), OperatorConstants.DEADBAND),

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -21,7 +22,8 @@ public class runShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.setShooterMotor1Voltage(0);
+    shooter.SetRPM(ShooterLookup.lookupRPM(0 /*Please add in your method for finding displacement!*/));
+    shooter.setHoodMotorPosition(ShooterLookup.lookupAngle(0 /*Please add in your method for finding displacement!*/));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,6 +38,7 @@ public class runShooter extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    shooter.RunIdle();
     return false;
   }
 }
