@@ -21,7 +21,7 @@ public class runShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.SetRPM(ShooterConstants.SHOOTING_RPM);
+    shooter.setShooterMotor1Voltage(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -31,7 +31,6 @@ public class runShooter extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.SetRPM(ShooterConstants.IDLE_RPM);
   }
 
   // Returns true when the command should end.

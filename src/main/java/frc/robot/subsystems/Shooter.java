@@ -44,6 +44,10 @@ public class Shooter extends SubsystemBase {
 
   private GenericEntry hoodPos = tab.add("hoodPos", 60).getEntry();
 
+  private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
+
+  
+
 
   private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
   private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
@@ -76,6 +80,12 @@ public class Shooter extends SubsystemBase {
     config1 = new SparkMaxConfig();
     config2 = new SparkMaxConfig();
     configHood = new SparkMaxConfig();
+    
+    config1.encoder.uvwAverageDepth(2);
+    config2.encoder.uvwAverageDepth(2);
+
+    config1.encoder.uvwMeasurementPeriod(16);
+    config2.encoder.uvwMeasurementPeriod(16);
 
  
     config1.closedLoop
@@ -134,6 +144,12 @@ public class Shooter extends SubsystemBase {
 
   public void SetRPM(int rpm) {
     sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
+
+  }
+
+  public void SetVariableRPM() {
+    int rpm = (int) shootRPM.getDouble(0);
+    SetRPM(rpm);
   }
 
   public void RunIdle() {
@@ -209,7 +225,12 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // This method will be called once per scheduler run;
+    SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
+    SmartDashboard.putNumber("Shooter 1 Velocity",shootMotor1.getEncoder().getVelocity());
+
+    SmartDashboard.putNumber("Shooter 2 Pos",shootMotor2.getEncoder().getPosition());
+    SmartDashboard.putNumber("Shooter 3 Velocity",shootMotor2.getEncoder().getVelocity());
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

@@ -104,13 +104,14 @@ public class RobotContainer {
    */
   private void configureControllerBindings() {
     b1.whileTrue(runshooterV);
+    b2.onTrue(runshooter);
 
     //b1.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     //b2.whileTrue(runshooterhoodback);
     //b3.whileTrue(runshooterhoodforward);
-    // b2.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // b3.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // b4.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    //b2.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    //b3.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    //b4.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
     /*
      * cam.setDefaultCommand(

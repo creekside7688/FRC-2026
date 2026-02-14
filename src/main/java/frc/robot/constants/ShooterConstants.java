@@ -6,9 +6,9 @@ public class ShooterConstants {
     public static final int BALL_HOOD_MOTOR = 120;
     public static final int FEED_MOTOR_SRX_ID = 6;
 
-    public static final double SHOOTER_KV = 1;
-    public static final double SHOOTER_KA = 0;
-    public static final double SHOOTER_KS = 0;
+    public static final double SHOOTER_KV = 0.0021101;
+    public static final double SHOOTER_KA = 0.00013519;
+    public static final double SHOOTER_KS = 0.12074;
 
     public static final double SHOOTER_P = 0;
     public static final double SHOOTER_I = 0;
