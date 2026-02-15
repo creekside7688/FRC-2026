@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drivebase;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,9 +11,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -32,7 +30,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -49,9 +46,10 @@ import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.vision.Vision;
 
 public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer {
+    // private final SwerveSetpointGenerator setpointGenerator;
+
     // Prevents writing to module IOInputs while reading data
     public static final Lock odometryLock = new ReentrantLock();
-    // private final SwerveSetpointGenerator setpointGenerator;
 
     // Gyro
     private final GyroIO gyroIO;
@@ -68,33 +66,14 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
             new SwerveModulePosition()
     };
 
-    // Standard deviations for encoder, used for pose estimation - how trusted
-    // encoder measurements are
+    // Standard deviations for encoder, used for pose estimation - how trusted encoder measurements are
     private static final Vector<N3> encoderStateDeviations = VecBuilder.fill(1.0, 1.0, 1.0);
 
     private final SwerveDrivePoseEstimator poseEstimator;
     private Rotation2d rawGyroRotation = Rotation2d.kZero;
     private final PIDController rotationOverrideController = new PIDController(0.5, 0, 0);
 
-    private LoggedNetworkBoolean rotationOverrideNT = new LoggedNetworkBoolean("Tuning/Drive/RotationOverride", false);
     private boolean rotationOverride = false;
-
-    private LoggedNetworkNumber aimPoseX = new LoggedNetworkNumber("Tuning/Drive/AimX", Units.inchesToMeters(182.11));
-    private LoggedNetworkNumber aimPoseY = new LoggedNetworkNumber("Tuning/Drive/AimY", Units.inchesToMeters(158.84));
-    private LoggedNetworkNumber controllerP = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerP", 20);
-    private LoggedNetworkNumber controllerI = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerI", 0);
-    private LoggedNetworkNumber controllerD = new LoggedNetworkNumber("Tuning/Drive/Rotation/ControllerD", 0);
-
-    private Translation2d rotationOverridePoint;
-
-    private LoggedNetworkBoolean translationOverrideNT = new LoggedNetworkBoolean("Tuning/Drive/TranslationOverride", false);
-
-    private LoggedNetworkNumber desiredTranslationY = new LoggedNetworkNumber("Tuning/Drive/TranslationY", Units.inchesToMeters(20));
-    private LoggedNetworkNumber tcontrollerP = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerP", 0);
-    private LoggedNetworkNumber tcontrollerI = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerI", 0);
-    private LoggedNetworkNumber tcontrollerD = new LoggedNetworkNumber("Tuning/Drive/Translation/ControllerD", 0);
-
-    private boolean translationOverride = false;
 
     private final PIDController translationOverrideController = new PIDController(0, 0,0);
 
@@ -120,14 +99,11 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
                 VecBuilder.fill(0.0, 0.0, 0.0) // Filler, not actually used
         );
 
-        rotationOverrideController.enableContinuousInput(0, 2 * Math.PI);
-        rotationOverrideController.setTolerance(0.3);
-        translationOverrideController.setTolerance(0.05);
         AutoBuilder.configure(
                 this::getPose,
                 this::setPose,
                 this::getChassisSpeeds,
-                this::driveRelative,
+                this::runVelocity,
                 AutonomousConstants.pfc,
                 AutonomousConstants.ROBOT_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -140,17 +116,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
     @Override
     public void periodic() {
-        rotationOverrideController.setP(controllerP.get());
-        rotationOverrideController.setI(controllerI.get());
-        rotationOverrideController.setD(controllerD.get());
-        rotationOverridePoint = new Translation2d(aimPoseX.get(), aimPoseY.get());
-        rotationOverride = rotationOverrideNT.get();
-
-        translationOverrideController.setP(tcontrollerP.get());
-        translationOverrideController.setI(tcontrollerI.get());
-        translationOverrideController.setD(tcontrollerD.get());
-        translationOverride = translationOverrideNT.get();
-
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -194,49 +159,13 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         Logger.recordOutput("SwerveStates/AutoLock", rotationOverride);
     }
 
+
     /**
-     * Drives the robot using controller input.
-     * 
-     * @param xInput Controls forward/backward movement relative to alliance
-     *               station. Positive -> forward movement
-     * @param yInput Controls left/right movement relative to alliance station.
-     *               Positive -> leftwards movement
-     * @param rInput controls left/right rotation relative to alliance station.
-     *               Positive -> CCW rotation
+     * Drives the robot with a specified (robot-relative) velocity
      */
-
-    public void joystickDrive(double xInput, double yInput, double rInput) {
-        Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(xInput, yInput);
-        xInput = linearVelocity.getX() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND;
-        yInput = linearVelocity.getY() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND;
-
-        if (translationOverride) {
-            yInput = translationOverrideController.calculate(getPose().getY(), desiredTranslationY.get());
-        }
-        Logger.recordOutput("SwerveStates/Unoptimized/RawXLinearVelocity", linearVelocity.getX());
-        Logger.recordOutput("SwerveStates/Unoptimized/RawYLinearVelocity", linearVelocity.getY());
-
-        if (rotationOverride) {
-        rInput = -rotationOverrideController.calculate(SwerveUtils.wrapAngle(SwerveUtils.lookAtPoint(rotationOverridePoint, this.getPose().getTranslation()).getRadians()), SwerveUtils.wrapAngle(getRotation2d().getRadians())) / Math.PI;
-        } else {
-            rInput = MathUtil.applyDeadband(rInput, OperatorConstants.DEADBAND);
-            rInput = Math.copySign(rInput * rInput, rInput) * DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND;
-        }
-
-        Logger.recordOutput("SwerveStates/Unoptimized/RawRotationalVelocity", rInput);
-
-        ChassisSpeeds speeds = new ChassisSpeeds(xInput,
-                yInput,
-                rInput);
-
-        boolean isFlipped = DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red;
-
-        speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds,
-                isFlipped ? getRotation2d().plus(Rotation2d.kPi) : getRotation2d());
-
-        ChassisSpeeds.discretize(speeds, 0.02);
-        SwerveModuleState[] setpointStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
+    public void runVelocity(ChassisSpeeds speeds) {
+        ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        SwerveModuleState[] setpointStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
 
         Logger.recordOutput("SwerveStates/Unoptimized/RawDesiredModuleStates", setpointStates);
@@ -250,176 +179,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         Logger.recordOutput("SwerveStates/Optimized/DesiredModuleStates", setpointStates);
         Logger.recordOutput("SwerveStates/Optimized/DesiredChassisSpeeds",
                 DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(setpointStates));
-    }
-
-    private double currentRotation = 0.0;
-    private double currentTranslationDirection = 0.0;
-    private double currentTranslationMagnitude = 0.0;
-
-    // Slew Rate filters to control acceleration.
-    private SlewRateLimiter magnitudeLimiter = new SlewRateLimiter(DriveConstants.MAGNITUDE_SLEW_RATE);
-    private SlewRateLimiter rotationLimiter = new SlewRateLimiter(DriveConstants.ROTATION_SLEW_RATE);
-
-    private double previousTime = WPIUtilJNI.now() * 1e-6;
-
-    public void drive(double xSpeed, double ySpeed, double rSpeed, boolean limitSpeed, boolean fieldRelative,
-            boolean rateLimit) {
-
-        // Cube the inputs for fine control at low speeds.
-
-        if (xSpeed < 0)
-            xSpeed = -Math.pow(Math.abs(xSpeed), 0.5);
-        else
-            xSpeed = Math.pow(Math.abs(xSpeed), 0.5);
-
-        if (ySpeed < 0)
-            ySpeed = -Math.pow(Math.abs(ySpeed), 0.5);
-        else
-            ySpeed = Math.pow(Math.abs(ySpeed), 0.5);
-
-        /*
-         * if (rSpeed < 0) rSpeed = - Math.pow(Math.abs(rSpeed), 0.5);
-         * else rSpeed = Math.pow(Math.abs(rSpeed), 0.5);
-         */
-
-        /*
-         * xSpeed = Math.pow(xSpeed, 1);
-         * ySpeed = Math.pow(ySpeed, 1);
-         */
-        rSpeed = Math.pow(rSpeed, 1);
-
-        SmartDashboard.putNumber("xTransformed", xSpeed);
-        SmartDashboard.putNumber("yTransformed", ySpeed);
-        SmartDashboard.putNumber("rTransformed", rSpeed);
-
-        double xSpeedCommand;
-        double ySpeedCommand;
-
-        // If we want to ratelimit
-        if (rateLimit) {
-            // Get the elapsed time since the last period
-            double currentTime = WPIUtilJNI.now() * 1e-6;
-            double elapsedTime = currentTime - previousTime;
-
-            // Convert the inputs to polar coordinates
-            double inputTranslationDirection = Math.atan2(ySpeed, xSpeed);
-            double inputTranslationMagnitude = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
-
-            double directionSlewRate;
-
-            // If we are moving
-            if (currentTranslationMagnitude != 0.0) {
-                // Apply a slew rate.
-                directionSlewRate = Math.abs(DriveConstants.DIRECTION_SLEW_RATE / currentTranslationMagnitude);
-
-                // If we are not moving
-            } else {
-                // Set an infinite slew rate
-                directionSlewRate = 500.0;
-            }
-
-            // Find the minimum difference between the input and current direction
-            double angleDif = SwerveUtils.angleDifference(inputTranslationDirection, currentTranslationDirection);
-
-            // If the difference is less than 0.45 radians
-            if (angleDif < (0.45 * Math.PI)) {
-                // Step towards the input direction
-                currentTranslationDirection = SwerveUtils
-                        .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection,
-                                directionSlewRate * elapsedTime);
-
-                // Limit the magnitude
-                currentTranslationMagnitude = magnitudeLimiter.calculate(inputTranslationMagnitude);
-
-                // If the difference is greater than 0.85 radians
-            } else if (angleDif > 0.85 * Math.PI) {
-                // If the robot is moving
-                if (currentTranslationMagnitude > 1e-4) {
-                    // Remove the magnitude
-                    currentTranslationMagnitude = magnitudeLimiter.calculate(0.0);
-
-                    // Otherwise
-                } else {
-                    // Wrap the angle and calcualte
-                    currentTranslationDirection = SwerveUtils.wrapAngle(currentTranslationDirection + Math.PI);
-                    currentTranslationMagnitude = magnitudeLimiter.calculate(inputTranslationMagnitude);
-                }
-
-                // Otherwise
-            } else {
-                // Step towards the input direction, but remove the magnitude.
-                currentTranslationDirection = SwerveUtils
-                        .stepTowardsCircular(currentTranslationDirection, inputTranslationDirection,
-                                directionSlewRate * elapsedTime);
-                currentTranslationMagnitude = magnitudeLimiter.calculate(0.0);
-            }
-
-            previousTime = currentTime;
-
-            // Calculate the commanded speeds
-            xSpeedCommand = currentTranslationMagnitude * Math.cos(currentTranslationDirection);
-            ySpeedCommand = currentTranslationMagnitude * Math.sin(currentTranslationDirection);
-            currentRotation = rotationLimiter.calculate(rSpeed);
-
-        } else {
-            xSpeedCommand = xSpeed;
-            ySpeedCommand = ySpeed;
-            currentRotation = rSpeed;
-        }
-
-        // Convert the speeds into percentages of the maximum speed.
-        double xSpeedDelivered = xSpeedCommand
-                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND
-                        : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
-
-        double ySpeedDelivered = ySpeedCommand
-                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND
-                        : DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
-
-        double rotDelivered = currentRotation
-                * (limitSpeed ? DriveConstants.MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND
-                        : DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
-
-        // Calculate the desired module states based on if we are driving field relative
-        // or not.
-        SwerveModuleState[] swerveModuleStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                this.getRotation2d())
-                        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-
-        // Desaturate the wheel speeds to prevent any speeds from exceeding the maximum.
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
-
-        for (int i = 0; i < modules.length; i++) {
-            modules[i].setDesiredState(swerveModuleStates[i]);
-        }
-
-        Logger.recordOutput("SwerveStates/Optimized/DesiredModuleStates", swerveModuleStates);
-        Logger.recordOutput("SwerveStates/Optimized/DesiredChassisSpeeds",
-                DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(swerveModuleStates));
-    }
-
-    // public void enableRotationOverride(Translation2d point) {
-    //     rotationOverride = true;
-    //     this.rotationOverridePoint = point;
-    // }
-
-    // public void disableRotationOverride() {
-    //     rotationOverride = false;
-    // }
-
-    /**
-     * Drives the robot using field relative chassis speeds.
-     */
-    public void driveRelative(ChassisSpeeds speeds) {
-        SwerveModuleState[] swerveModuleStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(speeds);
-
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
-
-        for (int i = 0; i < modules.length; i++) {
-            modules[i].setDesiredState(swerveModuleStates[i]);
-        }
+        
     }
 
     /**

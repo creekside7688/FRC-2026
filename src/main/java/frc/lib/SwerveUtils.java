@@ -106,6 +106,6 @@ public class SwerveUtils {
 
 
     public static Rotation2d lookAtPoint(Translation2d lookAt, Translation2d robotPose) {
-        return lookAt.minus(robotPose).getAngle();
+        return lookAt.minus(robotPose).getAngle().plus(Rotation2d.kPi);
     }
 }

@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
+import frc.lib.SwerveUtils;
+import frc.robot.commands.DriveCommands;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.OperatorConstants;
@@ -132,12 +134,8 @@ public class RobotContainer {
                 sd = new SwerveDrive(gyro, fl, fr, bl, br);
                 cam = new Vision(sd, camIO1, camIO2);
 
-                configureControllerBindings();
+                configureDriveBindings();
                 configureOperatorBindings();
-
-                configureSwerveDriveCommands();
-
-                // rgbLeds.RgbSolidRed();
         }
 
         /**
@@ -155,65 +153,26 @@ public class RobotContainer {
          * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
          * joysticks}.
          */
-        private void configureControllerBindings() {
+        private void configureDriveBindings() {
 
-                // Default driving command
-                sd.setDefaultCommand(
-                                new RunCommand(() -> sd.joystickDrive(
-                                                -driveController.getLeftY(),
-                                                -driveController.getLeftX(),
-                                                -driveController.getRightX()), sd));
-
-
-                driveController.getRightTrigger().whileTrue(new RunCommand(() -> sd.drive(
-                -MathUtil.applyDeadband(driveController.getLeftY(),
-                OperatorConstants.DEADBAND),
-                -MathUtil.applyDeadband(driveController.getLeftX(),
-                OperatorConstants.DEADBAND),
-                -MathUtil.applyDeadband(driveController.getRightX(),
-                 OperatorConstants.DEADBAND),
-                 false,
-                 true,
-                 true), sd));
-
-
-                driveController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
-                -MathUtil.applyDeadband(driveController.getLeftY(),
-                OperatorConstants.DEADBAND),
-                -MathUtil.applyDeadband(driveController.getLeftX(),
-                OperatorConstants.DEADBAND),
-                -MathUtil.applyDeadband(driveController.getRightX(),
-                 OperatorConstants.DEADBAND),
-                 false,
-                 true,
-                 false), sd));
-
+                sd.setDefaultCommand(DriveCommands.joystickDrive(sd, 
+                () -> -driveController.getLeftY(),
+                () -> -driveController.getLeftX(),
+                () -> -driveController.getRightX()));
                 
+                driveController.getA().whileTrue(
+                        DriveCommands.joystickDriveWithRotationalOverride(sd, () -> -driveController.getLeftY(), () -> -driveController.getLeftX(), 
+                        () -> SwerveUtils.lookAtPoint(sd.getPose().getTranslation(), DriveConstants.BLUE_HUB_CENTER_POINT))
+                );
 
-
-                // driveController.getLeftTrigger().whileTrue(new RunCommand(() -> sd.drive(
-                // -MathUtil.applyDeadband(driveController.getLeftY() * -1,
-                // OperatorConstants.DEADBAND),
-                // -MathUtil.applyDeadband(driveController.getLeftX(),
-                // OperatorConstants.DEADBAND),
-                // -MathUtil.applyDeadband(driveController.getRightX(),
-                // OperatorConstants.DEADBAND),
-                // true,
-                // true,
-                // true), sd));
-                // driveController.getA().whileTrue(sd.pathFindToPath());
-        }
-
-        public void configureOperatorBindings() {
-
-        }
-
-        private void configureSwerveDriveCommands() {
                 driveController.getDown()
                                 .whileTrue(
                                                 new RunCommand(
                                                                 () -> sd.zeroHeading(),
                                                                 sd));
+        }
+
+        public void configureOperatorBindings() {
 
         }
 
@@ -229,9 +188,14 @@ public class RobotContainer {
                 };
         }
 
+        // ONLY RUNS iN SIMULATION
         public void updateSimulation() {
+                // General Simulation
                 SimulatedArena.getInstance().simulationPeriodic();
                 Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+
+
+                // Game-Specific Simulation
                 Logger.recordOutput(
                                 "FieldSimulation/Fuel",
                                 SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
