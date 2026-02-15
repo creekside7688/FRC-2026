@@ -13,19 +13,17 @@
 
 package frc.robot.subsystems.drivebase.module;
 
+import com.revrobotics.REVLibError;
+import com.revrobotics.spark.SparkBase;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.constants.DriveConstants;
+import frc.robot.subsystems.drivebase.SwerveDrive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.DoubleSupplier;
-
-import com.revrobotics.REVLibError;
-import com.revrobotics.spark.SparkBase;
-
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.constants.DriveConstants;
-import frc.robot.subsystems.drivebase.SwerveDrive;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.

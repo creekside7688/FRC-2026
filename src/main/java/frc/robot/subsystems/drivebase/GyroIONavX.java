@@ -1,15 +1,11 @@
 package frc.robot.subsystems.drivebase;
 
-import java.util.Queue;
-
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import com.studica.frc.AHRS.NavXUpdateRate;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
+import java.util.Queue;
 
 public class GyroIONavX implements GyroIO {
 
@@ -23,7 +19,6 @@ public class GyroIONavX implements GyroIO {
 
         yawTimestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
         yawPositionQueue = SparkOdometryThread.getInstance().registerSignal(gyro::getAngle);
-
     }
 
     @Override
@@ -32,7 +27,8 @@ public class GyroIONavX implements GyroIO {
         inputs.yawPosition = gyro.getRotation2d();
         inputs.yawVelocityDegreesPerSec = gyro.getRate() * (DriveConstants.GYRO_INVERTED ? -1 : 1);
 
-        inputs.odometryYawTimestamps = yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+        inputs.odometryYawTimestamps =
+                yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryYawPositions = yawPositionQueue.stream()
                 .map((Double value) -> Rotation2d.fromDegrees(value))
                 .toArray(Rotation2d[]::new);
@@ -44,5 +40,4 @@ public class GyroIONavX implements GyroIO {
     public void reset() {
         gyro.reset();
     }
-
 }

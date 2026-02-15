@@ -16,26 +16,24 @@ public class FlightControl {
     private final Trigger button2;
     private final Trigger button3;
 
-    public  FlightControl(int port) {
+    public FlightControl(int port) {
         joystick = new Joystick(port);
 
         button1 = new JoystickButton(joystick, 1);
         button2 = new JoystickButton(joystick, 2);
         button3 = new JoystickButton(joystick, 3);
-
     }
-    
 
     public Joystick getJoystick() {
         return joystick;
     }
-    
+
     public double getJoyX() {
-        return joystick.getRawAxis(Joystick.AxisType.kX.value)*(0.75-joystick.getRawAxis(4)/4);
+        return joystick.getRawAxis(Joystick.AxisType.kX.value) * (0.75 - joystick.getRawAxis(4) / 4);
     }
 
     public double getJoyY() {
-        return joystick.getRawAxis(Joystick.AxisType.kY.value)*(0.75-joystick.getRawAxis(4)/4);
+        return joystick.getRawAxis(Joystick.AxisType.kY.value) * (0.75 - joystick.getRawAxis(4) / 4);
     }
 
     public double getTwist() {
@@ -45,14 +43,12 @@ public class FlightControl {
     public Trigger getButton1() {
         return button1;
     }
+
     public Trigger getButton2() {
         return button2;
     }
+
     public Trigger getButton3() {
         return button3;
     }
-
-
-   
-   
 }

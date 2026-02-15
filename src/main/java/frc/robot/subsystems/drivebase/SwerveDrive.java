@@ -2,26 +2,14 @@ package frc.robot.subsystems.drivebase;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -29,21 +17,20 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.SwerveUtils;
 import frc.robot.constants.AutonomousConstants;
-import frc.robot.constants.OperatorConstants;
 import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
 import frc.robot.subsystems.vision.Vision;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer {
     // private final SwerveSetpointGenerator setpointGenerator;
@@ -54,16 +41,13 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
     // Gyro
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-    private final Alert gyroDisconnectedAlert = new Alert("Gyro disconnected, using kinematics as fallback.",
-            Alert.AlertType.kError);
+    private final Alert gyroDisconnectedAlert =
+            new Alert("Gyro disconnected, using kinematics as fallback.", Alert.AlertType.kError);
 
     // Modules
     private final SwerveModule[] modules; // FL, FR, BL, BR
     private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[] {
-            new SwerveModulePosition(),
-            new SwerveModulePosition(),
-            new SwerveModulePosition(),
-            new SwerveModulePosition()
+        new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()
     };
 
     // Standard deviations for encoder, used for pose estimation - how trusted encoder measurements are
@@ -75,14 +59,14 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
     private boolean rotationOverride = false;
 
-    private final PIDController translationOverrideController = new PIDController(0, 0,0);
+    private final PIDController translationOverrideController = new PIDController(0, 0, 0);
 
     public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
         modules = new SwerveModule[] {
-                new SwerveModule(fl, "FL"),
-                new SwerveModule(fr, "FR"),
-                new SwerveModule(bl, "BL"),
-                new SwerveModule(br, "BR")
+            new SwerveModule(fl, "FL"),
+            new SwerveModule(fr, "FR"),
+            new SwerveModule(bl, "BL"),
+            new SwerveModule(br, "BR")
         };
 
         this.gyroIO = gyro;
@@ -97,7 +81,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
                 Pose2d.kZero, // Cameras update pose on field, initialize to (0, 0)
                 encoderStateDeviations,
                 VecBuilder.fill(0.0, 0.0, 0.0) // Filler, not actually used
-        );
+                );
 
         AutoBuilder.configure(
                 this::getPose,
@@ -133,8 +117,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
             for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
                 modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
                 moduleDeltas[moduleIndex] = new SwerveModulePosition(
-                        modulePositions[moduleIndex].distanceMeters
-                                - lastModulePositions[moduleIndex].distanceMeters,
+                        modulePositions[moduleIndex].distanceMeters - lastModulePositions[moduleIndex].distanceMeters,
                         modulePositions[moduleIndex].angle);
                 lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
             }
@@ -159,7 +142,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         Logger.recordOutput("SwerveStates/AutoLock", rotationOverride);
     }
 
-
     /**
      * Drives the robot with a specified (robot-relative) velocity
      */
@@ -177,9 +159,9 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         }
 
         Logger.recordOutput("SwerveStates/Optimized/DesiredModuleStates", setpointStates);
-        Logger.recordOutput("SwerveStates/Optimized/DesiredChassisSpeeds",
+        Logger.recordOutput(
+                "SwerveStates/Optimized/DesiredChassisSpeeds",
                 DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(setpointStates));
-        
     }
 
     /**

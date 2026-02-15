@@ -1,8 +1,8 @@
 package frc.robot.constants;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 public class AutonomousConstants {
     public static final double PATH_TRANSLATION_P = 5.0;
@@ -55,7 +55,7 @@ public class AutonomousConstants {
     }
 
     public static RobotConfig ROBOT_CONFIG;
-    
+
     static {
         try {
             ROBOT_CONFIG = RobotConfig.fromGUISettings();

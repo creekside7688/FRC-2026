@@ -2,18 +2,13 @@ package frc.robot.subsystems.drivebase.module;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Arrays;
-
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-import org.ironmaple.simulation.motorsims.SimulatedMotorController;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Timer;
 import frc.lib.SparkUtils;
 import frc.robot.constants.ModuleConstants;
+import java.util.Arrays;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public class ModuleIOMapleSim implements ModuleIO {
     private static final double DRIVE_KP = 13.0;
@@ -44,7 +39,6 @@ public class ModuleIOMapleSim implements ModuleIO {
         this.turnMotor = module.useGenericControllerForSteer()
                 .withCurrentLimit(Amps.of(ModuleConstants.TURN_MOTOR_CURRENT_LIMIT));
 
-
         driveController = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);
         turnController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
 
@@ -56,11 +50,13 @@ public class ModuleIOMapleSim implements ModuleIO {
         updateSimulation();
 
         inputs.driveConnected = true;
-        inputs.drivePositionMeters = module.getDriveWheelFinalPosition().in(Rotations) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
-        inputs.driveVelocityMetersPerSec = module.getDriveWheelFinalSpeed().in(RotationsPerSecond) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
+        inputs.drivePositionMeters =
+                module.getDriveWheelFinalPosition().in(Rotations) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
+        inputs.driveVelocityMetersPerSec =
+                module.getDriveWheelFinalSpeed().in(RotationsPerSecond) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES;
         inputs.driveAppliedVolts = module.getDriveMotorAppliedVoltage().in(Volts);
         inputs.driveCurrentAmps = Math.abs(module.getDriveMotorStatorCurrent().in(Amps));
-    
+
         inputs.turnConnected = true;
         inputs.turnPositionRad = module.getSteerAbsoluteFacing();
         inputs.turnVelocityRadPerSec = module.getSteerAbsoluteEncoderSpeed().in(RadiansPerSecond);
@@ -69,18 +65,18 @@ public class ModuleIOMapleSim implements ModuleIO {
 
         inputs.odometryTimestamps = SparkUtils.getSimulationOdometryTimeStamps();
         inputs.odometryDrivePositionsMeters = Arrays.stream(module.getCachedDriveWheelFinalPositions())
-            .mapToDouble(angle -> angle.in(Rotations) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES)
-            .toArray();
+                .mapToDouble(angle -> angle.in(Rotations) * ModuleConstants.WHEEL_CIRCUMFERENCE_METRES)
+                .toArray();
 
         inputs.odometryTurnPositionsRad = module.getCachedSteerAbsolutePositions();
     }
 
     public void updateSimulation() {
-            driveMotor.requestVoltage(module.config.driveMotorConfigs.calculateVoltage(
-                    Amps.of(0), RadiansPerSecond.of(desiredVelocityMetersPerSec / ModuleConstants.WHEEL_RADIUS_METRES)));
+        driveMotor.requestVoltage(module.config.driveMotorConfigs.calculateVoltage(
+                Amps.of(0), RadiansPerSecond.of(desiredVelocityMetersPerSec / ModuleConstants.WHEEL_RADIUS_METRES)));
 
-            turnMotor.requestVoltage(Volts.of(turnController.calculate(
-                    module.getSteerAbsoluteFacing().getRadians(), desiredAngleRadians)));
+        turnMotor.requestVoltage(Volts.of(
+                turnController.calculate(module.getSteerAbsoluteFacing().getRadians(), desiredAngleRadians)));
     }
 
     @Override
@@ -94,8 +90,7 @@ public class ModuleIOMapleSim implements ModuleIO {
     }
 
     @Override
-    public void resetDriveEncoder() {
-    }
+    public void resetDriveEncoder() {}
 
     @Override
     public void setDriveOpenLoop(double voltage) {

@@ -1,87 +1,82 @@
 package frc.robot.subsystems.drivebase.module;
 
-import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
 
-  private final ModuleIO io;
-  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
-  private final String descriptor;
+    private final ModuleIO io;
+    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final String descriptor;
 
-  private final Alert driveDisconnected;
-  private final Alert turnDisconnected;
-  private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
+    private final Alert driveDisconnected;
+    private final Alert turnDisconnected;
+    private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
-  private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
-  public SwerveModule(ModuleIO io, String descriptor) {
-    this.io = io;
-    this.descriptor = descriptor;
+    public SwerveModule(ModuleIO io, String descriptor) {
+        this.io = io;
+        this.descriptor = descriptor;
 
-    driveDisconnected = new Alert("Disconnected drive motor on " + descriptor + " module.", AlertType.kError);
-    turnDisconnected = new Alert("Disconnected turn motor on " + descriptor + " module.", AlertType.kError);
-  }
-
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + descriptor, inputs);
-
-    int sampleCount = inputs.odometryTimestamps.length;
-    odometryPositions = new SwerveModulePosition[sampleCount];
-    for (int i = 0; i < sampleCount; i++) {
-      double positionMeters = inputs.odometryDrivePositionsMeters[i];
-      Rotation2d angle = inputs.odometryTurnPositionsRad[i];
-      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+        driveDisconnected = new Alert("Disconnected drive motor on " + descriptor + " module.", AlertType.kError);
+        turnDisconnected = new Alert("Disconnected turn motor on " + descriptor + " module.", AlertType.kError);
     }
 
-    driveDisconnected.set(!inputs.driveConnected);
-    turnDisconnected.set(!inputs.turnConnected);
-  }
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Drive/Module" + descriptor, inputs);
 
-  public SwerveModuleState getState() {
-    return new SwerveModuleState(
-        inputs.driveVelocityMetersPerSec,
-        inputs.turnPositionRad);
-  }
+        int sampleCount = inputs.odometryTimestamps.length;
+        odometryPositions = new SwerveModulePosition[sampleCount];
+        for (int i = 0; i < sampleCount; i++) {
+            double positionMeters = inputs.odometryDrivePositionsMeters[i];
+            Rotation2d angle = inputs.odometryTurnPositionsRad[i];
+            odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+        }
 
-  public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(
-        inputs.drivePositionMeters,
-        inputs.turnPositionRad);
-  }
+        driveDisconnected.set(!inputs.driveConnected);
+        turnDisconnected.set(!inputs.turnConnected);
+    }
 
-  public SwerveModuleState getDesiredState() {
-    return desiredState;
-  }
+    public SwerveModuleState getState() {
+        return new SwerveModuleState(inputs.driveVelocityMetersPerSec, inputs.turnPositionRad);
+    }
 
-  /**
-   * *Mutates the Swerve Module State parameter!
-   */
-  public void setDesiredState(SwerveModuleState state) {
-    state.optimize(inputs.turnPositionRad);
-    state.cosineScale(inputs.turnPositionRad);
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(inputs.drivePositionMeters, inputs.turnPositionRad);
+    }
 
-    io.setDriveVelocity(state.speedMetersPerSecond);
-    io.setTurnPosition(state.angle);
+    public SwerveModuleState getDesiredState() {
+        return desiredState;
+    }
 
-    desiredState = state;
-  }
+    /**
+     * *Mutates the Swerve Module State parameter!
+     */
+    public void setDesiredState(SwerveModuleState state) {
+        state.optimize(inputs.turnPositionRad);
+        state.cosineScale(inputs.turnPositionRad);
 
-  public void resetEncoders() {
-    io.resetDriveEncoder();
-  }
+        io.setDriveVelocity(state.speedMetersPerSecond);
+        io.setTurnPosition(state.angle);
 
-  public SwerveModulePosition[] getOdometryPositions() {
-    return odometryPositions;
-  }
+        desiredState = state;
+    }
 
-  public double[] getOdometryTimestamps() {
-    return inputs.odometryTimestamps;
-  }
+    public void resetEncoders() {
+        io.resetDriveEncoder();
+    }
 
+    public SwerveModulePosition[] getOdometryPositions() {
+        return odometryPositions;
+    }
+
+    public double[] getOdometryTimestamps() {
+        return inputs.odometryTimestamps;
+    }
 }
