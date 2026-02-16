@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Voltage;
 import frc.lib.SparkUtils;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
@@ -98,7 +97,7 @@ public class ModuleIOMapleSim implements ModuleIO {
         double velocityRadPerSec = velocityMetersPerSecond / ModuleConstants.WHEEL_RADIUS_METRES;
         driveClosedLoop = true;
         ffVolts = DrivebaseConstants.SIM_DRIVE_KS * Math.signum(velocityRadPerSec)
-                    + DrivebaseConstants.SIM_DRIVE_KV * velocityRadPerSec;
+                + DrivebaseConstants.SIM_DRIVE_KV * velocityRadPerSec;
         desiredVelocityMetersPerSec = velocityMetersPerSecond;
     }
 

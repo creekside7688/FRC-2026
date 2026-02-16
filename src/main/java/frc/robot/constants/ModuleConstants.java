@@ -65,7 +65,4 @@ public class ModuleConstants {
         new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, DrivebaseConstants.WHEEL_BASE / 2.0),
         new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, -DrivebaseConstants.WHEEL_BASE / 2.0)
     };
-
-    public static final double DRIVE_KV = 473;
-    public static final double TURN_KV = 917;
 }

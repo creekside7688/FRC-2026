@@ -65,10 +65,10 @@ public class DriveCommands {
             Supplier<Rotation2d> rotationSupplier) {
 
         // Create PID controller
-        @SuppressWarnings("resource") // suppress never closed resource warning - is intentionally not closed
+        @SuppressWarnings("resource") // :sob:
         PIDController angleController =
                 new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
-        angleController.enableContinuousInput(-Math.PI, Math.PI);
+        angleController.enableContinuousInput(-Math.PI, Math.PI); // I love pid controllers
 
         // Construct command
         return Commands.run(

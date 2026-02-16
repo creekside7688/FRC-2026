@@ -2,7 +2,6 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DrivebaseConstants {
@@ -38,7 +37,7 @@ public class DrivebaseConstants {
 
     public static double ROBOT_MASS_KG = Units.lbsToKilograms(130);
 
-    // Angular offset relative to chassis in radians.
+    // Angular offset relative to chassis in radians. TODO: Redo offsets
     public static final double FL_OFFSET = Math.PI / 2;
     public static final double FR_OFFSET = 0;
     public static final double BL_OFFSET = -Math.PI;
@@ -61,6 +60,6 @@ public class DrivebaseConstants {
     public static final double OVERRIDE_ANGLE_KP = 5.0;
     public static final double OVERRIDE_ANGLE_KD = 0.4;
 
-    public static final double SIM_DRIVE_KV = 0.00789; // TODO: calculate real value
+    public static final double SIM_DRIVE_KV = 0.010; // TODO: calculate real value
     public static final double SIM_DRIVE_KS = 0.1; // TODO: calculate real value
 }

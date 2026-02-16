@@ -3,7 +3,6 @@ package frc.robot.subsystems.vision;
 import static frc.robot.constants.VisionConstants.APRIL_TAG_FIELD_LAYOUT;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.function.Supplier;
 import org.photonvision.simulation.PhotonCameraSim;
