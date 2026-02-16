@@ -32,8 +32,9 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
             visionSim.addAprilTags(APRIL_TAG_FIELD_LAYOUT);
         }
 
-        var cameraProperties =
-                SimCameraProperties.LL2_1280_720().setCalibration(1280, 720, Rotation2d.fromDegrees(79.1));
+        // var cameraProperties =
+        //         SimCameraProperties.LL2_1280_720().setCalibration(1280, 720, Rotation2d.fromDegrees(79.1));
+        var cameraProperties = SimCameraProperties.PERFECT_90DEG();
         cameraSim = new PhotonCameraSim(camera, cameraProperties, APRIL_TAG_FIELD_LAYOUT);
         cameraSim.enableDrawWireframe(false); // Resource intensive - disable if not needed
         cameraSim.enableProcessedStream(false);

@@ -60,10 +60,10 @@ public class ModuleConstants {
     public static final int TURN_MOTOR_CURRENT_LIMIT = 20; // Amps
 
     public static final Translation2d[] MODULE_TRANSLATIONS = new Translation2d[] {
-        new Translation2d(DriveConstants.TRACK_WIDTH / 2.0, DriveConstants.WHEEL_BASE / 2.0),
-        new Translation2d(DriveConstants.TRACK_WIDTH / 2.0, -DriveConstants.WHEEL_BASE / 2.0),
-        new Translation2d(-DriveConstants.TRACK_WIDTH / 2.0, DriveConstants.WHEEL_BASE / 2.0),
-        new Translation2d(-DriveConstants.TRACK_WIDTH / 2.0, -DriveConstants.WHEEL_BASE / 2.0)
+        new Translation2d(DrivebaseConstants.TRACK_WIDTH / 2.0, DrivebaseConstants.WHEEL_BASE / 2.0),
+        new Translation2d(DrivebaseConstants.TRACK_WIDTH / 2.0, -DrivebaseConstants.WHEEL_BASE / 2.0),
+        new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, DrivebaseConstants.WHEEL_BASE / 2.0),
+        new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, -DrivebaseConstants.WHEEL_BASE / 2.0)
     };
 
     public static final double DRIVE_KV = 473;

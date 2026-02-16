@@ -1,6 +1,9 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.server.launchMode": "Standard",
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": false,
+  "editor.formatOnType": false,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

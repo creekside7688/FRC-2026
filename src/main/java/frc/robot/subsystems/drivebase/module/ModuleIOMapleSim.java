@@ -1,20 +1,22 @@
 package frc.robot.subsystems.drivebase.module;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Voltage;
 import frc.lib.SparkUtils;
+import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
 import java.util.Arrays;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public class ModuleIOMapleSim implements ModuleIO {
-    private static final double DRIVE_KP = 13.0;
-    private static final double DRIVE_KI = 0.0;
-    private static final double DRIVE_KD = 0.0;
-
     private static final double TURN_KP = 7.0;
     private static final double TURN_KI = 0.0;
     private static final double TURN_KD = 0.5;
@@ -27,10 +29,11 @@ public class ModuleIOMapleSim implements ModuleIO {
     private final SimulatedMotorController.GenericMotorController driveMotor;
     private final SimulatedMotorController.GenericMotorController turnMotor;
 
-    private final PIDController driveController;
     private final PIDController turnController;
 
     private double driveAppliedVoltage, turnAppliedVoltage;
+
+    private double ffVolts;
 
     public ModuleIOMapleSim(SwerveModuleSimulation module) {
         this.module = module;
@@ -39,7 +42,6 @@ public class ModuleIOMapleSim implements ModuleIO {
         this.turnMotor = module.useGenericControllerForSteer()
                 .withCurrentLimit(Amps.of(ModuleConstants.TURN_MOTOR_CURRENT_LIMIT));
 
-        driveController = new PIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD);
         turnController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
 
         turnController.enableContinuousInput(-Math.PI, Math.PI);
@@ -72,20 +74,37 @@ public class ModuleIOMapleSim implements ModuleIO {
     }
 
     public void updateSimulation() {
-        driveMotor.requestVoltage(module.config.driveMotorConfigs.calculateVoltage(
-                Amps.of(0), RadiansPerSecond.of(desiredVelocityMetersPerSec / ModuleConstants.WHEEL_RADIUS_METRES)));
+        if (driveClosedLoop) {
+            double velocityRadPerSec = desiredVelocityMetersPerSec / ModuleConstants.WHEEL_RADIUS_METRES;
+            driveMotor.requestVoltage(module.config
+                    .driveMotorConfigs
+                    .calculateVoltage(Amps.of(0), RadiansPerSecond.of(velocityRadPerSec))
+                    .plus(Volts.of(ffVolts)));
+        } else {
+            driveMotor.requestVoltage(Volts.of(driveAppliedVoltage));
+        }
 
-        turnMotor.requestVoltage(Volts.of(
-                turnController.calculate(module.getSteerAbsoluteFacing().getRadians(), desiredAngleRadians)));
+        if (turnClosedLoop) {
+
+            turnMotor.requestVoltage(Volts.of(
+                    turnController.calculate(module.getSteerAbsoluteFacing().getRadians(), desiredAngleRadians)));
+        } else {
+            turnMotor.requestVoltage(Volts.of(turnAppliedVoltage));
+        }
     }
 
     @Override
     public void setDriveVelocity(double velocityMetersPerSecond) {
+        double velocityRadPerSec = velocityMetersPerSecond / ModuleConstants.WHEEL_RADIUS_METRES;
+        driveClosedLoop = true;
+        ffVolts = DrivebaseConstants.SIM_DRIVE_KS * Math.signum(velocityRadPerSec)
+                    + DrivebaseConstants.SIM_DRIVE_KV * velocityRadPerSec;
         desiredVelocityMetersPerSec = velocityMetersPerSecond;
     }
 
     @Override
     public void setTurnPosition(Rotation2d angle) {
+        turnClosedLoop = true;
         desiredAngleRadians = angle.getRadians();
     }
 

@@ -169,20 +169,9 @@ spotless {
             include '**/*.java'
             exclude '**/build/**', '**/build-*/**', '**/bin/**', '**/src/main/java/frc/robot/BuildConstants.java'
         }
-        toggleOffOn()
         palantirJavaFormat()
         indentWithSpaces(4)
         removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    groovyGradle {
-        target fileTree('.') {
-            include '**/*.gradle'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        greclipse()
-        indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -208,4 +197,6 @@ spotless {
 }
 
 
+// AUTO FORMATTER!!!!11!!! guys we are evolving
+// idk why you're looking at this file I hope you know what you're doing
 project.compileJava.dependsOn(spotlessApply)

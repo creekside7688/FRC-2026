@@ -1,12 +1,9 @@
 package frc.robot.subsystems.drivebase;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,7 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.AutonomousConstants;
-import frc.robot.constants.DriveConstants;
+import frc.robot.constants.DrivebaseConstants;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
 import frc.robot.subsystems.drivebase.module.SwerveModule;
@@ -55,11 +52,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
     private final SwerveDrivePoseEstimator poseEstimator;
     private Rotation2d rawGyroRotation = Rotation2d.kZero;
-    private final PIDController rotationOverrideController = new PIDController(0.5, 0, 0);
-
-    private boolean rotationOverride = false;
-
-    private final PIDController translationOverrideController = new PIDController(0, 0, 0);
 
     public SwerveDrive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
         modules = new SwerveModule[] {
@@ -75,7 +67,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         SparkOdometryThread.getInstance().start();
 
         this.poseEstimator = new SwerveDrivePoseEstimator(
-                DriveConstants.SWERVE_KINEMATICS,
+                DrivebaseConstants.SWERVE_KINEMATICS,
                 rawGyroRotation,
                 lastModulePositions,
                 Pose2d.kZero, // Cameras update pose on field, initialize to (0, 0)
@@ -128,7 +120,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
                 rawGyroRotation = gyroInputs.odometryYawPositions[i];
             } else {
                 // Use the angle delta from the kinematics and module deltas
-                Twist2d twist = DriveConstants.SWERVE_KINEMATICS.toTwist2d(moduleDeltas);
+                Twist2d twist = DrivebaseConstants.SWERVE_KINEMATICS.toTwist2d(moduleDeltas);
                 rawGyroRotation = rawGyroRotation.plus(new Rotation2d(twist.dtheta));
             }
 
@@ -138,8 +130,6 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
 
         // Update gyro alert
         gyroDisconnectedAlert.set(!gyroInputs.connected);
-
-        Logger.recordOutput("SwerveStates/AutoLock", rotationOverride);
     }
 
     /**
@@ -147,8 +137,8 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
      */
     public void runVelocity(ChassisSpeeds speeds) {
         ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-        SwerveModuleState[] setpointStates = DriveConstants.SWERVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
+        SwerveModuleState[] setpointStates = DrivebaseConstants.SWERVE_KINEMATICS.toSwerveModuleStates(discreteSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
 
         Logger.recordOutput("SwerveStates/Unoptimized/RawDesiredModuleStates", setpointStates);
         Logger.recordOutput("SwerveStates/Unoptimized/RawDesiredChassisSpeeds", speeds);
@@ -161,7 +151,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         Logger.recordOutput("SwerveStates/Optimized/DesiredModuleStates", setpointStates);
         Logger.recordOutput(
                 "SwerveStates/Optimized/DesiredChassisSpeeds",
-                DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(setpointStates));
+                DrivebaseConstants.SWERVE_KINEMATICS.toChassisSpeeds(setpointStates));
     }
 
     /**
@@ -170,7 +160,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
      */
     @AutoLogOutput(key = "SwerveStates/Measured/MeasuredChassisSpeeds")
     public ChassisSpeeds getChassisSpeeds() {
-        return DriveConstants.SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+        return DrivebaseConstants.SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
     @AutoLogOutput(key = "SwerveStates/Measured/MeasuredModuleStates")
@@ -229,7 +219,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
      * Sets the module states of the swerve drive.
      */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
 
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDesiredState(desiredStates[i]);

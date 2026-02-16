@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.SparkUtils;
-import frc.robot.constants.DriveConstants;
+import frc.robot.constants.DrivebaseConstants;
 import org.ironmaple.simulation.drivesims.GyroSimulation;
 
 public class GyroIOSim implements GyroIO {
@@ -22,7 +22,7 @@ public class GyroIOSim implements GyroIO {
         inputs.connected = true;
         inputs.yawPosition = gyro.getGyroReading().plus(Rotation2d.fromDegrees(angleOffset));
         inputs.yawVelocityDegreesPerSec =
-                gyro.getMeasuredAngularVelocity().in(DegreesPerSecond) * (DriveConstants.GYRO_INVERTED ? -1 : 1);
+                gyro.getMeasuredAngularVelocity().in(DegreesPerSecond) * (DrivebaseConstants.GYRO_INVERTED ? -1 : 1);
 
         inputs.odometryYawTimestamps = SparkUtils.getSimulationOdometryTimeStamps();
         inputs.odometryYawPositions = gyro.getCachedGyroReadings();

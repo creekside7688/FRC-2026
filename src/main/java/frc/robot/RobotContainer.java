@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,7 +16,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.SwerveUtils;
 import frc.robot.commands.DriveCommands;
-import frc.robot.constants.DriveConstants;
+import frc.robot.constants.ControllerConstants;
+import frc.robot.constants.DrivebaseConstants;
+import frc.robot.constants.GameConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drivebase.GyroIO;
@@ -49,18 +50,20 @@ import org.littletonrobotics.junction.Logger;
  */
 public class RobotContainer {
 
-    private final Controller operatorController = new Controller(1);
-    private final Controller driveController = new Controller(2);
+    private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
-    private final Vision cam;
+    private final Controller driveController = new Controller(ControllerConstants.DRIVER_CONTROLLER_PORT);
+
+    @SuppressWarnings("unused")
+    private final Vision camSystem;
 
     private final SwerveDrive sd;
 
     private final DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
             .withGyro(COTS.ofNav2X())
             .withTrackLengthTrackWidth(
-                    Units.Meters.of(DriveConstants.TRACK_WIDTH), Units.Meters.of(DriveConstants.TRACK_WIDTH))
-            .withRobotMass(Units.Pounds.of(130))
+                    Units.Meters.of(DrivebaseConstants.TRACK_WIDTH), Units.Meters.of(DrivebaseConstants.TRACK_WIDTH))
+            .withRobotMass(Units.Pounds.of(DrivebaseConstants.ROBOT_MASS_KG))
             .withSwerveModule(new SwerveModuleSimulationConfig(
                     DCMotor.getNEO(1),
                     DCMotor.getNeo550(1),
@@ -84,57 +87,60 @@ public class RobotContainer {
         ModuleIO fl, fr, bl, br;
         GyroIO gyro;
         VisionIO camIO1, camIO2;
-        if (RobotBase.isReal()) {
+        switch (RobotState.CURRENT_MODE) {
+            case REAL:
+                fl = new ModuleIOSparkMax(
+                        DrivebaseConstants.FL_DRIVE_MOTOR,
+                        DrivebaseConstants.FL_TURN_MOTOR,
+                        Rotation2d.fromRadians(DrivebaseConstants.FL_OFFSET));
+                fr = new ModuleIOSparkMax(
+                        DrivebaseConstants.FR_DRIVE_MOTOR,
+                        DrivebaseConstants.FR_TURN_MOTOR,
+                        Rotation2d.fromRadians(DrivebaseConstants.FR_OFFSET));
+                bl = new ModuleIOSparkMax(
+                        DrivebaseConstants.BL_DRIVE_MOTOR,
+                        DrivebaseConstants.BL_TURN_MOTOR,
+                        Rotation2d.fromRadians(DrivebaseConstants.BL_OFFSET));
+                br = new ModuleIOSparkMax(
+                        DrivebaseConstants.BR_DRIVE_MOTOR,
+                        DrivebaseConstants.BR_TURN_MOTOR,
+                        Rotation2d.fromRadians(DrivebaseConstants.BR_OFFSET));
+                gyro = new GyroIONavX(NavXComType.kUSB2);
+                camIO1 = new VisionIOPhotonVision("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM);
+                camIO2 = new VisionIOPhotonVision("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM);
+                break;
 
-            /*
-             * REAL HARDWARE IO
-             */
+            case SIM:
+                fl = new ModuleIOMapleSim(driveSimulation.getModules()[0]);
+                fr = new ModuleIOMapleSim(driveSimulation.getModules()[1]);
+                bl = new ModuleIOMapleSim(driveSimulation.getModules()[2]);
+                br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
 
-            fl = new ModuleIOSparkMax(
-                    DriveConstants.FL_DRIVE_MOTOR,
-                    DriveConstants.FL_TURN_MOTOR,
-                    Rotation2d.fromRadians(DriveConstants.FL_OFFSET));
-            fr = new ModuleIOSparkMax(
-                    DriveConstants.FR_DRIVE_MOTOR,
-                    DriveConstants.FR_TURN_MOTOR,
-                    Rotation2d.fromRadians(DriveConstants.FR_OFFSET));
-            bl = new ModuleIOSparkMax(
-                    DriveConstants.BL_DRIVE_MOTOR,
-                    DriveConstants.BL_TURN_MOTOR,
-                    Rotation2d.fromRadians(DriveConstants.BL_OFFSET));
-            br = new ModuleIOSparkMax(
-                    DriveConstants.BR_DRIVE_MOTOR,
-                    DriveConstants.BR_TURN_MOTOR,
-                    Rotation2d.fromRadians(DriveConstants.BR_OFFSET));
-            gyro = new GyroIONavX(NavXComType.kUSB2);
-            camIO1 = new VisionIOPhotonVision("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM);
-            camIO2 = new VisionIOPhotonVision("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM);
-        } else {
+                gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
+                camIO1 = new VisionIOPhotonVisionSim(
+                        "SWERVE_CAM",
+                        VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM,
+                        driveSimulation::getSimulatedDriveTrainPose);
+                camIO2 = new VisionIOPhotonVisionSim(
+                        "HOPPER_CAM",
+                        VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM,
+                        driveSimulation::getSimulatedDriveTrainPose);
 
-            /*
-             * MAPLESIM SIMULATION IO
-             */
+                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                break;
+            default: // REPLAY MODE - disable IO implementations, inputs provided by replay file
+                fl = new ModuleIO() {};
+                fr = new ModuleIO() {};
+                bl = new ModuleIO() {};
+                br = new ModuleIO() {};
 
-            fl = new ModuleIOMapleSim(driveSimulation.getModules()[0]);
-            fr = new ModuleIOMapleSim(driveSimulation.getModules()[1]);
-            bl = new ModuleIOMapleSim(driveSimulation.getModules()[2]);
-            br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
-
-            gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
-            camIO1 = new VisionIOPhotonVisionSim(
-                    "SWERVE_CAM",
-                    VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM,
-                    driveSimulation::getSimulatedDriveTrainPose);
-            camIO2 = new VisionIOPhotonVisionSim(
-                    "HOPPER_CAM",
-                    VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM,
-                    driveSimulation::getSimulatedDriveTrainPose);
-
-            SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                gyro = new GyroIO() {};
+                camIO1 = new VisionIO() {};
+                camIO2 = new VisionIO() {};
         }
 
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
-        cam = new Vision(sd, camIO1, camIO2);
+        camSystem = new Vision(sd, camIO1, camIO2);
 
         configureDriveBindings();
         configureOperatorBindings();
@@ -170,7 +176,7 @@ public class RobotContainer {
                         () -> -driveController.getLeftY(),
                         () -> -driveController.getLeftX(),
                         () -> SwerveUtils.lookAtPoint(
-                                sd.getPose().getTranslation(), DriveConstants.BLUE_HUB_CENTER_POINT)));
+                                sd.getPose().getTranslation(), GameConstants.BLUE_HUB_CENTER_POINT)));
 
         driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }

@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SwerveUtils;
-import frc.robot.constants.DriveConstants;
-import frc.robot.constants.OperatorConstants;
+import frc.robot.constants.ControllerConstants;
+import frc.robot.constants.DrivebaseConstants;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -32,16 +32,16 @@ public class DriveCommands {
                             xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
                     // Apply rotation deadband
-                    double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), OperatorConstants.DEADBAND);
+                    double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), ControllerConstants.DEADBAND);
 
                     // Square rotation value for more precise control
                     omega = Math.copySign(omega * omega, omega);
 
                     // Convert to field relative speeds & send command
                     ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                            linearVelocity.getY() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                            omega * DriveConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
+                            linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            omega * DrivebaseConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
                     swerveDrive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -65,8 +65,9 @@ public class DriveCommands {
             Supplier<Rotation2d> rotationSupplier) {
 
         // Create PID controller
+        @SuppressWarnings("resource") // suppress never closed resource warning - is intentionally not closed
         PIDController angleController =
-                new PIDController(DriveConstants.OVERRIDE_ANGLE_KP, 0.0, DriveConstants.OVERRIDE_ANGLE_KD);
+                new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
         // Construct command
@@ -83,8 +84,8 @@ public class DriveCommands {
 
                             // Convert to field relative speeds & send command
                             ChassisSpeeds speeds = new ChassisSpeeds(
-                                    linearVelocity.getX() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                                    linearVelocity.getY() * DriveConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                                    linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                                    linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
                                     omega);
                             boolean isFlipped = DriverStation.getAlliance().isPresent()
                                     && DriverStation.getAlliance().get() == Alliance.Red;

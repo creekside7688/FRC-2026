@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.constants.OperatorConstants;
+import frc.robot.constants.ControllerConstants;
 
 public class SwerveUtils {
 
@@ -93,7 +93,7 @@ public class SwerveUtils {
     }
 
     public static Translation2d GetLinearVelocityFromRawJoysticks(double x, double y) {
-        double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), OperatorConstants.DEADBAND);
+        double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), ControllerConstants.DEADBAND);
         Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
         // Square magnitude for more precise control

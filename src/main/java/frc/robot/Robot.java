@@ -36,6 +36,7 @@ public class Robot extends LoggedRobot {
      * initialization code.
      */
     public Robot() {
+        // GVersion logging
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -53,12 +54,14 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
-        // Real
+        // Real robot
         switch (RobotState.CURRENT_MODE) {
             case REAL:
-                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                // Logger.addDataReceiver(new WPILOGWriter()); // Uncomment during comp
+                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables, comment during comp
                 break;
 
+                // Sim robot
             case SIM:
                 Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
                 break;

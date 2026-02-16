@@ -24,15 +24,15 @@ public interface ModuleIO {
         public Rotation2d[] odometryTurnPositionsRad = new Rotation2d[] {};
     }
 
-    public void updateInputs(ModuleIOInputs inputs);
+    public default void updateInputs(ModuleIOInputs inputs) {}
 
-    public void setDriveVelocity(double velocityMetersPerSecond);
+    public default void setDriveVelocity(double velocityMetersPerSecond) {}
 
-    public void setTurnPosition(Rotation2d angle);
+    public default void setTurnPosition(Rotation2d angle) {}
 
-    public void setDriveOpenLoop(double voltage);
+    public default void setDriveOpenLoop(double voltage) {}
 
-    public void setTurnOpenLoop(double voltage);
+    public default void setTurnOpenLoop(double voltage) {}
 
-    public void resetDriveEncoder();
+    public default void resetDriveEncoder() {}
 }
