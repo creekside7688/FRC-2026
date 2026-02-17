@@ -16,9 +16,9 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class DriveCommands {
+public class TeleopDrive {
 
-    private DriveCommands() {}
+    private TeleopDrive() {}
 
     /**
      * Field relative drive command using two joysticks (controlling linear and angular velocities).

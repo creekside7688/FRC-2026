@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.SparkUtils;
-import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
 import java.util.Arrays;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -96,8 +95,8 @@ public class ModuleIOMapleSim implements ModuleIO {
     public void setDriveVelocity(double velocityMetersPerSecond) {
         double velocityRadPerSec = velocityMetersPerSecond / ModuleConstants.WHEEL_RADIUS_METRES;
         driveClosedLoop = true;
-        ffVolts = DrivebaseConstants.SIM_DRIVE_KS * Math.signum(velocityRadPerSec)
-                + DrivebaseConstants.SIM_DRIVE_KV * velocityRadPerSec;
+        ffVolts = ModuleConstants.SIM_DRIVE_KS * Math.signum(velocityRadPerSec)
+                + ModuleConstants.SIM_DRIVE_KV * velocityRadPerSec;
         desiredVelocityMetersPerSec = velocityMetersPerSecond;
     }
 

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.SwerveUtils;
-import frc.robot.commands.DriveCommands;
+import frc.robot.commands.TeleopDrive;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.GameConstants;
@@ -163,7 +163,7 @@ public class RobotContainer {
      */
     private void configureDriveBindings() {
 
-        sd.setDefaultCommand(DriveCommands.joystickDrive(
+        sd.setDefaultCommand(TeleopDrive.joystickDrive(
                 sd,
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
@@ -171,12 +171,12 @@ public class RobotContainer {
 
         driveController
                 .getA()
-                .whileTrue(DriveCommands.joystickDriveWithRotationalOverride(
+                .whileTrue(TeleopDrive.joystickDriveWithRotationalOverride(
                         sd,
                         () -> -driveController.getLeftY(),
                         () -> -driveController.getLeftX(),
                         () -> SwerveUtils.lookAtPoint(
-                                sd.getPose().getTranslation(), GameConstants.BLUE_HUB_CENTER_POINT)));
+                                sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
 
         driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }
