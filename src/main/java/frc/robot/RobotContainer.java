@@ -178,6 +178,9 @@ public class RobotContainer {
                         () -> SwerveUtils.lookAtPoint(
                                 sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
 
+        driveController
+                .getB()
+                .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
         driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }
 

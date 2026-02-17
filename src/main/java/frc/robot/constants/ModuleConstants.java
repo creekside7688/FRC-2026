@@ -38,7 +38,7 @@ public class ModuleConstants {
     public static final double TURN_PID_MINIMUM_INPUT = 0; // Radians
     public static final double TURN_PID_MAXIMUM_INPUT = TURN_ENCODER_POSITION_FACTOR; // Radians
 
-    //TODO: Drivebase characterization
+    // TODO: Drivebase characterization
     public static final double DRIVE_P = 0.04;
     public static final double DRIVE_I = 0;
     public static final double DRIVE_D = 0;
@@ -67,7 +67,7 @@ public class ModuleConstants {
         new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, -DrivebaseConstants.WHEEL_BASE / 2.0)
     };
 
-    //TODO: sim characterization(?)
-    public static final double SIM_DRIVE_KV = 0.010; 
-    public static final double SIM_DRIVE_KS = 0.1; 
+    // TODO: sim characterization(?)
+    public static final double SIM_DRIVE_KV = 0.010;
+    public static final double SIM_DRIVE_KS = 0.1;
 }

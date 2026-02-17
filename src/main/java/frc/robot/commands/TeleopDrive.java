@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.SwerveUtils;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
+import frc.robot.constants.GameConstants;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -19,6 +22,17 @@ import java.util.function.Supplier;
 public class TeleopDrive {
 
     private TeleopDrive() {}
+
+    private static final PIDController angleController =
+            new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
+
+    private static final PIDController yController = new PIDController(4, 0, 0);
+
+    static {
+        angleController.enableContinuousInput(-Math.PI, Math.PI); // I love pid controllers
+        angleController.setTolerance(0.1); // Radians
+        yController.setTolerance(0.1); // Meters
+    }
 
     /**
      * Field relative drive command using two joysticks (controlling linear and angular velocities).
@@ -64,41 +78,75 @@ public class TeleopDrive {
             DoubleSupplier ySupplier,
             Supplier<Rotation2d> rotationSupplier) {
 
-        // Create PID controller
-        @SuppressWarnings("resource") // :sob:
-        PIDController angleController =
-                new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
-        angleController.enableContinuousInput(-Math.PI, Math.PI); // I love pid controllers
+        // Construct command
+        return Commands.run(
+                () -> {
+                    // Get linear velocity
+                    Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(
+                            xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+                    // Calculate angular speed
+                    double omega = angleController.calculate(
+                            drive.getRotation2d().getRadians(),
+                            rotationSupplier.get().getRadians());
+
+                    // Convert to field relative speeds & send command
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            omega);
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                            speeds,
+                            isFlipped ? drive.getRotation2d().plus(new Rotation2d(Math.PI)) : drive.getRotation2d()));
+                },
+                drive);
+    }
+
+    public static Command joystickDriveWithTrenchAlign(SwerveDrive drive, DoubleSupplier xSupplier) {
 
         // Construct command
         return Commands.run(
-                        () -> {
-                            // Get linear velocity
-                            Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(
-                                    xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                () -> {
+                    // Get linear velocity
+                    Translation2d linearVelocity =
+                            SwerveUtils.GetLinearVelocityFromRawJoysticks(xSupplier.getAsDouble(), 0);
 
-                            // Calculate angular speed
-                            double omega = angleController.calculate(
-                                    drive.getRotation2d().getRadians(),
-                                    rotationSupplier.get().getRadians());
+                    // Calculate angular speed
+                    double omega = angleController.calculate(
+                            drive.getRotation2d().getRadians(),
+                            getTrenchLockAngle(drive.getRotation2d().getDegrees())
+                                    .getRadians());
 
-                            // Convert to field relative speeds & send command
-                            ChassisSpeeds speeds = new ChassisSpeeds(
-                                    linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                                    linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                                    omega);
-                            boolean isFlipped = DriverStation.getAlliance().isPresent()
-                                    && DriverStation.getAlliance().get() == Alliance.Red;
-                            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    speeds,
-                                    isFlipped
-                                            ? drive.getRotation2d().plus(new Rotation2d(Math.PI))
-                                            : drive.getRotation2d()));
-                        },
-                        drive)
+                    // Convert to field relative speeds & send command
+                    int flipFactor = DriverStation.getAlliance().isPresent()
+                                    && DriverStation.getAlliance().get() == Alliance.Red
+                            ? -1
+                            : 1;
+                    double robotPoseY = drive.getPose().getY();
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND * flipFactor,
+                            yController.calculate(robotPoseY, getTrenchY(robotPoseY))
+                                    * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            omega);
+                    drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation2d()));
+                },
+                drive);
+    }
 
-                // Reset PID controller when command starts
-                .beforeStarting(
-                        () -> angleController.setSetpoint(drive.getRotation2d().getRadians()));
+    private static Rotation2d getTrenchLockAngle(double rotationDegrees) {
+        if (Math.abs(MathUtil.inputModulus(rotationDegrees - 90, -180, 180)) < 90) {
+            return Rotation2d.kCCW_90deg;
+        } else {
+            return Rotation2d.kCW_90deg;
+        }
+    }
+
+    private static double getTrenchY(double robotPose) {
+        if (robotPose >= GameConstants.FIELD_WIDTH.div(2).in(Meters)) {
+            return GameConstants.FIELD_WIDTH.minus(GameConstants.TRENCH_CENTER).in(Meters);
+        }
+        return GameConstants.TRENCH_CENTER.in(Meters);
     }
 }

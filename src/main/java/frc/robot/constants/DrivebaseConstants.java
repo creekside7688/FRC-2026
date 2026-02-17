@@ -6,7 +6,7 @@ import edu.wpi.first.math.util.Units;
 
 public class DrivebaseConstants {
     // Maximum allowed speeds.
-    public static final double MAXIMUM_SPEED_METRES_PER_SECOND = 3.5;
+    public static final double MAXIMUM_SPEED_METRES_PER_SECOND = 2.5;
     public static final double MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
 
     public static final double MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND = 0.5;
@@ -37,7 +37,7 @@ public class DrivebaseConstants {
 
     public static double ROBOT_MASS_KG = Units.lbsToKilograms(130);
 
-    // Angular offset relative to chassis in radians. 
+    // Angular offset relative to chassis in radians.
     // TODO: find new offsets. current offsets are incorrect
     public static final double FL_OFFSET = Math.PI / 2;
     public static final double FR_OFFSET = 0;
@@ -59,5 +59,5 @@ public class DrivebaseConstants {
     public static final double ODOMETRY_FREQUENCY = 100.0; // Hz
 
     public static final double OVERRIDE_ANGLE_KP = 5.0;
-    public static final double OVERRIDE_ANGLE_KD = 0.4;
+    public static final double OVERRIDE_ANGLE_KD = 0.2;
 }
