@@ -199,4 +199,4 @@ spotless {
 
 // AUTO FORMATTER!!!!11!!! guys we are evolving
 // idk why you're looking at this file I hope you know what you're doing
-project.compileJava.dependsOn(spotlessApply)
+// project.compileJava.dependsOn(spotlessApply)
