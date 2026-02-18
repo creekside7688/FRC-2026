@@ -63,8 +63,9 @@ public class RobotContainer {
   private final RgbLEDs rgbLeds = new RgbLEDs();
 
   private final Shooter shooter = new Shooter();
+  private final SwerveDrive sd = new SwerveDrive(cam);
 
-  private final runShooter runshooter = new runShooter(shooter);
+  private final runShooter runshooter = new runShooter(shooter, sd);
 
   private final runShooterHoodForward runshooterhoodforward = new runShooterHoodForward(shooter);
   private final runShooterHoodBack runshooterhoodback = new runShooterHoodBack(shooter);

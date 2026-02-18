@@ -8,15 +8,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class runShooter extends Command {
 
   private final Shooter shooter;
+  private final SwerveDrive sd;
   /** Creates a new runShooter. */
-  public runShooter(Shooter shooter) {
+  public runShooter(Shooter shooter, SwerveDrive sd) {
     this.shooter = shooter;
-    addRequirements(shooter);
+    this.sd = sd;
+    addRequirements(shooter, sd);
   }
 
   // Called when the command is initially scheduled.
