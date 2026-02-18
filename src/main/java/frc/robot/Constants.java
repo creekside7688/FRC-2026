@@ -17,14 +17,14 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-public static int Intake_MotorID = 14;
+public static int Intake_MotorID = 15;
 public static double Intake_PID_P = 0;
 public static double Intake_PID_I = 0;
 public static double Intake_PID_D = 0;
 public static double Intake_SVA_S = 0;
 public static double Intake_SVA_V = 0;
 public static double Intake_SVA_A = 0;
-public static int Intake_RollerID = 15;
+public static int Intake_RollerID = 14;
 public static double PositionConversionFactor = (1/4)*(45/84);
 
 }

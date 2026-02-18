@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Intake_Cmds;
+import frc.robot.Intake.Test_Cmds;
 import frc.robot.constants.OperatorConstants;
 
 
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   Intake intake = new Intake();
   Intake_Cmds intake_cmds = new Intake_Cmds(intake);
+  Test_Cmds test_cmds = new Test_Cmds(intake);
   Joystick joystick = new Joystick(0);
   JoystickButton joystick_btn1 = new JoystickButton(joystick, 1);
   JoystickButton joystick_btn2 = new JoystickButton(joystick, 2);
@@ -86,7 +88,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureControllerBindings() {
-    joystick_btn5.whileTrue(intake_cmds);
+    joystick_btn5.whileTrue(test_cmds);
     joystick_btn1.whileTrue(intake.sysIdQuasistatic_intake(SysIdRoutine.Direction.kForward));
     joystick_btn2.whileTrue(intake.sysIdQuasistatic_intake(SysIdRoutine.Direction.kReverse));
     joystick_btn3.whileTrue(intake.sysIdDynamic_intake_roller(SysIdRoutine.Direction.kForward));
