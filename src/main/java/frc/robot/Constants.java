@@ -25,6 +25,6 @@ public static double Intake_SVA_S = 0;
 public static double Intake_SVA_V = 0;
 public static double Intake_SVA_A = 0;
 public static int Intake_RollerID = 14;
-public static double PositionConversionFactor = (45/336);
+public static double PositionConversionFactor = (45.0/336.0);
 
 }

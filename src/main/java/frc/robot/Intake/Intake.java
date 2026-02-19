@@ -83,10 +83,15 @@ public class Intake extends SubsystemBase {
     intake.set(0);
   }
 
+  public void ResetPosition() {
+    intake_encoder.setPosition(0);
+  }
+
   /** Creates a new Intake. */
   public Intake() {
     intake_config.closedLoop.pid(Constants.Intake_PID_P, Constants.Intake_PID_I, Constants.Intake_PID_D);
     intake_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+    ResetPosition();
     SetPositionConversionFactor();
     intake_config.closedLoop.feedForward
     .kS(Constants.Intake_SVA_S)
