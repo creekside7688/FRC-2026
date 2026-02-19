@@ -24,16 +24,15 @@ public class runShooter extends Command {
     private void getDistanceToHub() {
         var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
-        
-        distance = Math.sqrt(Math.pow((hubPose.getX() - sd.getPose().getX()), 2) + Math.pow((hubPose.getY() - sd.getPose().getY()), 2));
-        
+
+        distance = Math.sqrt(Math.pow((hubPose.getX() - sd.getPose().getX()), 2)
+                + Math.pow((hubPose.getY() - sd.getPose().getY()), 2));
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         getDistanceToHub();
-
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +46,7 @@ public class runShooter extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      shooter.RunIdle();
+        shooter.RunIdle();
     }
 
     // Returns true when the command should end.

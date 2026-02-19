@@ -9,33 +9,34 @@ import frc.robot.subsystems.robotParts.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class testVDS extends Command {
-  /** Creates a new testVDS. */
-  private final Shooter shooter;
-  public testVDS(Shooter shooter) {
-    this.shooter = shooter;
-    addRequirements(shooter);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+    /** Creates a new testVDS. */
+    private final Shooter shooter;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    shooter.SetVariableRPM();
-    shooter.setVariableMotorPosition();
-    shooter.RunFeeder();
-  }
+    public testVDS(Shooter shooter) {
+        this.shooter = shooter;
+        addRequirements(shooter);
+        // Use addRequirements() here to declare subsystem dependencies.
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        shooter.SetVariableRPM();
+        shooter.setVariableMotorPosition();
+        shooter.RunFeeder();
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {}
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }
