@@ -25,6 +25,7 @@ public class Test_Cmds extends Command {
   @Override
   public void execute() {
     a.SetSpeedIntake(.1);
+    a.PrintPosition();
   }
 
   // Called once the command ends or is interrupted.
