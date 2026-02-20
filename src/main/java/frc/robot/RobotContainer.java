@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
+import frc.lib.FlightControl;
 import frc.lib.SwerveUtils;
 import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.testShooter;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.GameConstants;
@@ -28,6 +30,7 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
+import frc.robot.subsystems.robotParts.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -53,6 +56,11 @@ public class RobotContainer {
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
     private final Controller driveController = new Controller(ControllerConstants.DRIVER_CONTROLLER_PORT);
+
+    private final FlightControl joystick = new FlightControl(0);
+    private final Shooter shooter = new Shooter();
+
+    private final testShooter testshooter = new testShooter(shooter);
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -184,7 +192,10 @@ public class RobotContainer {
         driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }
 
-    public void configureOperatorBindings() {}
+    public void configureOperatorBindings() {
+
+        joystick.getButton1().whileTrue(testshooter);
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
