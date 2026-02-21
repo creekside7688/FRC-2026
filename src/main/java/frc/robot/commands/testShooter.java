@@ -22,6 +22,7 @@ public class testShooter extends Command {
     @Override
     public void initialize() {
         shooter.runVariableVoltage();
+        //shooter.runIndexer();
         shooter.runVariableMotorFeeder();
     }
 

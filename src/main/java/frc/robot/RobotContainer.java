@@ -10,24 +10,20 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
-import frc.lib.SwerveUtils;
 import frc.robot.commands.IntakeBackCommand;
 import frc.robot.commands.IntakeForwardCommand;
 import frc.robot.commands.IntakeRollerBackCommand;
 import frc.robot.commands.IntakeRollerForwardCommand;
-import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.runHood;
 import frc.robot.commands.testLookup;
 import frc.robot.commands.testShooter;
 import frc.robot.commands.testVDS;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
-import frc.robot.constants.GameConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drivebase.GyroIO;
@@ -66,6 +62,7 @@ public class RobotContainer {
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
+    
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -73,6 +70,7 @@ public class RobotContainer {
 
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
+    private final testShooter tesShooterVariable = new testShooter(shooter);
 
     private final testShooter testshooter = new testShooter(shooter); // test that feeder + flywheel work
 
@@ -191,30 +189,30 @@ public class RobotContainer {
      */
     private void configureDriveBindings() {
 
-        sd.setDefaultCommand(TeleopDrive.joystickDrive(
-                sd,
-                () -> -driveController.getLeftY(),
-                () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX()));
+        // sd.setDefaultCommand(TeleopDrive.joystickDrive(
+        //         sd,
+        //         () -> -driveController.getLeftY(),
+        //         () -> -driveController.getLeftX(),
+        //         () -> -driveController.getRightX()));
 
-        driveController
-                .getA()
-                .whileTrue(TeleopDrive.joystickDriveWithRotationalOverride(
-                        sd,
-                        () -> -driveController.getLeftY(),
-                        () -> -driveController.getLeftX(),
-                        () -> SwerveUtils.lookAtPoint(
-                                sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
+        // driveController
+        //         .getA()
+        //         .whileTrue(TeleopDrive.joystickDriveWithRotationalOverride(
+        //                 sd,
+        //                 () -> -driveController.getLeftY(),
+        //                 () -> -driveController.getLeftX(),
+        //                 () -> SwerveUtils.lookAtPoint(
+        //                         sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
 
-        driveController
-                .getB()
-                .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
-        driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+        // driveController
+        //         .getB()
+        //         .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
+        // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(runhood);
+        driveController.getA().whileTrue(testshooter);
         driveController.getLeftBumper().whileTrue(intakeBackCommand);
         driveController.getRightBumper().whileTrue(intakeForwardCommand);
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);

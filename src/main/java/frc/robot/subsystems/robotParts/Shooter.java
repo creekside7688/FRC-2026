@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase {
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
-    private final SparkMax indexerMotor = new SparkMax(ShooterConstants.BALL_INDEXER_MOTOR_ID, null);
+    private final SparkMax indexerMotor = new SparkMax(ShooterConstants.BALL_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
     private final SparkMax hoodMotor;
     private final AbsoluteEncoder hoodMotorEncoder;
