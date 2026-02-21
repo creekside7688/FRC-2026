@@ -76,42 +76,33 @@ public class ShooterLookup {
             double x, double y, double dxdt, double dydt, double calculationLatency) {
         var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
-        double distx, disty;
-        if (alliance == Alliance.Red) {
-            distx = x - hubPose.getX();
-            disty = y - hubPose.getY();
-        } else {
-            distx = hubPose.getX() - x;
-            disty = hubPose.getY() - y;
-        }
 
-        double dx = (alliance == Alliance.Red) ? (-dxdt) * calculationLatency : dxdt * calculationLatency;
-        double dy = (alliance == Alliance.Red) ? (-dydt) * calculationLatency : dydt * calculationLatency;
+        double distx = hubPose.getX() - x;
+        double disty = hubPose.getY() - y;
 
-        if (distx == 0) return 0;
+        double dx = dxdt * calculationLatency;
+        double dy = dydt * calculationLatency;
 
-        double answer = (((dy * distx) - (dx * disty)) / Math.pow(distx, 2)) / (1 + Math.pow((disty / distx), 2));
-        return answer;
+        if (distx == 0 && disty == 0) return 0;
+
+        double answer = (((dy * distx) - (dx * disty))) / (Math.pow((distx), 2) + Math.pow((disty), 2));
+        return (answer * 180 / Math.PI);
     }
 
     public static final double CalculationDelayChangedDistance(
             double x, double y, double dxdt, double dydt, double calculationLatency) {
         var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
-        double distx, disty;
-        if (alliance == Alliance.Red) {
-            distx = x - hubPose.getX();
-            disty = y - hubPose.getY();
-        } else {
-            distx = hubPose.getX() - x;
-            disty = hubPose.getY() - y;
-        }
 
-        double dx = (alliance == Alliance.Red) ? (-dxdt) * calculationLatency : dxdt * calculationLatency;
-        double dy = (alliance == Alliance.Red) ? (-dydt) * calculationLatency : dydt * calculationLatency;
+        double distx = hubPose.getX() - x;
+        double disty = hubPose.getY() - y;
 
-        double answer =
-                ((2 * distx * dx) + (2 * disty * dy) / (2 * Math.sqrt(Math.pow(distx, 2) + Math.pow(disty, 2))));
+        double dx = dxdt * calculationLatency;
+        double dy = dydt * calculationLatency;
+
+        if (distx == 0 && disty == 0) return 0;
+
+        double answer = (((distx * dx) + (disty * dy)) / (Math.sqrt(Math.pow(distx, 2) + Math.pow(disty, 2))));
         return answer; // in meters
     }
 

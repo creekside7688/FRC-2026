@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
@@ -33,6 +35,7 @@ public class Shooter extends SubsystemBase {
     private SparkMaxConfig configHood;
 
     private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
+
     private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
     private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
@@ -43,8 +46,12 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
+    private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
+
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
+
+    private final SparkMax indexerMotor = new SparkMax(ShooterConstants.BALL_INDEXER_MOTOR_ID, null);
 
     private final SparkMax hoodMotor;
     private final AbsoluteEncoder hoodMotorEncoder;
@@ -111,21 +118,56 @@ public class Shooter extends SubsystemBase {
         configHood
                 .softLimit
                 .forwardSoftLimit(75) // Max angle
-                .reverseSoftLimit(55) // Min angle
+                .reverseSoftLimit(45) // Min angle
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimitEnabled(true);
 
         configHood.idleMode(IdleMode.kBrake);
 
-        hoodMotor.getEncoder().setPosition(60);
+        hoodMotor.getEncoder().setPosition(75);
 
         this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
+    public double getVariableDistance() {
+        return desiredDistance.getDouble(100);
+    }
+
+    public void runIndexer() {
+        indexerMotor.setVoltage(ShooterConstants.INDEXER_VOLTAGE);
+    }
+
+    public void stopIndexer() {
+        indexerMotor.setVoltage(0);
+    }
+
     public void SetRPM(double rpm) {
         sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
+    }
+
+    // checks if RPM is within tolerance.
+
+    public boolean checkShooterRPMTolerance(double targetRPM) {
+        double shooterVelocity = shootMotor1.getEncoder().getVelocity();
+        double toleranceHigh = targetRPM * 1.04;
+        double toleranceLow = targetRPM * 0.96;
+        if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkVariableRPMTolerance() {
+        double targetRPM = shootRPM.getDouble(0);
+        double shooterVelocity = shootMotor1.getEncoder().getVelocity();
+        double toleranceHigh = targetRPM * 1.04;
+        double toleranceLow = targetRPM * 0.96;
+        if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
+            return true;
+        }
+        return false;
     }
 
     public void SetVariableRPM() {
@@ -165,9 +207,51 @@ public class Shooter extends SubsystemBase {
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
     }
 
+    public boolean underTrench(Pose2d position) {
+        for (int i = 0; i < FieldConstants.TRENCH_ZONES_X.length; i++) {
+
+            if (position.getX() > FieldConstants.TRENCH_ZONES_X[i][0]
+                    && position.getX() < FieldConstants.TRENCH_ZONES_X[i][1]) {
+
+                if (position.getY() > FieldConstants.TRENCH_ZONES_Y[i][0]
+                        && position.getY() < FieldConstants.TRENCH_ZONES_Y[i][1]) return true;
+            }
+        }
+        return false;
+    }
+
+    public void hoodUnderTrench(Pose2d position) {
+        if (underTrench(position)) {
+            setHoodMotorPosition(75);
+        }
+    }
+
     public void setVariableMotorPosition() {
         int setPoint = (int) (hoodPos.getDouble(0));
         setHoodMotorPosition(setPoint);
+    }
+
+    // check if within tolerance to begin feeder
+
+    public boolean checkShooterPositionTolerance(double targetAngle) {
+        double shooterAngle = hoodMotor.getEncoder().getPosition();
+        double toleranceHigh = targetAngle * 1.02;
+        double toleranceLow = targetAngle * 0.98;
+        if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkVariablePositionTolerance() {
+        double targetAngle = hoodPos.getDouble(0);
+        double shooterAngle = hoodMotor.getEncoder().getPosition();
+        double toleranceHigh = targetAngle * 1.02;
+        double toleranceLow = targetAngle * 0.98;
+        if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
+            return true;
+        }
+        return false;
     }
 
     public void setHoodMotorVoltage(double volts) {

@@ -39,8 +39,12 @@ public class runShooter extends Command {
     @Override
     public void execute() {
         getDistanceToHub();
-        shooter.SetRPM(ShooterLookup.lookupRPM(distance));
+        double desiredRPM = ShooterLookup.lookupRPM(distance);
+        shooter.SetRPM(desiredRPM);
         shooter.setHoodMotorPosition(ShooterLookup.lookupAngle(distance));
+        if (shooter.checkShooterRPMTolerance(desiredRPM)) {
+            shooter.RunFeeder();
+        }
     }
 
     // Called once the command ends or is interrupted.
