@@ -17,7 +17,10 @@ import frc.lib.Controller;
 import frc.lib.FlightControl;
 import frc.lib.SwerveUtils;
 import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.runHood;
+import frc.robot.commands.testLookup;
 import frc.robot.commands.testShooter;
+import frc.robot.commands.testVDS;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.GameConstants;
@@ -60,7 +63,13 @@ public class RobotContainer {
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
 
-    private final testShooter testshooter = new testShooter(shooter);
+    private final testShooter testshooter = new testShooter(shooter); // test that feeder + flywheel work
+
+    private final runHood runhood = new runHood(shooter); // test that hood + indexer works
+
+    private final testVDS testvds = new testVDS(shooter); // for when we get values for lookup table through testing
+
+    private final testLookup testlookup = new testLookup(shooter); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -194,7 +203,7 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(testshooter);
+        joystick.getButton1().whileTrue(runhood);
     }
 
     /**
