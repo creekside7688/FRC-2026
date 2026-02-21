@@ -16,6 +16,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
 import frc.lib.SwerveUtils;
+import frc.robot.commands.IntakeBackCommand;
+import frc.robot.commands.IntakeForwardCommand;
+import frc.robot.commands.IntakeRollerBackCommand;
+import frc.robot.commands.IntakeRollerForwardCommand;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.testShooter;
 import frc.robot.constants.ControllerConstants;
@@ -30,6 +34,7 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.robotParts.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
@@ -52,6 +57,12 @@ import org.littletonrobotics.junction.Logger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+    private final Intake intake = new Intake();
+    private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
+    private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
+    private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
+    private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -195,6 +206,10 @@ public class RobotContainer {
     public void configureOperatorBindings() {
 
         joystick.getButton1().whileTrue(testshooter);
+        driveController.getLeftBumper().whileTrue(intakeBackCommand);
+        driveController.getRightBumper().whileTrue(intakeForwardCommand);
+        driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
+        driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
     }
 
     /**
