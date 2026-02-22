@@ -22,7 +22,6 @@ public class runHood extends Command {
     @Override
     public void initialize() {
         shooter.setVariableMotorPosition();
-        shooter.runIndexer();
     }
 
     // Called every time the scheduler runs while the command is scheduled.

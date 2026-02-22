@@ -48,6 +48,10 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
 
+    private GenericEntry Pvalue = tab.add("Pvalue", 0.1).getEntry();
+
+    private double lastPvalue = Pvalue.getDouble(0.1);
+
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
@@ -110,7 +114,7 @@ public class Shooter extends SubsystemBase {
 
         config2.follow(shootMotor1, true);
 
-        configHood.closedLoop.p(0.1).i(0).d(0);
+        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
 
         configHood.encoder.positionConversionFactor(ShooterConstants.ANGLECHANGE_PER_ROTATION);
 
@@ -203,6 +207,15 @@ public class Shooter extends SubsystemBase {
         hoodMotor.getEncoder().setPosition(currentActualAngle);
     }
 
+
+    public void hasHoodPChanged() {
+        if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
+            lastPvalue = (Pvalue.getDouble(0.1));
+            configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
+            hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }
+    }
+
     public void setHoodMotorPosition(double setPoint) {
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
     }
@@ -281,11 +294,13 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
+        hasHoodPChanged();
+
         SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
 
         SmartDashboard.putNumber("Shooter 2 Pos", shootMotor2.getEncoder().getPosition());
-        SmartDashboard.putNumber("Shooter 3 Velocity", shootMotor2.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter 2 Velocity", shootMotor2.getEncoder().getVelocity());
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

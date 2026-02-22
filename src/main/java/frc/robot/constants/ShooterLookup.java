@@ -7,20 +7,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class ShooterLookup {
     // distance from hub (inches, for now), RPM, angle (degrees)
     // RPM values are dummy values for now
-    public static final double[][] LookupTable = { // <= THIS ONE FOR RPMS!!!!
-        {220, 3500, 60.45}, // MAXIMUM
-        {200, 3381.27, 61.13},
-        {180, 3258.27, 61.92},
-        {160, 3131.416, 62.86},
-        {140, 3000.81, 64},
-        {120, 2866.6, 65.417},
-        {100, 2729.59, 67.2},
-        {80, 2591.85, 69.54},
-        {60, 2457.64, 72.69},
-        {50, 2394.45, 74.685} // MINIMUM
-    };
 
     // all in M/s for the middle value
+    //ignore this, this is for velocities
     public static final double[][] VelocitiesLookupTable = {
         {220, 8.6123, 60.45}, // MAXIMUM
         {210, 8.46653, 60.77},
@@ -42,6 +31,22 @@ public class ShooterLookup {
     public static InterpolatingDoubleTreeMap distanceRPMTable = new InterpolatingDoubleTreeMap();
 
     public static void initializeTable() {
+
+        final double[][] LookupTable = { // <= THIS ONE FOR RPMS!!!!
+                {220, 3500, 60.45}, // MAXIMUM
+                {200, 3381.27, 61.13},
+                {180, 3258.27, 61.92},
+                {160, 3131.416, 62.86},
+                {140, 3000.81, 64},
+                {120, 2866.6, 65.417},
+                {100, 2729.59, 67.2},
+                {80, 2591.85, 69.54},
+                {60, 2457.64, 72.69},
+                {50, 2394.45, 74.685} // MINIMUM
+        };
+
+
+
         for (int i = 0; i < LookupTable.length; i++) {
             distanceAngleTable.put(LookupTable[i][0], LookupTable[i][2]);
         }
