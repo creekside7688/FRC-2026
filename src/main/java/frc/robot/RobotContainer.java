@@ -18,7 +18,7 @@ import frc.robot.commands.IntakeBackCommand;
 import frc.robot.commands.IntakeForwardCommand;
 import frc.robot.commands.IntakeRollerBackCommand;
 import frc.robot.commands.IntakeRollerForwardCommand;
-import frc.robot.commands.runHood;
+import frc.robot.commands.testHood;
 import frc.robot.commands.testLookup;
 import frc.robot.commands.testShooter;
 import frc.robot.commands.testVDS;
@@ -74,7 +74,7 @@ public class RobotContainer {
 
     private final testShooter testshooter = new testShooter(shooter); // test that feeder + flywheel work
 
-    private final runHood runhood = new runHood(shooter); // test that hood + indexer works
+    private final testHood testhood = new testHood(shooter); // test that hood + indexer works
 
     private final testVDS testvds = new testVDS(shooter); // for when we get values for lookup table through testing
 

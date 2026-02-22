@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.robotParts.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class runHood extends Command {
-    /** Creates a new runHood. */
+public class testHood extends Command {
+    /** Creates a new testHood. */
     private final Shooter shooter;
 
-    public runHood(Shooter shooter) {
+    public testHood(Shooter shooter) {
         this.shooter = shooter;
         addRequirements(shooter);
         // Use addRequirements() here to declare subsystem dependencies.
