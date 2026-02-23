@@ -39,6 +39,8 @@ public class ShooterHood extends SubsystemBase {
 
     private GenericEntry hoodPos = tab.add("hoodPos", 60).getEntry();
 
+    double desiredAngle = 0;
+
     double lastPvalue = Pvalue.getDouble(0.1);
 
     private final SparkClosedLoopController hood_Controller;
@@ -81,6 +83,7 @@ public class ShooterHood extends SubsystemBase {
     }
 
     public void setHoodPosition(double setPoint) {
+        desiredAngle = setPoint;
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
     }
 
@@ -89,10 +92,10 @@ public class ShooterHood extends SubsystemBase {
         setHoodPosition(setPoint);
     }
 
-    public boolean checkShooterPositionTolerance(double targetAngle) {
+    public boolean checkShooterPositionTolerance() {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
-        double toleranceHigh = targetAngle * 1.02;
-        double toleranceLow = targetAngle * 0.98;
+        double toleranceHigh = desiredAngle * 1.02;
+        double toleranceLow = desiredAngle * 0.98;
         if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
             return true;
         }
@@ -147,8 +150,15 @@ public class ShooterHood extends SubsystemBase {
         // This method will be called once per scheduler run
     }
 
-    public Command setShooterAngle(double Angle) {
+    private double getAngleFromPose(Pose2d pose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+
+        return Math.hypot(hubPose.getX() - pose.getX(), hubPose.getY() - pose.getY());
+    }
+
+    public Command setShooterAngle(Supplier<Pose2d> poseSupplier) {
         // implicitly requires `this`
-        return this.runOnce(() -> this.setHoodPosition(Angle));
+        return this.runOnce(() -> this.setHoodPosition(ShooterLookup.lookupAngle(getAngleFromPose(poseSupplier.get()))));
     }
 }

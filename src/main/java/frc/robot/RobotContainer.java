@@ -77,7 +77,7 @@ public class RobotContainer {
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
     Command ShootRPM;
-    Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
+    Command ShootAngle; // PLacebo values I dunno
     Command ShootFeederRun = shooter.runShooterFeeder();
     Command ShootFeederStop = shooter.stopShooterFeeder();
     Command spindexerRun = spindexer.runSpindexerMotor();
@@ -184,6 +184,7 @@ public class RobotContainer {
         camSystem = new Vision(sd, camIO1, camIO2);
 
         ShootRPM = shooter.setShooterRPM(sd::getPose);
+        ShootAngle = shooterhood.setShooterAngle(sd::getPose);
 
         configureDriveBindings();
         configureOperatorBindings();
@@ -235,7 +236,7 @@ public class RobotContainer {
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        Command holdxuntilflywheel = ShootRPM.alongWith(
+        Command holdxuntilflywheel = ShootRPM.alongWith( ShootAngle
                 ShootFeederRun.onlyIf(() -> shooter.checkShooterRPMTolerance()),
                 spindexerRun.onlyIf(() -> shooter.checkShooterRPMTolerance()));
 
