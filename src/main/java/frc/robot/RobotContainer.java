@@ -230,15 +230,19 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        driveController.getA().whileTrue(testshooter);
+        joystick.getButton1().whileTrue(intakeBackCommand);
+        // driveController.getA().whileTrue(testhood);
         driveController.getLeftBumper().whileTrue(intakeBackCommand);
         driveController.getRightBumper().whileTrue(intakeForwardCommand);
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        Command holdxuntilflywheel = ShootRPM.alongWith( ShootAngle
-                ShootFeederRun.onlyIf(() -> shooter.checkShooterRPMTolerance()),
-                spindexerRun.onlyIf(() -> shooter.checkShooterRPMTolerance()));
+        Command holdxuntilflywheel = ShootRPM.alongWith(
+                ShootAngle,
+                ShootFeederRun.onlyIf(
+                        () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
+                spindexerRun.onlyIf(
+                        () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
         operatorController.getX().whileTrue(holdxuntilflywheel);
 
@@ -247,8 +251,6 @@ public class RobotContainer {
 
         Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
         intake.setDefaultCommand(StopStowIntake);
-
-        
     }
 
     /**
