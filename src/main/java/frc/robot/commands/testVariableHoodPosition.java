@@ -5,14 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.robotParts.Shooter;
+import frc.robot.subsystems.Shooter.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class testShooter extends Command {
-    /** Creates a new testShooter. */
+public class testVariableHoodPosition extends Command {
+    /** Creates a new testHood. */
     private final Shooter shooter;
 
-    public testShooter(Shooter shooter) {
+    public testVariableHoodPosition(Shooter shooter) {
         this.shooter = shooter;
         addRequirements(shooter);
         // Use addRequirements() here to declare subsystem dependencies.
@@ -21,20 +21,19 @@ public class testShooter extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        shooter.runVariableVoltage();
-        //shooter.runIndexer();
-        shooter.runVariableMotorFeeder();
+        shooter.setVariableHoodPosition();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+        shooter.setVariableHoodPosition();
+    }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setShooterMotor1Voltage(0);
-        shooter.stopFeeder();
+        shooter.setHoodPosition(75);
     }
 
     // Returns true when the command should end.

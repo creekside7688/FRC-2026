@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.robotParts;
+package frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -139,13 +139,11 @@ public class Shooter extends SubsystemBase {
         return desiredDistance.getDouble(100);
     }
 
-    public void runIndexer() {
-        indexerMotor.setVoltage(ShooterConstants.INDEXER_VOLTAGE);
+    public void setIndexer(double IndexerVoltage) {
+        indexerMotor.setVoltage(IndexerVoltage);
     }
 
-    public void stopIndexer() {
-        indexerMotor.setVoltage(0);
-    }
+    //flywheel
 
     public void SetRPM(double rpm) {
         sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
@@ -155,8 +153,8 @@ public class Shooter extends SubsystemBase {
 
     public boolean checkShooterRPMTolerance(double targetRPM) {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.04;
-        double toleranceLow = targetRPM * 0.96;
+        double toleranceHigh = targetRPM * 1.02;
+        double toleranceLow = targetRPM * 0.98;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
@@ -166,8 +164,8 @@ public class Shooter extends SubsystemBase {
     public boolean checkVariableRPMTolerance() {
         double targetRPM = shootRPM.getDouble(0);
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.04;
-        double toleranceLow = targetRPM * 0.96;
+        double toleranceHigh = targetRPM * 1.02;
+        double toleranceLow = targetRPM * 0.98;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
@@ -194,20 +192,17 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("set voltage", retrievedVoltage);
     }
 
+    //feeder
+
     public void RunFeeder() {
         feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
     }
 
-    public void stopSystem() {
-        stopFeeder();
-        shootMotor1.setVoltage(0);
+    public void stopFeeder() {
+        feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
 
-    public void resetHoodEncoder(double currentActualAngle) {
-        hoodMotor.getEncoder().setPosition(currentActualAngle);
-    }
-
-
+    //hood testing;
     public void hasHoodPChanged() {
         if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
             lastPvalue = (Pvalue.getDouble(0.1));
@@ -216,8 +211,13 @@ public class Shooter extends SubsystemBase {
         }
     }
 
-    public void setHoodMotorPosition(double setPoint) {
+    public void setHoodPosition(double setPoint) {
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
+    }
+
+    public void setVariableHoodPosition() {
+        int setPoint = (int) (hoodPos.getDouble(0));
+        setHoodPosition(setPoint);
     }
 
     public boolean underTrench(Pose2d position) {
@@ -235,16 +235,12 @@ public class Shooter extends SubsystemBase {
 
     public void hoodUnderTrench(Pose2d position) {
         if (underTrench(position)) {
-            setHoodMotorPosition(75);
+            setHoodPosition(75);
         }
     }
 
-    public void setVariableMotorPosition() {
-        int setPoint = (int) (hoodPos.getDouble(0));
-        setHoodMotorPosition(setPoint);
-    }
 
-    // check if within tolerance to begin feeder
+
 
     public boolean checkShooterPositionTolerance(double targetAngle) {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
@@ -267,6 +263,8 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
+    //Hood motor Voltages
+
     public void setHoodMotorVoltage(double volts) {
         hoodMotor.setVoltage(volts);
     }
@@ -275,20 +273,6 @@ public class Shooter extends SubsystemBase {
         double hoodMVolts = hoodVoltage.getDouble(0);
         if (inverted) hoodMVolts *= -1;
         setHoodMotorVoltage(hoodMVolts);
-    }
-
-    /*
-
-    */
-
-    public void stopFeeder() {
-        feedControllerSrx.set(ControlMode.PercentOutput, 0);
-    }
-
-    public void runVariableMotorFeeder() {
-        double retriedFS = feederSpeed.getDouble(0);
-        SmartDashboard.putNumber("m", retriedFS);
-        feedControllerSrx.set(ControlMode.PercentOutput, retriedFS);
     }
 
     @Override

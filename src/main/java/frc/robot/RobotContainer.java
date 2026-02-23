@@ -18,14 +18,15 @@ import frc.robot.commands.IntakeBackCommand;
 import frc.robot.commands.IntakeForwardCommand;
 import frc.robot.commands.IntakeRollerBackCommand;
 import frc.robot.commands.IntakeRollerForwardCommand;
-import frc.robot.commands.testHood;
-import frc.robot.commands.testLookup;
-import frc.robot.commands.testShooter;
+import frc.robot.commands.testVariableHoodPosition;
+import frc.robot.commands.testShootingLookup;
+import frc.robot.commands.testVariableRPMFlywheel;
 import frc.robot.commands.testVDS;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -34,7 +35,6 @@ import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.robotParts.Shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -62,7 +62,6 @@ public class RobotContainer {
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
-    
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -70,15 +69,15 @@ public class RobotContainer {
 
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
-    private final testShooter tesShooterVariable = new testShooter(shooter);
+    private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
-    private final testShooter testshooter = new testShooter(shooter); // test that feeder + flywheel work
+    private final testVariableRPMFlywheel testshooter = new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
 
-    private final testHood testhood = new testHood(shooter); // test that hood + indexer works
+    private final testVariableHoodPosition testhood = new testVariableHoodPosition(shooter); // test that hood + indexer works
 
     private final testVDS testvds = new testVDS(shooter); // for when we get values for lookup table through testing
 
-    private final testLookup testlookup = new testLookup(shooter); // for when we do lookup table testing
+    private final testShootingLookup testlookup = new testShootingLookup(shooter); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;

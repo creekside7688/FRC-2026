@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.robotParts.Shooter;
+import frc.robot.subsystems.Shooter.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class testVDS extends Command {
@@ -26,8 +26,8 @@ public class testVDS extends Command {
     @Override
     public void execute() {
         shooter.SetVariableRPM();
-        shooter.setVariableMotorPosition();
-        if (shooter.checkVariableRPMTolerance()) {
+        shooter.setVariableHoodPosition();
+        if (shooter.checkVariableRPMTolerance() && shooter.checkVariablePositionTolerance()) {
             shooter.RunFeeder();
         }
     }

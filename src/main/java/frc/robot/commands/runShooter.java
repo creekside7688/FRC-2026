@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterLookup;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.drivebase.SwerveDrive;
-import frc.robot.subsystems.robotParts.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class runShooter extends Command {
@@ -41,7 +41,7 @@ public class runShooter extends Command {
         getDistanceToHub();
         double desiredRPM = ShooterLookup.lookupRPM(distance);
         shooter.SetRPM(desiredRPM);
-        shooter.setHoodMotorPosition(ShooterLookup.lookupAngle(distance));
+        shooter.setHoodPosition(ShooterLookup.lookupAngle(distance));
         if (shooter.checkShooterRPMTolerance(desiredRPM)) {
             shooter.RunFeeder();
         }

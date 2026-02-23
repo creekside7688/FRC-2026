@@ -5,15 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ShooterLookup;
-import frc.robot.subsystems.robotParts.Shooter;
+import frc.robot.subsystems.Shooter.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class testLookup extends Command {
-    /** Creates a new testVDS. */
+public class testVariableRPMFlywheel extends Command {
+    /** Creates a new testShooter. */
     private final Shooter shooter;
 
-    public testLookup(Shooter shooter) {
+    public testVariableRPMFlywheel(Shooter shooter) {
         this.shooter = shooter;
         addRequirements(shooter);
         // Use addRequirements() here to declare subsystem dependencies.
@@ -21,26 +20,21 @@ public class testLookup extends Command {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {}
+    public void initialize() {
+        shooter.SetVariableRPM();
+        // shooter.runIndexer();
+    }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double distance = shooter.getVariableDistance();
-        double desiredRPM = ShooterLookup.lookupRPM(distance);
-        double desiredAngle = ShooterLookup.lookupAngle(distance);
-        shooter.SetRPM(desiredRPM);
-        shooter.setHoodMotorPosition(ShooterLookup.lookupAngle(desiredAngle));
-        if (shooter.checkShooterRPMTolerance(desiredRPM) && shooter.checkShooterPositionTolerance(desiredAngle)) {
-            shooter.RunFeeder();
-        }
+        shooter.SetVariableRPM();
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.RunIdle();
-        shooter.stopFeeder();
+        shooter.SetRPM(0);
     }
 
     // Returns true when the command should end.
