@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -169,6 +170,11 @@ public class RobotContainer {
 
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
         camSystem = new Vision(sd, camIO1, camIO2);
+
+        Command ShootRPM = shooter.setShooterRPM(3000);
+        Command ShootAngle = shooter.setShooterAngle(60); //PLacebo values I dunno
+        Command ShootFeederRun = shooter.runShooterFeeder();
+
 
         configureDriveBindings();
         configureOperatorBindings();

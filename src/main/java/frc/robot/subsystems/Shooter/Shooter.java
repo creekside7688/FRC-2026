@@ -283,6 +283,22 @@ public class Shooter extends SubsystemBase {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
     }
+
+    public Command setShooterRPM(double RPM) {
+    // implicitly requires `this`
+        return this.runOnce(() -> this.SetRPM(RPM));
+    }
+
+    public Command setShooterAngle(double Angle) {
+    // implicitly requires `this`
+        return this.runOnce(() -> this.setHoodPosition(Angle));
+    }
+
+    public Command runShooterFeeder() {
+        return this.runOnce(() -> this.RunFeeder());
+    }
+
+
     /**
      * Returns a command that will execute a dynamic test in the given direction.
      *

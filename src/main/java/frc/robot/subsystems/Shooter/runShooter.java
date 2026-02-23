@@ -18,7 +18,7 @@ public class runShooter extends Command {
     public runShooter(Shooter shooter, SwerveDrive sd) {
         this.shooter = shooter;
         this.sd = sd;
-        addRequirements(shooter, sd);
+        addRequirements(shooter);
     }
 
     private void getDistanceToHub() {
