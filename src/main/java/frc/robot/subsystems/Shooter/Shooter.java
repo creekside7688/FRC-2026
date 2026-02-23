@@ -55,7 +55,6 @@ public class Shooter extends SubsystemBase {
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
-    private final SparkMax indexerMotor = new SparkMax(ShooterConstants.BALL_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
     private final SparkMax hoodMotor;
     private final AbsoluteEncoder hoodMotorEncoder;
@@ -138,18 +137,7 @@ public class Shooter extends SubsystemBase {
     public double getVariableDistance() {
         return desiredDistance.getDouble(100);
     }
-
-    public void setIndexer(double IndexerVoltage) {
-        indexerMotor.setVoltage(IndexerVoltage);
-    }
-
     //flywheel
-
-    public void SetRPM(double rpm) {
-        sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
-    }
-
-    // checks if RPM is within tolerance.
 
     public boolean checkShooterRPMTolerance(double targetRPM) {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
@@ -170,6 +158,10 @@ public class Shooter extends SubsystemBase {
             return true;
         }
         return false;
+    }
+
+    public void SetRPM(double rpm) {
+        sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
     }
 
     public void SetVariableRPM() {

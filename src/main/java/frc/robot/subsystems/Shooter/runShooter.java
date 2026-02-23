@@ -1,11 +1,11 @@
-package frc.robot.commands;
+package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterLookup;
-import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -22,11 +22,10 @@ public class runShooter extends Command {
     }
 
     private void getDistanceToHub() {
-        var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
-        distance = Math.sqrt(Math.pow((hubPose.getX() - sd.getPose().getX()), 2)
-                + Math.pow((hubPose.getY() - sd.getPose().getY()), 2));
+        distance = Math.hypot((hubPose.getX() - sd.getPose().getX()), (hubPose.getY() - sd.getPose().getY()));
     }
 
     // Called when the command is initially scheduled.
