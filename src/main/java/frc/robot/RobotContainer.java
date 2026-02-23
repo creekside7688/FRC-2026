@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
-import frc.robot.commands.IntakeBackCommand;
-import frc.robot.commands.IntakeForwardCommand;
-import frc.robot.commands.IntakeRollerBackCommand;
-import frc.robot.commands.IntakeRollerForwardCommand;
+import frc.robot.subsystems.intake.IntakeBackCommand;
+import frc.robot.subsystems.intake.IntakeForwardCommand;
+import frc.robot.subsystems.intake.IntakeRollerBackCommand;
+import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
@@ -29,6 +29,7 @@ import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableHoodPosition;
 import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
 import frc.robot.subsystems.Spindexer.Spindexer;
+import frc.robot.subsystems.Spindexer.runSpindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -77,6 +78,14 @@ public class RobotContainer {
     private final ShooterHood shooterhood = new ShooterHood();
     private final Spindexer spindexer = new Spindexer();
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
+
+
+    Command ShootRPM;
+        Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
+        Command ShootFeederRun = shooter.runShooterFeeder();
+        Command ShootFeederStop = shooter.stopShooterFeeder();
+        Command spindexerRun = spindexer.runSpindexerMotor();
+        Command spindexerStop = spindexer.stopSpindexerMotor();
 
     private final testVariableRPMFlywheel testshooter =
             new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
@@ -177,12 +186,8 @@ public class RobotContainer {
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
         camSystem = new Vision(sd, camIO1, camIO2);
 
-        Command ShootRPM = shooter.setShooterRPM(3000);
-        Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
-        Command ShootFeederRun = shooter.runShooterFeeder();
-        Command ShootFeederStop = shooter.stopShooterFeeder();
-        Command spindexerRun = spindexer.runSpindexerMotor();
-        Command spindexerStop = spindexer.stopSpindexerMotor();
+        ShootRPM = shooter.setShooterRPM(sd::getPose);
+
 
         configureDriveBindings();
         configureOperatorBindings();
@@ -233,6 +238,12 @@ public class RobotContainer {
         driveController.getRightBumper().whileTrue(intakeForwardCommand);
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
+
+        Command holdxuntilflywheel = ShootRPM.alongWith(ShootFeederRun.onlyIf(() -> shooter.checkShooterRPMTolerance()), spindexerRun.onlyIf( () -> shooter.checkShooterRPMTolerance()));
+        
+
+        operatorController.getX().whileTrue(holdxuntilflywheel);
+
 
         Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
         driveController.getB().whileTrue(DeployRunIntake);

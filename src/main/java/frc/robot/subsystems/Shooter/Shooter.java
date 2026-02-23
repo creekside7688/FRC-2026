@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Shooter;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.AbsoluteEncoder;
@@ -17,7 +19,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,7 +30,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.ShooterLookup;
 
 public class Shooter extends SubsystemBase {
     /** Creates a new shooter. */
@@ -45,12 +52,10 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
 
-    private GenericEntry Pvalue = tab.add("Pvalue", 0.1).getEntry();
-
-    private double lastPvalue = Pvalue.getDouble(0.1);
-
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
+
+    double desiredRPM = 0;
 
     private final AbsoluteEncoder shootMotor1Encoder;
 
@@ -111,10 +116,10 @@ public class Shooter extends SubsystemBase {
     }
     // flywheel
 
-    public boolean checkShooterRPMTolerance(double targetRPM) {
+    public boolean checkShooterRPMTolerance() {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.02;
-        double toleranceLow = targetRPM * 0.98;
+        double toleranceHigh = desiredRPM * 1.02;
+        double toleranceLow = desiredRPM * 0.98;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
@@ -133,6 +138,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void SetRPM(double rpm) {
+        desiredRPM = rpm;
         sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
     }
 
@@ -190,9 +196,16 @@ public class Shooter extends SubsystemBase {
         return routine.dynamic(direction);
     }
 
-    public Command setShooterRPM(double RPM) {
+    private double getRPMFromPose(Pose2d pose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+
+        return Math.hypot(hubPose.getX() - pose.getX(), hubPose.getY() - pose.getY());
+    }
+
+    public Command setShooterRPM(Supplier<Pose2d> poseSupplier) {
         // implicitly requires `this`
-        return this.runOnce(() -> this.SetRPM(RPM));
+        return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
     }
 
     public Command runShooterFeeder() {

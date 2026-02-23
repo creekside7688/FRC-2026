@@ -43,7 +43,7 @@ public class runShooter extends Command {
         double desiredRPM = ShooterLookup.lookupRPM(distance);
         shooter.SetRPM(desiredRPM);
         //shooter.setHoodPosition(ShooterLookup.lookupAngle(distance));
-        if (shooter.checkShooterRPMTolerance(desiredRPM)) {
+        if (shooter.checkShooterRPMTolerance()) {
             shooter.RunFeeder();
         }
     }
