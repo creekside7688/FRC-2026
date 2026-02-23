@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -28,6 +27,7 @@ import frc.robot.subsystems.Shooter.testShootingLookup;
 import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableHoodPosition;
 import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
+import frc.robot.subsystems.Spindexer.Spindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -70,6 +70,7 @@ public class RobotContainer {
 
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
+    private final Spindexer spindexer = new Spindexer();
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
     private final testVariableRPMFlywheel testshooter =
@@ -172,9 +173,11 @@ public class RobotContainer {
         camSystem = new Vision(sd, camIO1, camIO2);
 
         Command ShootRPM = shooter.setShooterRPM(3000);
-        Command ShootAngle = shooter.setShooterAngle(60); //PLacebo values I dunno
+        Command ShootAngle = shooter.setShooterAngle(60); // PLacebo values I dunno
         Command ShootFeederRun = shooter.runShooterFeeder();
-
+        Command ShootFeederStop = shooter.stopShooterFeeder();
+        Command spindexerRun = spindexer.runSpindexerMotor();
+        Command spindexerStop = spindexer.stopSpindexerMotor();
 
         configureDriveBindings();
         configureOperatorBindings();

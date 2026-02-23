@@ -285,12 +285,12 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command setShooterRPM(double RPM) {
-    // implicitly requires `this`
+        // implicitly requires `this`
         return this.runOnce(() -> this.SetRPM(RPM));
     }
 
     public Command setShooterAngle(double Angle) {
-    // implicitly requires `this`
+        // implicitly requires `this`
         return this.runOnce(() -> this.setHoodPosition(Angle));
     }
 
@@ -298,6 +298,9 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> this.RunFeeder());
     }
 
+    public Command stopShooterFeeder() {
+        return this.runOnce(() -> this.stopFeeder());
+    }
 
     /**
      * Returns a command that will execute a dynamic test in the given direction.
