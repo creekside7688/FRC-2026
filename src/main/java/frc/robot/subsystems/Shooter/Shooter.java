@@ -195,6 +195,7 @@ public class Shooter extends SubsystemBase {
 
     // hood testing;
     public void hasHoodPChanged() {
+        SmartDashboard.putNumber("Last Hood P Value", lastPvalue);
         if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
             lastPvalue = (Pvalue.getDouble(0.1));
             configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
