@@ -19,7 +19,6 @@ public class ShooterConstants {
 
     public static final double RUN_FEEDER_OUTPUT = -1.0;
 
-    public static final double ANGLECHANGE_PER_ROTATION = (360.0 / 1300) * 25;
 
     public static final double INDEXER_VOLTAGE = 5;
 }

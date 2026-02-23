@@ -9,30 +9,30 @@ import edu.wpi.first.wpilibj2.command.Command;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class testVariableHoodPosition extends Command {
     /** Creates a new testHood. */
-    private final Shooter shooter;
+    private final ShooterHood shooterhood;
 
-    public testVariableHoodPosition(Shooter shooter) {
-        this.shooter = shooter;
-        addRequirements(shooter);
+    public testVariableHoodPosition(ShooterHood shooterhood) {
+        this.shooterhood = shooterhood;
+        addRequirements(shooterhood);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        shooter.setVariableHoodPosition();
+        shooterhood.setVariableHoodPosition();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.setVariableHoodPosition();
+        shooterhood.setVariableHoodPosition();
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.setHoodPosition(75);
+        shooterhood.setHoodPosition(75);
     }
 
     // Returns true when the command should end.

@@ -40,9 +40,6 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
 
-    private GenericEntry hoodVoltage = tab.add("hoodVoltage", 0).getEntry();
-
-    private GenericEntry hoodPos = tab.add("hoodPos", 60).getEntry();
 
     private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
@@ -55,8 +52,6 @@ public class Shooter extends SubsystemBase {
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
-    private final SparkMax hoodMotor;
-    private final AbsoluteEncoder hoodMotorEncoder;
     private final AbsoluteEncoder shootMotor1Encoder;
 
     private final TalonSRX feedControllerSrx =
@@ -67,22 +62,16 @@ public class Shooter extends SubsystemBase {
             new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this));
 
     private final SparkClosedLoopController sm1_Controller;
-    private final SparkClosedLoopController hood_Controller;
 
     public Shooter() {
         SmartDashboard.putBoolean("t", false);
 
-        this.hoodMotor = new SparkMax(ShooterConstants.BALL_HOOD_MOTOR, MotorType.kBrushless);
-
-        this.hoodMotorEncoder = this.hoodMotor.getAbsoluteEncoder();
-        this.shootMotor1Encoder = this.hoodMotor.getAbsoluteEncoder();
+        this.shootMotor1Encoder = shootMotor1.getAbsoluteEncoder();
 
         sm1_Controller = this.shootMotor1.getClosedLoopController();
-        hood_Controller = this.hoodMotor.getClosedLoopController();
 
         config1 = new SparkMaxConfig();
         config2 = new SparkMaxConfig();
-        configHood = new SparkMaxConfig();
 
         config1.encoder.uvwAverageDepth(2);
         config2.encoder.uvwAverageDepth(2);
@@ -112,25 +101,9 @@ public class Shooter extends SubsystemBase {
 
         config2.follow(shootMotor1, true);
 
-        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
-
-        configHood.encoder.positionConversionFactor(ShooterConstants.ANGLECHANGE_PER_ROTATION);
-
-        // Soft Limits: Prevent the hood from slamming into the frame
-        configHood
-                .softLimit
-                .forwardSoftLimit(75) // Max angle
-                .reverseSoftLimit(45) // Min angle
-                .forwardSoftLimitEnabled(true)
-                .reverseSoftLimitEnabled(true);
-
-        configHood.idleMode(IdleMode.kBrake);
-
-        hoodMotor.getEncoder().setPosition(75);
 
         this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public double getVariableDistance() {
@@ -193,81 +166,14 @@ public class Shooter extends SubsystemBase {
         feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
 
-    // hood testing;
-    public void hasHoodPChanged() {
-        SmartDashboard.putNumber("Last Hood P Value", lastPvalue);
-        if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
-            lastPvalue = (Pvalue.getDouble(0.1));
-            configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
-            hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        }
-    }
 
-    public void setHoodPosition(double setPoint) {
-        hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
-    }
 
-    public void setVariableHoodPosition() {
-        int setPoint = (int) (hoodPos.getDouble(0));
-        setHoodPosition(setPoint);
-    }
-
-    public boolean underTrench(Pose2d position) {
-        for (int i = 0; i < FieldConstants.TRENCH_ZONES_X.length; i++) {
-
-            if (position.getX() > FieldConstants.TRENCH_ZONES_X[i][0]
-                    && position.getX() < FieldConstants.TRENCH_ZONES_X[i][1]) {
-
-                if (position.getY() > FieldConstants.TRENCH_ZONES_Y[i][0]
-                        && position.getY() < FieldConstants.TRENCH_ZONES_Y[i][1]) return true;
-            }
-        }
-        return false;
-    }
-
-    public void hoodUnderTrench(Pose2d position) {
-        if (underTrench(position)) {
-            setHoodPosition(75);
-        }
-    }
-
-    public boolean checkShooterPositionTolerance(double targetAngle) {
-        double shooterAngle = hoodMotor.getEncoder().getPosition();
-        double toleranceHigh = targetAngle * 1.02;
-        double toleranceLow = targetAngle * 0.98;
-        if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkVariablePositionTolerance() {
-        double targetAngle = hoodPos.getDouble(0);
-        double shooterAngle = hoodMotor.getEncoder().getPosition();
-        double toleranceHigh = targetAngle * 1.02;
-        double toleranceLow = targetAngle * 0.98;
-        if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
-            return true;
-        }
-        return false;
-    }
-
-    // Hood motor Voltages
-
-    public void setHoodMotorVoltage(double volts) {
-        hoodMotor.setVoltage(volts);
-    }
-
-    public void setVariableHMVoltage(boolean inverted) {
-        double hoodMVolts = hoodVoltage.getDouble(0);
-        if (inverted) hoodMVolts *= -1;
-        setHoodMotorVoltage(hoodMVolts);
-    }
+    
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
-        hasHoodPChanged();
+
 
         SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
@@ -287,11 +193,6 @@ public class Shooter extends SubsystemBase {
     public Command setShooterRPM(double RPM) {
         // implicitly requires `this`
         return this.runOnce(() -> this.SetRPM(RPM));
-    }
-
-    public Command setShooterAngle(double Angle) {
-        // implicitly requires `this`
-        return this.runOnce(() -> this.setHoodPosition(Angle));
     }
 
     public Command runShooterFeeder() {

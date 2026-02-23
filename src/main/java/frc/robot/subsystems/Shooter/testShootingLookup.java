@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterLookup;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+
+
 public class testShootingLookup extends Command {
     /** Creates a new testVDS. */
     private final Shooter shooter;
@@ -29,10 +31,13 @@ public class testShootingLookup extends Command {
         double desiredRPM = ShooterLookup.lookupRPM(distance);
         double desiredAngle = ShooterLookup.lookupAngle(distance);
         shooter.SetRPM(desiredRPM);
-        shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
+       // shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
+        /*
+         
         if (shooter.checkShooterRPMTolerance(desiredRPM) && shooter.checkShooterPositionTolerance(desiredAngle)) {
             shooter.RunFeeder();
         }
+         */
     }
 
     // Called once the command ends or is interrupted.

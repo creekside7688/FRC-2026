@@ -10,10 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class testVDS extends Command {
     /** Creates a new testLookup. */
     private final Shooter shooter;
+    private final ShooterHood shooterhood;
 
-    public testVDS(Shooter shooter) {
+    public testVDS(Shooter shooter, ShooterHood shooterhood) {
         this.shooter = shooter;
-        addRequirements(shooter);
+        this.shooterhood = shooterhood;
+        addRequirements(shooter, shooterhood);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -25,8 +27,8 @@ public class testVDS extends Command {
     @Override
     public void execute() {
         shooter.SetVariableRPM();
-        shooter.setVariableHoodPosition();
-        if (shooter.checkVariableRPMTolerance() && shooter.checkVariablePositionTolerance()) {
+        shooterhood.setVariableHoodPosition();
+        if (shooter.checkVariableRPMTolerance() && shooterhood.checkVariablePositionTolerance()) {
             shooter.RunFeeder();
         }
     }

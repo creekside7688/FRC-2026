@@ -23,6 +23,7 @@ import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterHood;
 import frc.robot.subsystems.Shooter.testShootingLookup;
 import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableHoodPosition;
@@ -70,6 +71,7 @@ public class RobotContainer {
 
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
+    private final ShooterHood shooterhood = new ShooterHood();
     private final Spindexer spindexer = new Spindexer();
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
@@ -77,9 +79,9 @@ public class RobotContainer {
             new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
 
     private final testVariableHoodPosition testhood =
-            new testVariableHoodPosition(shooter); // test that hood + indexer works
+            new testVariableHoodPosition(shooterhood); // test that hood + indexer works
 
-    private final testVDS testvds = new testVDS(shooter); // for when we get values for lookup table through testing
+    private final testVDS testvds = new testVDS(shooter, shooterhood); // for when we get values for lookup table through testing
 
     private final testShootingLookup testlookup =
             new testShootingLookup(shooter); // for when we do lookup table testing
@@ -173,7 +175,7 @@ public class RobotContainer {
         camSystem = new Vision(sd, camIO1, camIO2);
 
         Command ShootRPM = shooter.setShooterRPM(3000);
-        Command ShootAngle = shooter.setShooterAngle(60); // PLacebo values I dunno
+        Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
         Command ShootFeederRun = shooter.runShooterFeeder();
         Command ShootFeederStop = shooter.stopShooterFeeder();
         Command spindexerRun = spindexer.runSpindexerMotor();
