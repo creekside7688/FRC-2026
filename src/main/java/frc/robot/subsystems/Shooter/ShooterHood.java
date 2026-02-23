@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,12 +22,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.HoodConstants;
-import frc.robot.constants.ShooterConstants;
 
 public class ShooterHood extends SubsystemBase {
     /** Creates a new ShooterHood. */
-
     private SparkMaxConfig configHood;
+
     private final SparkMax hoodMotor;
 
     private final AbsoluteEncoder hoodMotorEncoder;
@@ -54,7 +52,6 @@ public class ShooterHood extends SubsystemBase {
         configHood = new SparkMaxConfig();
 
         configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
-        
 
         configHood.encoder.positionConversionFactor(HoodConstants.ANGLECHANGE_PER_ROTATION);
 
@@ -73,7 +70,7 @@ public class ShooterHood extends SubsystemBase {
         hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-     // hood testing;
+    // hood testing;
     public void hasHoodPChanged() {
         SmartDashboard.putNumber("Last Hood P Value", lastPvalue);
         if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
@@ -91,6 +88,7 @@ public class ShooterHood extends SubsystemBase {
         int setPoint = (int) (hoodPos.getDouble(0));
         setHoodPosition(setPoint);
     }
+
     public boolean checkShooterPositionTolerance(double targetAngle) {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
         double toleranceHigh = targetAngle * 1.02;
@@ -143,11 +141,9 @@ public class ShooterHood extends SubsystemBase {
         }
     }
 
-    
-
     @Override
     public void periodic() {
-          hasHoodPChanged();
+        hasHoodPChanged();
         // This method will be called once per scheduler run
     }
 

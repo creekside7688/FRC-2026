@@ -14,10 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
-import frc.robot.subsystems.intake.IntakeBackCommand;
-import frc.robot.subsystems.intake.IntakeForwardCommand;
-import frc.robot.subsystems.intake.IntakeRollerBackCommand;
-import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
@@ -29,7 +25,6 @@ import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableHoodPosition;
 import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
 import frc.robot.subsystems.Spindexer.Spindexer;
-import frc.robot.subsystems.Spindexer.runSpindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -38,6 +33,10 @@ import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeBackCommand;
+import frc.robot.subsystems.intake.IntakeForwardCommand;
+import frc.robot.subsystems.intake.IntakeRollerBackCommand;
+import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -65,9 +64,7 @@ public class RobotContainer {
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
-    private final Command intakeRollerStop = new Command() {
-        
-    };
+    private final Command intakeRollerStop = new Command() {};
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -79,13 +76,12 @@ public class RobotContainer {
     private final Spindexer spindexer = new Spindexer();
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
-
     Command ShootRPM;
-        Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
-        Command ShootFeederRun = shooter.runShooterFeeder();
-        Command ShootFeederStop = shooter.stopShooterFeeder();
-        Command spindexerRun = spindexer.runSpindexerMotor();
-        Command spindexerStop = spindexer.stopSpindexerMotor();
+    Command ShootAngle = shooterhood.setShooterAngle(60); // PLacebo values I dunno
+    Command ShootFeederRun = shooter.runShooterFeeder();
+    Command ShootFeederStop = shooter.stopShooterFeeder();
+    Command spindexerRun = spindexer.runSpindexerMotor();
+    Command spindexerStop = spindexer.stopSpindexerMotor();
 
     private final testVariableRPMFlywheel testshooter =
             new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
@@ -93,7 +89,8 @@ public class RobotContainer {
     private final testVariableHoodPosition testhood =
             new testVariableHoodPosition(shooterhood); // test that hood + indexer works
 
-    private final testVDS testvds = new testVDS(shooter, shooterhood); // for when we get values for lookup table through testing
+    private final testVDS testvds =
+            new testVDS(shooter, shooterhood); // for when we get values for lookup table through testing
 
     private final testShootingLookup testlookup =
             new testShootingLookup(shooter); // for when we do lookup table testing
@@ -188,7 +185,6 @@ public class RobotContainer {
 
         ShootRPM = shooter.setShooterRPM(sd::getPose);
 
-
         configureDriveBindings();
         configureOperatorBindings();
     }
@@ -239,11 +235,11 @@ public class RobotContainer {
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        Command holdxuntilflywheel = ShootRPM.alongWith(ShootFeederRun.onlyIf(() -> shooter.checkShooterRPMTolerance()), spindexerRun.onlyIf( () -> shooter.checkShooterRPMTolerance()));
-        
+        Command holdxuntilflywheel = ShootRPM.alongWith(
+                ShootFeederRun.onlyIf(() -> shooter.checkShooterRPMTolerance()),
+                spindexerRun.onlyIf(() -> shooter.checkShooterRPMTolerance()));
 
         operatorController.getX().whileTrue(holdxuntilflywheel);
-
 
         Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
         driveController.getB().whileTrue(DeployRunIntake);
@@ -251,6 +247,7 @@ public class RobotContainer {
         Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
         intake.setDefaultCommand(StopStowIntake);
 
+        
     }
 
     /**

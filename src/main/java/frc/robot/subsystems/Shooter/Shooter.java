@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.Shooter;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.AbsoluteEncoder;
@@ -29,10 +27,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.constants.FieldConstants;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterLookup;
+import java.util.function.Supplier;
 
 public class Shooter extends SubsystemBase {
     /** Creates a new shooter. */
@@ -46,7 +44,6 @@ public class Shooter extends SubsystemBase {
     private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
     private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
-
 
     private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
@@ -105,7 +102,6 @@ public class Shooter extends SubsystemBase {
         config2.idleMode(IdleMode.kCoast);
 
         config2.follow(shootMotor1, true);
-
 
         this.shootMotor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         shootMotor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -172,14 +168,9 @@ public class Shooter extends SubsystemBase {
         feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
 
-
-
-    
-
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
-
 
         SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());

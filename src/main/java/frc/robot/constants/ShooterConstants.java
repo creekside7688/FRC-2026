@@ -19,6 +19,5 @@ public class ShooterConstants {
 
     public static final double RUN_FEEDER_OUTPUT = -1.0;
 
-
     public static final double INDEXER_VOLTAGE = 5;
 }

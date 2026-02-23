@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class testVDS extends Command {
     /** Creates a new testLookup. */
     private final Shooter shooter;
+
     private final ShooterHood shooterhood;
 
     public testVDS(Shooter shooter, ShooterHood shooterhood) {
