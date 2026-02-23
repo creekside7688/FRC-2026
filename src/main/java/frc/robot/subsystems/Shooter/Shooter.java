@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.robotParts;
+package frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -48,10 +48,12 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
 
+    private GenericEntry Pvalue = tab.add("Pvalue", 0.1).getEntry();
+
+    private double lastPvalue = Pvalue.getDouble(0.1);
+
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
-
-    private final SparkMax indexerMotor = new SparkMax(ShooterConstants.BALL_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
     private final SparkMax hoodMotor;
     private final AbsoluteEncoder hoodMotorEncoder;
@@ -110,7 +112,7 @@ public class Shooter extends SubsystemBase {
 
         config2.follow(shootMotor1, true);
 
-        configHood.closedLoop.p(0.1).i(0).d(0);
+        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
 
         configHood.encoder.positionConversionFactor(ShooterConstants.ANGLECHANGE_PER_ROTATION);
 
@@ -134,25 +136,12 @@ public class Shooter extends SubsystemBase {
     public double getVariableDistance() {
         return desiredDistance.getDouble(100);
     }
-
-    public void runIndexer() {
-        indexerMotor.setVoltage(ShooterConstants.INDEXER_VOLTAGE);
-    }
-
-    public void stopIndexer() {
-        indexerMotor.setVoltage(0);
-    }
-
-    public void SetRPM(double rpm) {
-        sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
-    }
-
-    // checks if RPM is within tolerance.
+    // flywheel
 
     public boolean checkShooterRPMTolerance(double targetRPM) {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.04;
-        double toleranceLow = targetRPM * 0.96;
+        double toleranceHigh = targetRPM * 1.02;
+        double toleranceLow = targetRPM * 0.98;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
@@ -162,12 +151,16 @@ public class Shooter extends SubsystemBase {
     public boolean checkVariableRPMTolerance() {
         double targetRPM = shootRPM.getDouble(0);
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.04;
-        double toleranceLow = targetRPM * 0.96;
+        double toleranceHigh = targetRPM * 1.02;
+        double toleranceLow = targetRPM * 0.98;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
         return false;
+    }
+
+    public void SetRPM(double rpm) {
+        sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
     }
 
     public void SetVariableRPM() {
@@ -190,21 +183,32 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("set voltage", retrievedVoltage);
     }
 
+    // feeder
+
     public void RunFeeder() {
         feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
     }
 
-    public void stopSystem() {
-        stopFeeder();
-        shootMotor1.setVoltage(0);
+    public void stopFeeder() {
+        feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
 
-    public void resetHoodEncoder(double currentActualAngle) {
-        hoodMotor.getEncoder().setPosition(currentActualAngle);
+    // hood testing;
+    public void hasHoodPChanged() {
+        if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
+            lastPvalue = (Pvalue.getDouble(0.1));
+            configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
+            hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        }
     }
 
-    public void setHoodMotorPosition(double setPoint) {
+    public void setHoodPosition(double setPoint) {
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
+    }
+
+    public void setVariableHoodPosition() {
+        int setPoint = (int) (hoodPos.getDouble(0));
+        setHoodPosition(setPoint);
     }
 
     public boolean underTrench(Pose2d position) {
@@ -222,16 +226,9 @@ public class Shooter extends SubsystemBase {
 
     public void hoodUnderTrench(Pose2d position) {
         if (underTrench(position)) {
-            setHoodMotorPosition(75);
+            setHoodPosition(75);
         }
     }
-
-    public void setVariableMotorPosition() {
-        int setPoint = (int) (hoodPos.getDouble(0));
-        setHoodMotorPosition(setPoint);
-    }
-
-    // check if within tolerance to begin feeder
 
     public boolean checkShooterPositionTolerance(double targetAngle) {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
@@ -254,6 +251,8 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
+    // Hood motor Voltages
+
     public void setHoodMotorVoltage(double volts) {
         hoodMotor.setVoltage(volts);
     }
@@ -264,28 +263,16 @@ public class Shooter extends SubsystemBase {
         setHoodMotorVoltage(hoodMVolts);
     }
 
-    /*
-
-    */
-
-    public void stopFeeder() {
-        feedControllerSrx.set(ControlMode.PercentOutput, 0);
-    }
-
-    public void runVariableMotorFeeder() {
-        double retriedFS = feederSpeed.getDouble(0);
-        SmartDashboard.putNumber("m", retriedFS);
-        feedControllerSrx.set(ControlMode.PercentOutput, retriedFS);
-    }
-
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
+        hasHoodPChanged();
+
         SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
 
         SmartDashboard.putNumber("Shooter 2 Pos", shootMotor2.getEncoder().getPosition());
-        SmartDashboard.putNumber("Shooter 3 Velocity", shootMotor2.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter 2 Velocity", shootMotor2.getEncoder().getVelocity());
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

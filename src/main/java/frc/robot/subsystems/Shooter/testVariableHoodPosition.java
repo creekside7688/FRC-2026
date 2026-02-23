@@ -2,18 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.ShooterLookup;
-import frc.robot.subsystems.robotParts.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class testLookup extends Command {
-    /** Creates a new testVDS. */
+public class testVariableHoodPosition extends Command {
+    /** Creates a new testHood. */
     private final Shooter shooter;
 
-    public testLookup(Shooter shooter) {
+    public testVariableHoodPosition(Shooter shooter) {
         this.shooter = shooter;
         addRequirements(shooter);
         // Use addRequirements() here to declare subsystem dependencies.
@@ -21,26 +19,20 @@ public class testLookup extends Command {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {}
+    public void initialize() {
+        shooter.setVariableHoodPosition();
+    }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double distance = shooter.getVariableDistance();
-        double desiredRPM = ShooterLookup.lookupRPM(distance);
-        double desiredAngle = ShooterLookup.lookupAngle(distance);
-        shooter.SetRPM(desiredRPM);
-        shooter.setHoodMotorPosition(ShooterLookup.lookupAngle(desiredAngle));
-        if (shooter.checkShooterRPMTolerance(desiredRPM) && shooter.checkShooterPositionTolerance(desiredAngle)) {
-            shooter.RunFeeder();
-        }
+        shooter.setVariableHoodPosition();
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.RunIdle();
-        shooter.stopFeeder();
+        shooter.setHoodPosition(75);
     }
 
     // Returns true when the command should end.
