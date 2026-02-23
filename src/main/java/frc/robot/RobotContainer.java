@@ -71,13 +71,16 @@ public class RobotContainer {
     private final Shooter shooter = new Shooter();
     private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
-    private final testVariableRPMFlywheel testshooter = new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
+    private final testVariableRPMFlywheel testshooter =
+            new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
 
-    private final testVariableHoodPosition testhood = new testVariableHoodPosition(shooter); // test that hood + indexer works
+    private final testVariableHoodPosition testhood =
+            new testVariableHoodPosition(shooter); // test that hood + indexer works
 
     private final testVDS testvds = new testVDS(shooter); // for when we get values for lookup table through testing
 
-    private final testShootingLookup testlookup = new testShootingLookup(shooter); // for when we do lookup table testing
+    private final testShootingLookup testlookup =
+            new testShootingLookup(shooter); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;

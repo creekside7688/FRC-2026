@@ -55,7 +55,6 @@ public class Shooter extends SubsystemBase {
     private final SparkMax shootMotor1 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID1, MotorType.kBrushless);
     private final SparkMax shootMotor2 = new SparkMax(ShooterConstants.BALL_SHOOTING_MOTOR_ID2, MotorType.kBrushless);
 
-
     private final SparkMax hoodMotor;
     private final AbsoluteEncoder hoodMotorEncoder;
     private final AbsoluteEncoder shootMotor1Encoder;
@@ -137,7 +136,7 @@ public class Shooter extends SubsystemBase {
     public double getVariableDistance() {
         return desiredDistance.getDouble(100);
     }
-    //flywheel
+    // flywheel
 
     public boolean checkShooterRPMTolerance(double targetRPM) {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
@@ -184,7 +183,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("set voltage", retrievedVoltage);
     }
 
-    //feeder
+    // feeder
 
     public void RunFeeder() {
         feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
@@ -194,7 +193,7 @@ public class Shooter extends SubsystemBase {
         feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
 
-    //hood testing;
+    // hood testing;
     public void hasHoodPChanged() {
         if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
             lastPvalue = (Pvalue.getDouble(0.1));
@@ -231,9 +230,6 @@ public class Shooter extends SubsystemBase {
         }
     }
 
-
-
-
     public boolean checkShooterPositionTolerance(double targetAngle) {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
         double toleranceHigh = targetAngle * 1.02;
@@ -255,7 +251,7 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
-    //Hood motor Voltages
+    // Hood motor Voltages
 
     public void setHoodMotorVoltage(double volts) {
         hoodMotor.setVoltage(volts);

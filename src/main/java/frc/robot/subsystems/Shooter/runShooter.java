@@ -25,7 +25,9 @@ public class runShooter extends Command {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
-        distance = Math.hypot((hubPose.getX() - sd.getPose().getX()), (hubPose.getY() - sd.getPose().getY()));
+        distance = Math.hypot(
+                (hubPose.getX() - sd.getPose().getX()),
+                (hubPose.getY() - sd.getPose().getY()));
     }
 
     // Called when the command is initially scheduled.
