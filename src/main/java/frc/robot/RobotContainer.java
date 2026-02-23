@@ -63,6 +63,9 @@ public class RobotContainer {
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
+    private final Command intakeRollerStop = new Command() {
+        
+    };
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -228,6 +231,13 @@ public class RobotContainer {
         driveController.getRightBumper().whileTrue(intakeForwardCommand);
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
+
+        Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
+        driveController.getB().whileTrue(DeployRunIntake);
+
+        Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
+        intake.setDefaultCommand(StopStowIntake);
+
     }
 
     /**
