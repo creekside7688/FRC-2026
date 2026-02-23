@@ -230,7 +230,11 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(intakeBackCommand);
+        joystick.getButton1().whileTrue(testhood);
+        joystick.getButton3().whileTrue(intakeBackCommand);
+        joystick.getButton4().whileTrue(intakeForwardCommand);
+        joystick.getButton5().whileTrue(intakeRollerBackCommand);
+        joystick.getButton6().whileTrue(intakeRollerForwardCommand);
         // driveController.getA().whileTrue(testhood);
         driveController.getLeftBumper().whileTrue(intakeBackCommand);
         driveController.getRightBumper().whileTrue(intakeForwardCommand);

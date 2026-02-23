@@ -15,13 +15,20 @@ public class FlightControl {
     private final Trigger button1;
     private final Trigger button2;
     private final Trigger button3;
+    private final Trigger button4;
+    private final Trigger button5;
+    private final Trigger button6;
 
     public FlightControl(int port) {
         joystick = new Joystick(port);
 
+
         button1 = new JoystickButton(joystick, 1);
         button2 = new JoystickButton(joystick, 2);
         button3 = new JoystickButton(joystick, 3);
+        button4 = new JoystickButton(joystick, 4);
+        button5 = new JoystickButton(joystick, 5);
+        button6 = new JoystickButton(joystick, 6);
     }
 
     public Joystick getJoystick() {
@@ -50,5 +57,17 @@ public class FlightControl {
 
     public Trigger getButton3() {
         return button3;
+    }
+
+    public Trigger getButton4() {
+        return button4;
+    }
+
+    public Trigger getButton5() {
+        return button5;
+    }
+
+    public Trigger getButton6() {
+        return button6;
     }
 }
