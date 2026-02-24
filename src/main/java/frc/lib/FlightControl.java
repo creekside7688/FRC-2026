@@ -22,7 +22,6 @@ public class FlightControl {
     public FlightControl(int port) {
         joystick = new Joystick(port);
 
-
         button1 = new JoystickButton(joystick, 1);
         button2 = new JoystickButton(joystick, 2);
         button3 = new JoystickButton(joystick, 3);

@@ -59,7 +59,7 @@ public class ShooterHood extends SubsystemBase {
 
         configHood = new SparkMaxConfig();
 
-        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
+        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0).outputRange(-0.2, 0.2);
 
         configHood.encoder.positionConversionFactor(HoodConstants.ANGLECHANGE_PER_ROTATION);
 
@@ -100,8 +100,8 @@ public class ShooterHood extends SubsystemBase {
 
     public boolean checkShooterPositionTolerance() {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
-        double toleranceHigh = desiredAngle * 1.02;
-        double toleranceLow = desiredAngle * 0.98;
+        double toleranceHigh = desiredAngle * 1.005;
+        double toleranceLow = desiredAngle * 0.995;
         if (shooterAngle > toleranceLow && shooterAngle < toleranceHigh) {
             return true;
         }

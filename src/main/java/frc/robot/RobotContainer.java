@@ -241,7 +241,7 @@ public class RobotContainer {
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        Command holdxuntilflywheel = ShootRPM.alongWith(
+        /*Command holdxuntilflywheel = ShootRPM.alongWith(
                 ShootAngle,
                 ShootFeederRun.onlyIf(
                         () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
@@ -255,6 +255,7 @@ public class RobotContainer {
 
         Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
         intake.setDefaultCommand(StopStowIntake);
+        */
     }
 
     /**
