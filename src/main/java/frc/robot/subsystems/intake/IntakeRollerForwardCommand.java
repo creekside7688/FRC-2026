@@ -5,15 +5,16 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.IntakeConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeRollerForwardCommand extends Command {
-    Intake a;
-    double motorinput;
+    Intake intake;
+    double motorInput;
 
     /** Creates a new cmds. */
     public IntakeRollerForwardCommand(Intake inputIntake) {
-        a = inputIntake;
+        intake = inputIntake;
         addRequirements(inputIntake);
         // Use addRequirements() here to declare subsystem dependencies.
     }
@@ -25,13 +26,13 @@ public class IntakeRollerForwardCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        a.SetSpeedIntakeRoller(0.1);
+        intake.setSpeedIntakeRoller(IntakeConstants.INTAKE_ROLLER_SPEED);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        a.StopIntakeRoller();
+        intake.stopIntakeRoller();
     }
 
     // Returns true when the command should end.

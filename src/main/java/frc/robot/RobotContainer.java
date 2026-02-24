@@ -36,7 +36,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeBackCommand;
 import frc.robot.subsystems.intake.IntakeForwardCommand;
 import frc.robot.subsystems.intake.IntakeRollerBackCommand;
-import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
+import frc.robot.subsystems.intake.IntakeRollerStopCommand;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -63,7 +63,7 @@ public class RobotContainer {
     private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
-    private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
+    private final IntakeRollerStopCommand intakeRollerForwardCommand = new IntakeRollerStopCommand(intake);
     private final Command intakeRollerStop = new Command() {};
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
