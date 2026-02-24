@@ -13,12 +13,14 @@ public class runShooter extends Command {
 
     private final Shooter shooter;
     private final SwerveDrive sd;
+    private final Feeder feeder;
     private double distance;
     /** Creates a new runShooter. */
-    public runShooter(Shooter shooter, SwerveDrive sd) {
+    public runShooter(Shooter shooter, SwerveDrive sd, Feeder feeder) {
         this.shooter = shooter;
         this.sd = sd;
-        addRequirements(shooter);
+        this.feeder = feeder;
+        addRequirements(shooter, feeder);
     }
 
     private void getDistanceToHub() {
@@ -44,7 +46,7 @@ public class runShooter extends Command {
         shooter.SetRPM(desiredRPM);
         // shooter.setHoodPosition(ShooterLookup.lookupAngle(distance));
         if (shooter.checkShooterRPMTolerance()) {
-            shooter.RunFeeder();
+            feeder.RunFeeder();
         }
     }
 
@@ -52,6 +54,7 @@ public class runShooter extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.RunIdle();
+        feeder.stopFeeder();
     }
 
     // Returns true when the command should end.

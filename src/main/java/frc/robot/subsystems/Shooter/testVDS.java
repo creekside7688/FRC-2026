@@ -13,7 +13,9 @@ public class testVDS extends Command {
 
     private final ShooterHood shooterhood;
 
-    public testVDS(Shooter shooter, ShooterHood shooterhood) {
+    private final Feeder feeder;
+
+    public testVDS(Shooter shooter, ShooterHood shooterhood, Feeder feeder) {
         this.shooter = shooter;
         this.shooterhood = shooterhood;
         addRequirements(shooter, shooterhood);
@@ -30,7 +32,7 @@ public class testVDS extends Command {
         shooter.SetVariableRPM();
         shooterhood.setVariableHoodPosition();
         if (shooter.checkVariableRPMTolerance() && shooterhood.checkVariablePositionTolerance()) {
-            shooter.RunFeeder();
+            feeder.RunFeeder();
         }
     }
 
@@ -38,7 +40,7 @@ public class testVDS extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.RunIdle();
-        shooter.stopFeeder();
+        feeder.stopFeeder();
     }
 
     // Returns true when the command should end.

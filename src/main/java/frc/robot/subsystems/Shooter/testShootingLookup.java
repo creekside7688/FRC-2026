@@ -12,10 +12,12 @@ import frc.robot.constants.ShooterLookup;
 public class testShootingLookup extends Command {
     /** Creates a new testVDS. */
     private final Shooter shooter;
+    private final Feeder feeder;
 
-    public testShootingLookup(Shooter shooter) {
+    public testShootingLookup(Shooter shooter, Feeder feeder) {
         this.shooter = shooter;
-        addRequirements(shooter);
+        this.feeder = feeder;
+        addRequirements(shooter, feeder);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -30,6 +32,7 @@ public class testShootingLookup extends Command {
         double desiredRPM = ShooterLookup.lookupRPM(distance);
         double desiredAngle = ShooterLookup.lookupAngle(distance);
         shooter.SetRPM(desiredRPM);
+        feeder.RunFeeder();
         // shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
         /*
 
@@ -43,7 +46,7 @@ public class testShootingLookup extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.RunIdle();
-        shooter.stopFeeder();
+        feeder.stopFeeder();
     }
 
     // Returns true when the command should end.

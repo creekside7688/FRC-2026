@@ -43,7 +43,6 @@ public class Shooter extends SubsystemBase {
 
     private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
-    private GenericEntry feederSpeed = tab.add("feederSpeed", 0).getEntry();
 
     private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
@@ -55,10 +54,6 @@ public class Shooter extends SubsystemBase {
     double desiredRPM = 0;
 
     private final AbsoluteEncoder shootMotor1Encoder;
-
-    private final TalonSRX feedControllerSrx =
-            new TalonSRX(ShooterConstants.FEED_MOTOR_SRX_ID); // I actually dunno this
-    // ID
 
     private final SysIdRoutine routine = new SysIdRoutine(
             new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(shootMotor1::setVoltage, null, this));
@@ -160,13 +155,7 @@ public class Shooter extends SubsystemBase {
 
     // feeder
 
-    public void RunFeeder() {
-        feedControllerSrx.set(ControlMode.PercentOutput, ShooterConstants.RUN_FEEDER_OUTPUT);
-    }
 
-    public void stopFeeder() {
-        feedControllerSrx.set(ControlMode.PercentOutput, 0);
-    }
 
     @Override
     public void periodic() {
@@ -199,13 +188,7 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
     }
 
-    public Command runShooterFeeder() {
-        return this.runOnce(() -> this.RunFeeder());
-    }
-
-    public Command stopShooterFeeder() {
-        return this.runOnce(() -> this.stopFeeder());
-    }
+    
 
     /**
      * Returns a command that will execute a dynamic test in the given direction.

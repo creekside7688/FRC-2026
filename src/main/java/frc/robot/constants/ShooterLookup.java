@@ -3,6 +3,7 @@ package frc.robot.constants;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class ShooterLookup {
     // distance from hub (inches, for now), RPM, angle (degrees)
@@ -20,6 +21,7 @@ public class ShooterLookup {
         {160, 7.70389, 62.86},
         {150, 7.54436, 63.41},
         {140, 7.38251, 64},
+        {130, 7.21846, 64.67},
         {120, 2866.6, 65.417},
         {100, 2729.59, 67.2},
         {80, 2591.85, 69.54},
@@ -77,8 +79,8 @@ public class ShooterLookup {
 
     public static final double CalculationDelayChangedAngle(
             double x, double y, double dxdt, double dydt, double calculationLatency) {
-        var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
         double distx = hubPose.getX() - x;
         double disty = hubPose.getY() - y;
@@ -94,8 +96,8 @@ public class ShooterLookup {
 
     public static final double CalculationDelayChangedDistance(
             double x, double y, double dxdt, double dydt, double calculationLatency) {
-        var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
         double distx = hubPose.getX() - x;
         double disty = hubPose.getY() - y;
@@ -111,8 +113,8 @@ public class ShooterLookup {
 
     // not done
     public static final void RecurssiveFOTDistance(double x, double y, double dxdt, double dydt, double angle) {
-        var alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
         double distx, disty;
         if (alliance == Alliance.Red) {
             distx = x - hubPose.getX();

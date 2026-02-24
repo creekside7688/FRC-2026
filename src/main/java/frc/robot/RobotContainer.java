@@ -20,6 +20,7 @@ import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterHood;
+import frc.robot.subsystems.Shooter.Feeder;
 import frc.robot.subsystems.Shooter.testShootingLookup;
 import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableHoodPosition;
@@ -73,13 +74,13 @@ public class RobotContainer {
     private final FlightControl joystick = new FlightControl(0);
     private final Shooter shooter = new Shooter();
     private final ShooterHood shooterhood = new ShooterHood();
+    private final Feeder feeder = new Feeder();
     private final Spindexer spindexer = new Spindexer();
-    private final testVariableRPMFlywheel tesShooterVariable = new testVariableRPMFlywheel(shooter);
 
     Command ShootRPM;
     Command ShootAngle; // PLacebo values I dunno
-    Command ShootFeederRun = shooter.runShooterFeeder();
-    Command ShootFeederStop = shooter.stopShooterFeeder();
+    Command ShootFeederRun = feeder.runShooterFeeder();
+    Command ShootFeederStop = feeder.stopShooterFeeder();
     Command spindexerRun = spindexer.runSpindexerMotor();
     Command spindexerStop = spindexer.stopSpindexerMotor();
 
