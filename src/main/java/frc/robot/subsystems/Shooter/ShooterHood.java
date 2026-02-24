@@ -41,13 +41,9 @@ public class ShooterHood extends SubsystemBase {
 
     private GenericEntry hoodVoltage = tab.add("hoodVoltage", 0).getEntry();
 
-    private GenericEntry Pvalue = tab.add("Pvalue", 0.1).getEntry();
-
     private GenericEntry hoodPos = tab.add("hoodPos", 60).getEntry();
 
     double desiredAngle = 0;
-
-    double lastPvalue = Pvalue.getDouble(0.1);
 
     private final SparkClosedLoopController hood_Controller;
 
@@ -59,7 +55,7 @@ public class ShooterHood extends SubsystemBase {
 
         configHood = new SparkMaxConfig();
 
-        configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0).outputRange(-0.2, 0.2);
+        configHood.closedLoop.p(HoodConstants.HOOD_P).i(0).d(0).outputRange(-0.2, 0.2);
 
         configHood.encoder.positionConversionFactor(HoodConstants.ANGLECHANGE_PER_ROTATION);
 
@@ -78,15 +74,6 @@ public class ShooterHood extends SubsystemBase {
         hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    // hood testing;
-    public void hasHoodPChanged() {
-        SmartDashboard.putNumber("Last Hood P Value", lastPvalue);
-        if (!(Pvalue.getDouble(0.1) == lastPvalue)) {
-            lastPvalue = (Pvalue.getDouble(0.1));
-            configHood.closedLoop.p(Pvalue.getDouble(0.1)).i(0).d(0);
-            hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        }
-    }
 
     public void setHoodPosition(double setPoint) {
         desiredAngle = setPoint;
@@ -152,7 +139,6 @@ public class ShooterHood extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hasHoodPChanged();
         SmartDashboard.putNumber("Encoder position:", hoodMotor.getEncoder().getPosition());
         SmartDashboard.putBoolean("Within tolerance?", checkVariablePositionTolerance());
         // This method will be called once per scheduler run
