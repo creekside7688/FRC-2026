@@ -5,38 +5,36 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.IntakeConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class IntakeBackCommand extends Command {
+public class IntakeRollerStopCommand extends Command {
     Intake intake;
     double motorInput;
 
     /** Creates a new cmds. */
-    public IntakeBackCommand(Intake inputIntake) {
+    public IntakeRollerStopCommand(Intake inputIntake) {
         intake = inputIntake;
         addRequirements(inputIntake);
         // Use addRequirements() here to declare subsystem dependencies.
     }
+
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-        intake.setSpeedIntake(-IntakeConstants.INTAKE_SPEED);
-    }
+    public void initialize() {}
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+        intake.stopIntakeRoller();
+    }
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-        intake.setSpeedIntake(0);
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return intake.getReversedSoftLimitReached();
+        return false;
     }
 }

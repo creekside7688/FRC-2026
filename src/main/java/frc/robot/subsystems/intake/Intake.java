@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,82 +21,97 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
-    SparkMax intake = new SparkMax(IntakeConstants.Intake_MotorID, MotorType.kBrushless);
-    SparkMax intake_roller = new SparkMax(IntakeConstants.Intake_RollerID, MotorType.kBrushless);
-    SparkMaxConfig intake_config = new SparkMaxConfig();
-    RelativeEncoder intake_encoder = intake.getEncoder();
-    SparkClosedLoopController intake_closedloopcontroller = intake.getClosedLoopController();
-    SysIdRoutine intake_routine =
+    SparkMax intake = new SparkMax(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+    SparkMax intakeRoller = new SparkMax(IntakeConstants.INTAKE_ROLLER_MOTOR_ID, MotorType.kBrushless);
+    SparkMaxConfig intakeConfig = new SparkMaxConfig();
+    RelativeEncoder intakeEncoder = intake.getEncoder();
+    SparkClosedLoopController intakeClosedLoopController = intake.getClosedLoopController();
+    SysIdRoutine intakeRoutine =
             new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(intake::setVoltage, null, this));
-    SysIdRoutine intake_roller_routine = new SysIdRoutine(
-            new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(intake_roller::setVoltage, null, this));
+    SysIdRoutine intakeRollerRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(intakeRoller::setVoltage, null, this));
 
-    public Command sysIdQuasistatic_intake(SysIdRoutine.Direction direction) {
-        return intake_routine.quasistatic(direction);
+    public Command sysIdQuasistaticIntake(SysIdRoutine.Direction direction) {
+        return intakeRoutine.quasistatic(direction);
     }
 
-    public Command sysIdDynamic_intake(SysIdRoutine.Direction direction) {
-        return intake_routine.dynamic(direction);
+    public Command sysIdDynamicIntake(SysIdRoutine.Direction direction) {
+        return intakeRoutine.dynamic(direction);
     }
 
-    public Command sysIdQuasistatic_intake_roller(SysIdRoutine.Direction direction) {
-        return intake_roller_routine.quasistatic(direction);
+    public Command sysIdQuasistaticIntakeRoller(SysIdRoutine.Direction direction) {
+        return intakeRollerRoutine.quasistatic(direction);
     }
 
-    public Command sysIdDynamic_intake_roller(SysIdRoutine.Direction direction) {
-        return intake_roller_routine.dynamic(direction);
+    public Command sysIdDynamicIntakeRoller(SysIdRoutine.Direction direction) {
+        return intakeRollerRoutine.dynamic(direction);
     }
 
-    public double Position() {
-        return intake_encoder.getPosition();
+    public double getPosition() {
+        return intakeEncoder.getPosition();
     }
 
-    public void PrintPosition() {
-        SmartDashboard.putNumber("Position", Position());
+    public void printPosition() {
+        SmartDashboard.putNumber("Position", getPosition());
     }
 
-    public void SetPositionConversionFactor() {
-        intake_config.encoder.positionConversionFactor(IntakeConstants.PositionConversionFactor);
+    public void setPositionConversionFactor() {
+        intakeConfig.encoder.positionConversionFactor(IntakeConstants.POSITION_CONVERSION_FACTOR);
     }
 
-    public void GoToAngle(double Angle) {
-        intake_closedloopcontroller.setSetpoint(Angle, ControlType.kPosition);
+    public void goToAngle(double Angle) {
+        intakeClosedLoopController.setSetpoint(Angle, ControlType.kPosition);
     }
 
-    public void SetSpeedIntakeRoller(double Speed) {
-        intake_roller.set(Speed);
+    public void setSpeedIntakeRoller(double Speed) {
+        intakeRoller.set(Speed);
     }
 
-    public void StopIntakeRoller() {
-        intake_roller.set(0);
+    public void stopIntakeRoller() {
+        intakeRoller.set(0);
     }
 
-    public void SetSpeedIntake(double Speed) {
+    public void setSpeedIntake(double Speed) {
         intake.set(Speed);
     }
 
-    public void StopIntake() {
+    public void stopIntake() {
         intake.set(0);
     }
 
-    public void ResetPosition() {
-        intake_encoder.setPosition(0);
+    public void resetPosition() {
+        intakeEncoder.setPosition(0);
     }
 
+    public boolean getForwardSoftLimitReached() {
+        return intake.getForwardSoftLimit().isReached();
+    }
+
+    public boolean getReversedSoftLimitReached() {
+        return intake.getReverseSoftLimit().isReached();
+    }
     /** Creates a new Intake. */
     public Intake() {
-        intake_config.closedLoop.pid(
-                IntakeConstants.Intake_PID_P, IntakeConstants.Intake_PID_I, IntakeConstants.Intake_PID_D);
-        intake_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        ResetPosition();
-        SetPositionConversionFactor();
-        intake_config
+        intakeConfig.closedLoop.pid(
+                IntakeConstants.INTAKE_PID_P, IntakeConstants.INTAKE_PID_I, IntakeConstants.INTAKE_PID_D);
+        intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        intakeConfig
+                .softLimit
+                .forwardSoftLimit(IntakeConstants.INTAKE_SOFT_FORWARD_LIMIT)
+                .reverseSoftLimit(IntakeConstants.INTAKE_SOFT_REVERSED_LIMIT)
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimitEnabled(true);
+
+        intakeConfig.idleMode(IdleMode.kBrake);
+        resetPosition();
+        setPositionConversionFactor();
+        intakeConfig
                 .closedLoop
                 .feedForward
-                .kS(IntakeConstants.Intake_SVA_S)
-                .kV(IntakeConstants.Intake_SVA_V)
-                .kA(IntakeConstants.Intake_SVA_A);
-        intake.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+                .kS(IntakeConstants.INTAKE_SVA_S)
+                .kV(IntakeConstants.INTAKE_SVA_V)
+                .kA(IntakeConstants.INTAKE_SVA_A);
+        intake.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
