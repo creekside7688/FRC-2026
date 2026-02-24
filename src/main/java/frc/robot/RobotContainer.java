@@ -238,15 +238,15 @@ public class RobotContainer {
         driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
         driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        /*Command holdxuntilflywheel = ShootRPM.alongWith(
+        Command shooterRunSequential = ShootRPM.alongWith(
                 ShootAngle,
                 ShootFeederRun.onlyIf(
                         () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
                 spindexerRun.onlyIf(
                         () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
-        operatorController.getX().whileTrue(holdxuntilflywheel);
-        */
+        operatorController.getX().whileTrue(shooterRunSequential);
+        
 
         Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
         driveController.getB().whileTrue(DeployRunIntake);
