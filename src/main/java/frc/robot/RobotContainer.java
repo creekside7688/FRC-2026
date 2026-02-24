@@ -84,11 +84,8 @@ public class RobotContainer {
     Command spindexerStop = spindexer.stopSpindexerMotor();
 
     private final testVariableRPMFlywheel testshooter =
-            new testVariableRPMFlywheel(shooter); // test that feeder + flywheel work
-
-    private final testVariableHoodPosition testhood =
-            new testVariableHoodPosition(shooterhood); // test that hood + indexer works
-
+            new testVariableRPMFlywheel(shooter); // test that feeder
+    
     private final testVDS testvds =
             new testVDS(shooter, shooterhood); // for when we get values for lookup table through testing
 
@@ -230,7 +227,6 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(testhood);
         joystick.getButton3().whileTrue(intakeBackCommand);
         joystick.getButton4().whileTrue(intakeForwardCommand);
         joystick.getButton5().whileTrue(intakeRollerBackCommand);
@@ -249,13 +245,13 @@ public class RobotContainer {
                         () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
         operatorController.getX().whileTrue(holdxuntilflywheel);
+        */
 
         Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
         driveController.getB().whileTrue(DeployRunIntake);
 
         Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
         intake.setDefaultCommand(StopStowIntake);
-        */
     }
 
     /**
