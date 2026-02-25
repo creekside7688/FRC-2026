@@ -4,7 +4,6 @@ public class ShooterConstants {
     public static final int BALL_SHOOTING_MOTOR_ID1 = 18; // "leader" motor
     public static final int BALL_SHOOTING_MOTOR_ID2 = 12;
     public static final int BALL_HOOD_MOTOR = 9;
-    public static final int FEED_MOTOR_SRX_ID = 6;
 
     public static final double SHOOTER_KV = 0.0021101;
     public static final double SHOOTER_KA = 0.00013519;
