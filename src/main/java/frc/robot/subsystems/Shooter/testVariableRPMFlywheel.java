@@ -33,7 +33,7 @@ public class testVariableRPMFlywheel extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.SetRPM(0);
+        shooter.setShooterMotor1Voltage(0);
     }
 
     // Returns true when the command should end.
