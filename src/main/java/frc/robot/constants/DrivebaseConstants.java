@@ -39,7 +39,6 @@ public class DrivebaseConstants {
     public static double ROBOT_MASS_KG = Units.lbsToKilograms(130);
 
     // Angular offset relative to chassis in radians.
-    // TODO: find new offsets. current offsets are incorrect
     public static final double FL_OFFSET = Math.PI / 2;
     public static final double FR_OFFSET = 0;
     public static final double BL_OFFSET = -Math.PI;
