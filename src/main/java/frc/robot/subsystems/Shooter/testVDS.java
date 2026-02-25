@@ -18,7 +18,8 @@ public class testVDS extends Command {
     public testVDS(Shooter shooter, ShooterHood shooterhood, Feeder feeder) {
         this.shooter = shooter;
         this.shooterhood = shooterhood;
-        addRequirements(shooter, shooterhood);
+        this.feeder = feeder;
+        addRequirements(shooter, shooterhood, feeder);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 

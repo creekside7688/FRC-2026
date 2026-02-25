@@ -1,9 +1,9 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.math.geometry.Translation3d;
 
 public class ShooterLookup {
     // distance from hub (inches, for now), RPM, angle (degrees)

@@ -18,12 +18,11 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
+import frc.robot.subsystems.Shooter.Feeder;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterHood;
-import frc.robot.subsystems.Shooter.Feeder;
 import frc.robot.subsystems.Shooter.testShootingLookup;
 import frc.robot.subsystems.Shooter.testVDS;
-import frc.robot.subsystems.Shooter.testVariableHoodPosition;
 import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
 import frc.robot.subsystems.Spindexer.Spindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
@@ -84,14 +83,13 @@ public class RobotContainer {
     Command spindexerRun = spindexer.runSpindexerMotor();
     Command spindexerStop = spindexer.stopSpindexerMotor();
 
-    private final testVariableRPMFlywheel testshooter =
-            new testVariableRPMFlywheel(shooter); // test that feeder
-    
+    private final testVariableRPMFlywheel testshooter = new testVariableRPMFlywheel(shooter); // test that feeder
+
     private final testVDS testvds =
-            new testVDS(shooter, shooterhood); // for when we get values for lookup table through testing
+            new testVDS(shooter, shooterhood, feeder); // for when we get values for lookup table through testing
 
     private final testShootingLookup testlookup =
-            new testShootingLookup(shooter); // for when we do lookup table testing
+            new testShootingLookup(shooter, feeder); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -246,7 +244,6 @@ public class RobotContainer {
                         () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
         operatorController.getX().whileTrue(shooterRunSequential);
-        
 
         Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
         driveController.getB().whileTrue(DeployRunIntake);

@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -42,7 +40,6 @@ public class Shooter extends SubsystemBase {
     private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
 
     private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
-
 
     private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
@@ -155,8 +152,6 @@ public class Shooter extends SubsystemBase {
 
     // feeder
 
-
-
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
@@ -187,8 +182,6 @@ public class Shooter extends SubsystemBase {
         // implicitly requires `this`
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
     }
-
-    
 
     /**
      * Returns a command that will execute a dynamic test in the given direction.

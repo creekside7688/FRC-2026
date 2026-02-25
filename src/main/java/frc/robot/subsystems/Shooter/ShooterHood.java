@@ -74,7 +74,6 @@ public class ShooterHood extends SubsystemBase {
         hoodMotor.configure(configHood, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-
     public void setHoodPosition(double setPoint) {
         desiredAngle = setPoint;
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);

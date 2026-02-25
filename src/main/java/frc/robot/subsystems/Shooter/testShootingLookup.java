@@ -12,6 +12,7 @@ import frc.robot.constants.ShooterLookup;
 public class testShootingLookup extends Command {
     /** Creates a new testVDS. */
     private final Shooter shooter;
+
     private final Feeder feeder;
 
     public testShootingLookup(Shooter shooter, Feeder feeder) {
