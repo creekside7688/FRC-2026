@@ -71,6 +71,7 @@ public class RobotContainer {
     private final Controller driveController = new Controller(ControllerConstants.DRIVER_CONTROLLER_PORT);
 
     private final FlightControl joystick = new FlightControl(0);
+
     private final Shooter shooter = new Shooter();
     private final ShooterHood shooterhood = new ShooterHood();
     private final Feeder feeder = new Feeder();
@@ -183,7 +184,7 @@ public class RobotContainer {
         ShootAngle = shooterhood.setShooterAngle(sd::getPose);
 
         configureDriveBindings();
-        configureOperatorBindings();
+        //configureOperatorBindings();
     }
 
     /**
@@ -202,6 +203,8 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureDriveBindings() {
+
+        joystick.getButton1().whileTrue(testshooter);
 
         // sd.setDefaultCommand(TeleopDrive.joystickDrive(
         //         sd,
