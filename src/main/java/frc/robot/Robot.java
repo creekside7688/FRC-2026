@@ -16,7 +16,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.urcl.URCL;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -76,7 +75,7 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
-        Logger.registerURCL(URCL.startExternal());
+        // Logger.registerURCL(URCL.startExternal());
 
         Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
         // be added.

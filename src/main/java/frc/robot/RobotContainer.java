@@ -4,18 +4,21 @@
 
 package frc.robot;
 
-import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
 import frc.lib.FlightControl;
+import frc.lib.SwerveUtils;
+import frc.robot.commands.TeleopDrive;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
+import frc.robot.constants.GameConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.Shooter.Feeder;
@@ -32,11 +35,6 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeBackCommand;
-import frc.robot.subsystems.intake.IntakeForwardCommand;
-import frc.robot.subsystems.intake.IntakeRollerBackCommand;
-import frc.robot.subsystems.intake.IntakeRollerStopCommand;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -59,12 +57,12 @@ import org.littletonrobotics.junction.Logger;
  */
 public class RobotContainer {
 
-    private final Intake intake = new Intake();
-    private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
-    private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
-    private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
-    private final IntakeRollerStopCommand intakeRollerForwardCommand = new IntakeRollerStopCommand(intake);
-    private final Command intakeRollerStop = new Command() {};
+    //     private final Intake intake = new Intake();
+    //     private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
+    //     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
+    //     private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
+    //     private final IntakeRollerStopCommand intakeRollerForwardCommand = new IntakeRollerStopCommand(intake);
+    //     private final Command intakeRollerStop = new Command() {};
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -143,7 +141,7 @@ public class RobotContainer {
                         DrivebaseConstants.BR_DRIVE_MOTOR,
                         DrivebaseConstants.BR_TURN_MOTOR,
                         Rotation2d.fromRadians(DrivebaseConstants.BR_OFFSET));
-                gyro = new GyroIONavX(NavXComType.kUSB2);
+                gyro = new GyroIONavX();
                 camIO1 = new VisionIOPhotonVision("SWERVE_CAM", VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM);
                 camIO2 = new VisionIOPhotonVision("HOPPER_CAM", VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM);
                 break;
@@ -177,11 +175,18 @@ public class RobotContainer {
                 camIO2 = new VisionIO() {};
         }
 
+        fl = new ModuleIO() {};
+        fr = new ModuleIO() {};
+        bl = new ModuleIO() {};
+        br = new ModuleIO() {};
+
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
+        // sd = new SwerveDrive(
+        //         new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
         camSystem = new Vision(sd, camIO1, camIO2);
 
-        ShootRPM = shooter.setShooterRPM(sd::getPose);
-        ShootAngle = shooterhood.setShooterAngle(sd::getPose);
+        // ShootRPM = shooter.setShooterRPM(sd::getPose);
+        // ShootAngle = shooterhood.setShooterAngle(sd::getPose);
 
         configureDriveBindings();
         configureOperatorBindings();
@@ -205,54 +210,54 @@ public class RobotContainer {
     private void configureDriveBindings() {
 
 
-        // sd.setDefaultCommand(TeleopDrive.joystickDrive(
-        //         sd,
-        //         () -> -driveController.getLeftY(),
-        //         () -> -driveController.getLeftX(),
-        //         () -> -driveController.getRightX()));
+        sd.setDefaultCommand(TeleopDrive.joystickDrive(
+                sd,
+                () -> -driveController.getLeftY(),
+                () -> -driveController.getLeftX(),
+                () -> -driveController.getRightX()));
 
-        // driveController
-        //         .getA()
-        //         .whileTrue(TeleopDrive.joystickDriveWithRotationalOverride(
-        //                 sd,
-        //                 () -> -driveController.getLeftY(),
-        //                 () -> -driveController.getLeftX(),
-        //                 () -> SwerveUtils.lookAtPoint(
-        //                         sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
+        driveController
+                .getA()
+                .whileTrue(TeleopDrive.joystickDriveWithRotationalOverride(
+                        sd,
+                        () -> -driveController.getLeftY(),
+                        () -> -driveController.getLeftX(),
+                        () -> SwerveUtils.lookAtPoint(
+                                sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
 
-        // driveController
-        //         .getB()
-        //         .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
-        // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+        driveController
+                .getB()
+                .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
+        driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
     }
 
     public void configureOperatorBindings() {
 
         joystick.getButton1().whileTrue(testvds);
-        joystick.getButton3().whileTrue(intakeBackCommand);
-        joystick.getButton4().whileTrue(intakeForwardCommand);
-        joystick.getButton5().whileTrue(intakeRollerBackCommand);
-        joystick.getButton6().whileTrue(intakeRollerForwardCommand);
+        // joystick.getButton3().whileTrue(intakeBackCommand);
+        // joystick.getButton4().whileTrue(intakeForwardCommand);
+        // joystick.getButton5().whileTrue(intakeRollerBackCommand);
+        // joystick.getButton6().whileTrue(intakeRollerForwardCommand);
         // driveController.getA().whileTrue(testhood);
-        driveController.getLeftBumper().whileTrue(intakeBackCommand);
-        driveController.getRightBumper().whileTrue(intakeForwardCommand);
-        driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
-        driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
+        // driveController.getLeftBumper().whileTrue(intakeBackCommand);
+        // driveController.getRightBumper().whileTrue(intakeForwardCommand);
+        // driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
+        // driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
 
-        Command shooterRunSequential = ShootRPM.alongWith(
-                ShootAngle,
-                ShootFeederRun.onlyIf(
-                        () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
-                spindexerRun.onlyIf(
-                        () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
+        // Command shooterRunSequential = ShootRPM.alongWith(
+        //         ShootAngle,
+        //         ShootFeederRun.onlyIf(
+        //                 () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
+        //         spindexerRun.onlyIf(
+        //                 () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
-        operatorController.getX().whileTrue(shooterRunSequential);
+        // operatorController.getX().whileTrue(shooterRunSequential);
 
-        Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
-        driveController.getB().whileTrue(DeployRunIntake);
+        // Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
+        // driveController.getB().whileTrue(DeployRunIntake);
 
-        Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
-        intake.setDefaultCommand(StopStowIntake);
+        // Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
+        // intake.setDefaultCommand(StopStowIntake);
     }
 
     /**

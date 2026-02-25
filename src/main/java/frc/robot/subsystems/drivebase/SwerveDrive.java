@@ -62,7 +62,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
         };
 
         this.gyroIO = gyro;
-        this.zeroHeading();
+        // this.zeroHeading();
 
         SparkOdometryThread.getInstance().start();
 

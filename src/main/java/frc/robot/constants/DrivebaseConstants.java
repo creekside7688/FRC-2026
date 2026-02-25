@@ -1,5 +1,6 @@
 package frc.robot.constants;
 
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -60,4 +61,6 @@ public class DrivebaseConstants {
 
     public static final double OVERRIDE_ANGLE_KP = 5.0;
     public static final double OVERRIDE_ANGLE_KD = 0.2;
+
+    public static final NavXComType GYRO_PORT = NavXComType.kUSB1;
 }

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drivebase;
 
 import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.constants.DrivebaseConstants;
 import frc.robot.subsystems.drivebase.module.SparkOdometryThread;
@@ -13,9 +12,8 @@ public class GyroIONavX implements GyroIO {
     private final Queue<Double> yawPositionQueue;
     private final Queue<Double> yawTimestampQueue;
 
-    public GyroIONavX(NavXComType port) {
-        gyro = new AHRS(port, (byte) DrivebaseConstants.ODOMETRY_FREQUENCY);
-        gyro.setAngleAdjustment(270);
+    public GyroIONavX() {
+        gyro = new AHRS(DrivebaseConstants.GYRO_PORT, (int) DrivebaseConstants.ODOMETRY_FREQUENCY);
 
         yawTimestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
         yawPositionQueue = SparkOdometryThread.getInstance().registerSignal(gyro::getAngle);
@@ -24,7 +22,7 @@ public class GyroIONavX implements GyroIO {
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
-        inputs.yawPosition = gyro.getRotation2d();
+        inputs.yawPosition = Rotation2d.fromDegrees(gyro.getAngle());
         inputs.yawVelocityDegreesPerSec = gyro.getRate() * (DrivebaseConstants.GYRO_INVERTED ? -1 : 1);
 
         inputs.odometryYawTimestamps =
