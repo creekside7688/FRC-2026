@@ -13,9 +13,10 @@ public class DrivebaseConstants {
     public static final double MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND = 0.5;
     public static final double MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND = 0.5 * Math.PI;
 
-    public static final double DIRECTION_SLEW_RATE = 8; // radians per second
-    public static final double MAGNITUDE_SLEW_RATE = 8; // percent per second (1 = 100%)
-    public static final double ROTATION_SLEW_RATE = 7; // percent per second (1 = 100%), speed
+    // SLEW RATE LIMITER STUFF - UNCOMMENT IF USING SLEW RATE LIMITER
+//     public static final double DIRECTION_SLEW_RATE = 8; // radians per second
+//     public static final double MAGNITUDE_SLEW_RATE = 8; // percent per second (1 = 100%)
+//     public static final double ROTATION_SLEW_RATE = 7; // percent per second (1 = 100%), speed
     // rotating starts and
     // stops. Max is 7 for safety.
 

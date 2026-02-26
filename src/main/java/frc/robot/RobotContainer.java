@@ -178,14 +178,7 @@ public class RobotContainer {
                 camIO2 = new VisionIO() {};
         }
 
-        fl = new ModuleIO() {};
-        fr = new ModuleIO() {};
-        bl = new ModuleIO() {};
-        br = new ModuleIO() {};
-
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
-        // sd = new SwerveDrive(
-        //         new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
         camSystem = new Vision(sd, camIO1, camIO2);
 
         // ShootRPM = shooter.setShooterRPM(sd::getPose);

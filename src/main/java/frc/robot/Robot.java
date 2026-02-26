@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.revrobotics.util.StatusLogger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -16,6 +18,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -35,7 +38,10 @@ public class Robot extends LoggedRobot {
      * initialization code.
      */
     public Robot() {
-        // GVersion logging
+        // Disable official auto-logging for REV devices, use URCL instead
+        StatusLogger.disableAutoLogging(); 
+
+        // GVersion logging (git)
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -56,7 +62,7 @@ public class Robot extends LoggedRobot {
         // Real robot
         switch (RobotState.CURRENT_MODE) {
             case REAL:
-                // Logger.addDataReceiver(new WPILOGWriter()); // Uncomment during comp
+                // Logger.addDataReceiver(new WPILOGWriter()); // Uncomment during comp / when usb plugged in
                 Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables, comment during comp
                 break;
 
@@ -75,7 +81,7 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
-        // Logger.registerURCL(URCL.startExternal());
+        Logger.registerURCL(URCL.startExternal());
 
         Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
         // be added.
