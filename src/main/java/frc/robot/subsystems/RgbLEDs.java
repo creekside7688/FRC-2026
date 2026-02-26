@@ -13,9 +13,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static edu.wpi.first.units.Units.Centimeters;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.lang.annotation.Retention;
@@ -26,9 +29,10 @@ public class RgbLEDs extends SubsystemBase {
   AddressableLED led;
   AddressableLEDBuffer ledBuffer;
   final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
-  final Distance kLedSpacing = Meters.of(1 / 30.0);
-  final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(1), kLedSpacing);
+  final Distance kLedSpacing = Meters.of(4 / 60.0);
+  final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(4), kLedSpacing);
   final LEDPattern black = LEDPattern.solid(Color.kBlack);
+
 
   /**
    * Creates a new RGBLEDs.
@@ -55,6 +59,23 @@ public class RgbLEDs extends SubsystemBase {
 
   public Command rgbRainbow() {
     return runPattern(scrollingRainbow);
+  }
+  
+  public Command colorGradient(Color color1, Color color2) {
+    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+    return runPattern(gradient);
+  }
+
+  public Command colorBreathe(Color color1, Color color2) {
+  LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+  LEDPattern breathe = base.breathe(Seconds.of(1));
+  return runPattern(breathe);
+  }
+
+  public Command colorScroll(Color color1, Color color2) {
+    LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+    LEDPattern scroll = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
+    return runPattern(scroll);
   }
 
   public Command rgbSolid(int r, int g, int b) {

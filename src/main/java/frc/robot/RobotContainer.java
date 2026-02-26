@@ -142,7 +142,20 @@ public class RobotContainer {
     flightcont.getButton1().whileTrue(rgbLeds.ledBlink(LEDPattern.solid(Color.kAqua), 1));
 
     flightcont.getButton2().whileTrue(rgbLeds.rgbRainbow());
-  
+
+    flightcont.getButton3().whileTrue(rgbLeds.RgbSolidRed());
+
+    flightcont.getButton4().whileTrue(rgbLeds.ledBlink(LEDPattern.solid(Color.kDarkBlue), 0.5));
+    
+    flightcont.getButton5().whileTrue(rgbLeds.rgbSolid(255, 0, 255));
+
+    flightcont.getButton6().whileTrue(rgbLeds.ledBlink(LEDPattern.solid(Color.kYellow), 0.1));
+
+    flightcont.getButton7().whileTrue(rgbLeds.colorGradient(new Color(255, 0, 255), new Color(255, 255, 0)));
+    
+    flightcont.getButton8().whileTrue(rgbLeds.colorBreathe(new Color(0, 255, 0), new Color(0, 0, 255)));
+    
+    flightcont.getButton9().whileTrue(rgbLeds.colorScroll(new Color(255, 0, 0), new Color(0, 42, 150)));
   }
 
 
