@@ -5,25 +5,27 @@
 package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.Spindexer.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class testVDS extends Command {
-    /** Creates a new testLookup. */
-    private final Shooter shooter;
 
-    private final ShooterHood shooterhood;
+public class testSOTM extends Command {
+    /** Creates a new testVDS. */
+    private final Shooter shooter;
 
     private final Feeder feeder;
 
+    private final ShooterHood shooterHood;
+
     private final Spindexer spindexer;
 
-    public testVDS(Shooter shooter, ShooterHood shooterhood, Feeder feeder, Spindexer spindexer) {
+    public testSOTM(Shooter shooter, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
         this.shooter = shooter;
-        this.shooterhood = shooterhood;
         this.feeder = feeder;
+        this.shooterHood = shooterHood;
         this.spindexer = spindexer;
-        addRequirements(shooter, shooterhood, feeder, spindexer);
+        addRequirements(shooter, feeder, shooterHood, spindexer);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -34,20 +36,32 @@ public class testVDS extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        shooter.SetVariableRPM();
-        shooterhood.setVariableHoodPosition();
-        if (shooter.checkVariableRPMTolerance() && shooterhood.checkVariablePositionTolerance()) {
+        double distance = shooter.getVariableDistance();
+        double desiredRPM = ShooterLookup.lookupRPM(distance);
+        double desiredAngle = ShooterLookup.lookupAngle(distance);
+
+        shooter.SetRPM(desiredRPM);
+        shooterHood.setHoodPosition(desiredAngle);
+        if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
             feeder.RunFeeder();
             spindexer.runIndexer();
         }
+
+        // shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
+        /*
+
+        if (shooter.checkShooterRPMTolerance(desiredRPM) && shooter.checkShooterPositionTolerance(desiredAngle)) {
+            shooter.RunFeeder();
+        }
+         */
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         shooter.setShooterMotor1Voltage(0);
-        feeder.stopFeeder();
         spindexer.stopIndexer();
+        feeder.stopFeeder();
     }
 
     // Returns true when the command should end.

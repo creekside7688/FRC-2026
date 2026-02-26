@@ -6,6 +6,7 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterLookup;
+import frc.robot.subsystems.Spindexer.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 
@@ -15,10 +16,16 @@ public class testShootingLookup extends Command {
 
     private final Feeder feeder;
 
-    public testShootingLookup(Shooter shooter, Feeder feeder) {
+    private final ShooterHood shooterHood;
+
+    private final Spindexer spindexer;
+
+    public testShootingLookup(Shooter shooter, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
         this.shooter = shooter;
         this.feeder = feeder;
-        addRequirements(shooter, feeder);
+        this.shooterHood = shooterHood;
+        this.spindexer = spindexer;
+        addRequirements(shooter, feeder, shooterHood, spindexer);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -33,7 +40,12 @@ public class testShootingLookup extends Command {
         double desiredRPM = ShooterLookup.lookupRPM(distance);
         double desiredAngle = ShooterLookup.lookupAngle(distance);
         shooter.SetRPM(desiredRPM);
-        feeder.RunFeeder();
+        shooterHood.setHoodPosition(desiredAngle);
+        if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
+            feeder.RunFeeder();
+            spindexer.runIndexer();
+        }
+
         // shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
         /*
 
@@ -46,7 +58,8 @@ public class testShootingLookup extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.RunIdle();
+        shooter.setShooterMotor1Voltage(0);
+        spindexer.stopIndexer();
         feeder.stopFeeder();
     }
 

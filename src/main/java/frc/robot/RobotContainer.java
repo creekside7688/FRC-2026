@@ -28,6 +28,7 @@ import frc.robot.subsystems.Shooter.testShootingLookup;
 import frc.robot.subsystems.Shooter.testVDS;
 import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
 import frc.robot.subsystems.Spindexer.Spindexer;
+import frc.robot.subsystems.Spindexer.runSpindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -84,11 +85,13 @@ public class RobotContainer {
 
     private final testVariableRPMFlywheel testshooter = new testVariableRPMFlywheel(shooter); // test that feeder
 
-    private final testVDS testvds =
-            new testVDS(shooter, shooterhood, feeder); // for when we get values for lookup table through testing
+    private final runSpindexer runspindexer = new runSpindexer(spindexer);
+
+    private final testVDS testvds = new testVDS(
+            shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through testing
 
     private final testShootingLookup testlookup =
-            new testShootingLookup(shooter, feeder); // for when we do lookup table testing
+            new testShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -208,7 +211,6 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureDriveBindings() {
-
 
         sd.setDefaultCommand(TeleopDrive.joystickDrive(
                 sd,
