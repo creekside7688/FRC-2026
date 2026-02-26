@@ -24,6 +24,6 @@ public class IntakeBackCommand extends Command {
     }
 
     public boolean isFinished() {
-        return false;
+        return this.intake.getReversedSoftLimitReached();
     }
 }

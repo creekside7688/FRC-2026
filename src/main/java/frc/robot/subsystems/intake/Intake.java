@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.IntakeConstants;
 import java.util.function.Consumer;
 
 public class Intake extends SubsystemBase {
@@ -62,8 +63,12 @@ public class Intake extends SubsystemBase {
     }
 
     public void setIntakeAngle() {
-        double intakeAngleValue = this.intakeAngle.getDouble(0.0);
+        double intakeAngleValue = this.intakeAngle.getDouble(0.331);
         this.intakeClosedLoopController.setSetpoint(intakeAngleValue, ControlType.kPosition);
+    }
+
+    public void setIntake(double Setpoint) {
+        this.intakeClosedLoopController.setSetpoint(Setpoint, ControlType.kPosition);
     }
 
     public void setSpeedIntakeRoller(double Speed) {
@@ -95,9 +100,9 @@ public class Intake extends SubsystemBase {
     }
 
     public void setConstants() {
-        double intakePValue = this.intakeP.getDouble(0.0);
+        double intakePValue = this.intakeP.getDouble(0.01);
         this.intakeConfig.closedLoop.pid(intakePValue, 0.0, 0.0);
-        double intakeGValue = this.intakeG.getDouble(0.0);
+        double intakeGValue = this.intakeG.getDouble(0.1);
         this.intakeConfig.closedLoop.feedForward.kG(intakeGValue);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
@@ -117,7 +122,7 @@ public class Intake extends SubsystemBase {
         this.intakeRollerRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(),
                 new SysIdRoutine.Mechanism(this.intakeRoller::setVoltage, (Consumer) null, this));
-        this.intakeConfig.closedLoop.pid(0.0, 0.0, 0.0);
+        this.intakeConfig.closedLoop.pid(IntakeConstants.INTAKE_PID_P, 0.0, 0.0);
         this.intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         this.intakeConfig
                 .softLimit
@@ -128,7 +133,13 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.idleMode(IdleMode.kBrake);
         this.resetPosition();
         this.setPositionConversionFactor();
-        this.intakeConfig.closedLoop.feedForward.kG(0.0).kS(0.0).kV(0.0).kA(0.0);
+        this.intakeConfig
+                .closedLoop
+                .feedForward
+                .kG(IntakeConstants.INTAKE_FEEDFORWARD_G)
+                .kS(0.0)
+                .kV(IntakeConstants.INTAKE_SVA_V)
+                .kA(0.0);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

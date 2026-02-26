@@ -8,6 +8,7 @@ public class IntakeConstants {
     public static final double INTAKE_SVA_S = 0;
     public static final double INTAKE_SVA_V = 0;
     public static final double INTAKE_SVA_A = 0;
+    public static final double INTAKE_FEEDFORWARD_G = 1;
     public static final double INTAKE_SOFT_FORWARD_LIMIT = 30.0;
     public static final double INTAKE_SOFT_REVERSED_LIMIT = 0;
     public static final int INTAKE_ROLLER_MOTOR_ID = 14;
