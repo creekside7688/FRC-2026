@@ -1,42 +1,30 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
+// Source code is decompiled from a .class file using FernFlower decompiler.
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.IntakeConstants;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeForwardCommand extends Command {
-    Intake intake;
-    double motorInput;
+   Intake intake;
+   double motorInput;
 
-    /** Creates a new cmds. */
-    public IntakeForwardCommand(Intake inputIntake) {
-        intake = inputIntake;
-        addRequirements(inputIntake);
-        // Use addRequirements() here to declare subsystem dependencies.
-    }
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {}
+   public IntakeForwardCommand(Intake inputIntake) {
+      this.intake = inputIntake;
+      this.addRequirements(new Subsystem[]{inputIntake});
+   }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        intake.setSpeedIntake(IntakeConstants.INTAKE_SPEED);
-    }
+   public void initialize() {
+   }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        intake.setSpeedIntake(0);
-    }
+   public void execute() {
+      this.intake.setSpeedIntake(0.2);
+   }
 
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return intake.getForwardSoftLimitReached();
-    }
+   public void end(boolean interrupted) {
+      this.intake.setSpeedIntake(0.0);
+   }
+
+   public boolean isFinished() {
+      return false;
+   }
 }

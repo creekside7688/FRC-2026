@@ -1,43 +1,30 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
+// Source code is decompiled from a .class file using FernFlower decompiler.
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.IntakeConstants;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeRollerForwardCommand extends Command {
-    Intake intake;
-    double motorInput;
+   Intake intake;
+   double motorInput;
 
-    /** Creates a new cmds. */
-    public IntakeRollerForwardCommand(Intake inputIntake) {
-        intake = inputIntake;
-        addRequirements(inputIntake);
-        // Use addRequirements() here to declare subsystem dependencies.
-    }
+   public IntakeRollerForwardCommand(Intake inputIntake) {
+      this.intake = inputIntake;
+      this.addRequirements(new Subsystem[]{inputIntake});
+   }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {}
+   public void initialize() {
+   }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        intake.setSpeedIntakeRoller(IntakeConstants.INTAKE_ROLLER_SPEED);
-    }
+   public void execute() {
+      this.intake.setSpeedIntakeRoller(0.1);
+   }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-        intake.stopIntakeRoller();
-    }
+   public void end(boolean interrupted) {
+      this.intake.stopIntakeRoller();
+   }
 
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
+   public boolean isFinished() {
+      return false;
+   }
 }
