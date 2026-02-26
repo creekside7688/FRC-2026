@@ -37,8 +37,8 @@ public class testShootingLookup extends Command {
     @Override
     public void execute() {
         double distance = shooter.getVariableDistance();
-        double desiredRPM = ShooterLookup.lookupRPM(distance);
-        double desiredAngle = ShooterLookup.lookupAngle(distance);
+        double desiredRPM = ShooterLookup.lookupRPM(distance / 39.3701);
+        double desiredAngle = ShooterLookup.lookupAngle(distance / 39.3701);
         shooter.SetRPM(desiredRPM);
         shooterHood.setHoodPosition(desiredAngle);
         if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {

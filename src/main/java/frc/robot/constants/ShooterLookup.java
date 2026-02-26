@@ -67,7 +67,7 @@ public class ShooterLookup {
     }
 
     public static final boolean validShot(double distance) {
-        return distance <= 220 && distance >= 50;
+        return distance <= 240 && distance >= 50;
     }
 
     public static final double lookupRPM(double distance) {

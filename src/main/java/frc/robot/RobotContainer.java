@@ -228,7 +228,7 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(testvds);
+        joystick.getButton1().whileTrue(testlookup);
         // joystick.getButton3().whileTrue(intakeBackCommand);
         // joystick.getButton4().whileTrue(intakeForwardCommand);
         // joystick.getButton5().whileTrue(intakeRollerBackCommand);

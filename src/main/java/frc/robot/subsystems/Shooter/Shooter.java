@@ -58,6 +58,8 @@ public class Shooter extends SubsystemBase {
     private final SparkClosedLoopController sm1_Controller;
 
     public Shooter() {
+
+        ShooterLookup.initializeTable();
         SmartDashboard.putBoolean("t", false);
 
         this.shootMotor1Encoder = shootMotor1.getAbsoluteEncoder();

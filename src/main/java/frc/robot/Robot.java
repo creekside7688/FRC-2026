@@ -7,7 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.util.StatusLogger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -39,7 +38,7 @@ public class Robot extends LoggedRobot {
      */
     public Robot() {
         // Disable official auto-logging for REV devices, use URCL instead
-        StatusLogger.disableAutoLogging(); 
+        StatusLogger.disableAutoLogging();
 
         // GVersion logging (git)
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);

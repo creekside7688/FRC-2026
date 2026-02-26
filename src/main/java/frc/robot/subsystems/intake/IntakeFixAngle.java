@@ -6,27 +6,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class IntakeFixAngle extends Command {
-   Intake intake;
-   double motorInput;
+    Intake intake;
+    double motorInput;
 
-   public IntakeFixAngle(Intake inputIntake) {
-      this.intake = inputIntake;
-      this.addRequirements(new Subsystem[]{inputIntake});
-   }
+    public IntakeFixAngle(Intake inputIntake) {
+        this.intake = inputIntake;
+        this.addRequirements(new Subsystem[] {inputIntake});
+    }
 
-   public void initialize() {
-      this.intake.setConstants();
-      Timer.delay(0.5);
-      this.intake.setIntakeAngle();
-   }
+    public void initialize() {
+        this.intake.setConstants();
+        Timer.delay(0.5);
+        this.intake.setIntakeAngle();
+    }
 
-   public void execute() {
-   }
+    public void execute() {}
 
-   public void end(boolean interrupted) {
-   }
+    public void end(boolean interrupted) {}
 
-   public boolean isFinished() {
-      return false;
-   }
+    public boolean isFinished() {
+        return false;
+    }
 }
