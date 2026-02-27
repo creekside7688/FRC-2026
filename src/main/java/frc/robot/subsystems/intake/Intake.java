@@ -62,13 +62,20 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.encoder.positionConversionFactor(0.13392857142857142);
     }
 
-    public void setIntakeAngle() {
-        double intakeAngleValue = this.intakeAngle.getDouble(0.331);
-        this.intakeClosedLoopController.setSetpoint(intakeAngleValue, ControlType.kPosition);
+    public void goToAngle() {
+        this.intakeClosedLoopController.setSetpoint(0, ControlType.kPosition);
     }
 
     public void setIntake(double Setpoint) {
-        this.intakeClosedLoopController.setSetpoint(Setpoint, ControlType.kPosition);
+        this.intakeClosedLoopController.setSetpoint(Setpoint, ControlType.kVelocity);
+    }
+
+    public double getVelocity() {
+        return this.intakeEncoder.getVelocity();
+    }
+
+    public void printVelocity() {
+        SmartDashboard.putNumber("intakeVelocity", getVelocity());
     }
 
     public void setSpeedIntakeRoller(double Speed) {
@@ -100,9 +107,9 @@ public class Intake extends SubsystemBase {
     }
 
     public void setConstants() {
-        double intakePValue = this.intakeP.getDouble(0.01);
+        double intakePValue = this.intakeP.getDouble(0);
         this.intakeConfig.closedLoop.pid(intakePValue, 0.0, 0.0);
-        double intakeGValue = this.intakeG.getDouble(0.1);
+        double intakeGValue = this.intakeG.getDouble(0);
         this.intakeConfig.closedLoop.feedForward.kG(intakeGValue);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
@@ -133,17 +140,21 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.idleMode(IdleMode.kBrake);
         this.resetPosition();
         this.setPositionConversionFactor();
+        this.intakeConfig.closedLoop.outputRange(-0.4, 0.2);
         this.intakeConfig
                 .closedLoop
                 .feedForward
                 .kG(IntakeConstants.INTAKE_FEEDFORWARD_G)
                 .kS(0.0)
                 .kV(IntakeConstants.INTAKE_SVA_V)
-                .kA(0.0);
+                .kA(0.0)
+                .kCos(0);
+        // this.intakeConfig.closedLoopRampRate(10);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void periodic() {
         this.printPosition();
+        this.printVelocity();
     }
 }

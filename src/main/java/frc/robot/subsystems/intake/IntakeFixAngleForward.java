@@ -14,7 +14,7 @@ public class IntakeFixAngleForward extends Command {
     }
 
     public void initialize() {
-        this.intake.setIntake(0.331);
+        this.intake.setIntake(0.1);
     }
 
     public void execute() {}

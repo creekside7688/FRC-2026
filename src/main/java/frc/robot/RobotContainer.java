@@ -38,10 +38,9 @@ import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeBackCommand;
-import frc.robot.subsystems.intake.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.IntakeFixAngleBack;
+import frc.robot.subsystems.intake.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.IntakeForwardCommand;
-import frc.robot.subsystems.intake.IntakeRollerBackCommand;
 import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
@@ -68,10 +67,9 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
-    private final IntakeRollerBackCommand intakeRollerBackCommand = new IntakeRollerBackCommand(intake);
     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
-    private final IntakeFixAngleForward intakeFixAngleCommand = new IntakeFixAngleForward(intake);
-    private final IntakeFixAngleBack intakeFixAngleReversedCommand = new IntakeFixAngleBack(intake);
+    private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
+    private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     //     private final Command intakeRollerStop = new Command() {};
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -238,10 +236,9 @@ public class RobotContainer {
     public void configureOperatorBindings() {
 
         joystick.getButton1().whileTrue(testlookup);
-        joystick.getButton3().whileTrue(intakeFixAngleCommand);
+        joystick.getButton3().whileTrue(intakeFixAngleForwardCommand);
         joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        joystick.getButton5().whileTrue(intakeBackCommand);
-        joystick.getButton6().whileTrue(intakeFixAngleReversedCommand);
+        joystick.getButton5().whileTrue(intakeFixAngleBackCommand);
         // joystick.getButton6().whileTrue(intakeRollerForwardCommand);
         // driveController.getA().whileTrue(testhood);
         // driveController.getLeftBumper().whileTrue(intakeBackCommand);

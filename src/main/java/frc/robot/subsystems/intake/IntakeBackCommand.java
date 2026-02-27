@@ -16,7 +16,7 @@ public class IntakeBackCommand extends Command {
     public void initialize() {}
 
     public void execute() {
-        this.intake.setSpeedIntake(-0.2);
+        this.intake.setSpeedIntake(-0.4);
     }
 
     public void end(boolean interrupted) {
