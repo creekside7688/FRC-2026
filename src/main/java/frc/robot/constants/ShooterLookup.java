@@ -2,7 +2,6 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -91,7 +90,7 @@ public class ShooterLookup {
     public static final Translation2d CalculationDelayOffset(
             Pose2d robotPose, double dxdt, double dydt, double calculationLatency) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
         double x = robotPose.getX();
         double y = robotPose.getY();

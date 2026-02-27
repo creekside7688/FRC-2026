@@ -16,19 +16,20 @@ public class GyroIONavX implements GyroIO {
         gyro = new AHRS(DrivebaseConstants.GYRO_PORT, (int) DrivebaseConstants.ODOMETRY_FREQUENCY);
 
         yawTimestampQueue = SparkOdometryThread.getInstance().makeTimestampQueue();
-        yawPositionQueue = SparkOdometryThread.getInstance().registerSignal(gyro::getAngle);
+        yawPositionQueue = SparkOdometryThread.getInstance()
+                .registerSignal(() -> gyro.getRotation2d().getDegrees());
     }
 
     @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
-        inputs.yawPosition = Rotation2d.fromDegrees(gyro.getAngle());
+        inputs.yawPosition = gyro.getRotation2d();
         inputs.yawVelocityDegreesPerSec = gyro.getRate() * (DrivebaseConstants.GYRO_INVERTED ? -1 : 1);
 
         inputs.odometryYawTimestamps =
                 yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryYawPositions = yawPositionQueue.stream()
-                .map((Double value) -> Rotation2d.fromDegrees(value))
+                .map((Double rot) -> Rotation2d.fromDegrees(rot))
                 .toArray(Rotation2d[]::new);
         yawTimestampQueue.clear();
         yawPositionQueue.clear();
