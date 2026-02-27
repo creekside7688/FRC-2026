@@ -1,5 +1,7 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -86,10 +88,14 @@ public class ShooterLookup {
         }
     }
 
-    public static final double CalculationDelayChangedAngle(
-            double x, double y, double dxdt, double dydt, double calculationLatency) {
+
+    public static final Translation2d CalculationDelayOffset(
+            Pose2d robotPose, double dxdt, double dydt, double calculationLatency) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+
+        double x = robotPose.getX();
+        double y = robotPose.getY();
 
         double distx = hubPose.getX() - x;
         double disty = hubPose.getY() - y;
@@ -97,42 +103,27 @@ public class ShooterLookup {
         double dx = dxdt * calculationLatency;
         double dy = dydt * calculationLatency;
 
-        if (distx == 0 && disty == 0) return 0;
+        if (distx == 0 && disty == 0) return new Translation2d(0, 0);
 
-        double answer = (((dy * distx) - (dx * disty))) / (Math.pow((distx), 2) + Math.pow((disty), 2));
-        return (answer * 180 / Math.PI);
-    }
+        double dAngle = (((dy * distx) - (dx * disty))) / (Math.pow((distx), 2) + Math.pow((disty), 2));
 
-    public static final double CalculationDelayChangedDistance(
-            double x, double y, double dxdt, double dydt, double calculationLatency) {
-        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
-
-        double distx = hubPose.getX() - x;
-        double disty = hubPose.getY() - y;
-
-        double dx = dxdt * calculationLatency;
-        double dy = dydt * calculationLatency;
-
-        if (distx == 0 && disty == 0) return 0;
-
-        double answer = (((distx * dx) + (disty * dy)) / (Math.sqrt(Math.pow(distx, 2) + Math.pow(disty, 2))));
-        return answer; // in meters
+        double dDistance = (((distx * dx) + (disty * dy)) / (Math.sqrt(Math.pow(distx, 2) + Math.pow(disty, 2))));
+        return new Translation2d(dDistance, dAngle); // in meters
     }
 
     // not done
-    public static final double RecurssiveFOTDistance(
-            double x, double y, double dxdt, double dydt, double hoodAngle, double angle, double distance) {
+    public static final Translation2d RecurssiveFOT(
+            double dxdt, double dydt, double hoodAngle, double angle, double distance) {
 
         double newAngle = angle;
         double newDistance = distance;
 
         for (int i = 0; i < 5; i++) {
 
-            double velocity2D = distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(hoodAngle);
+            double velocity2D = distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(Math.toRadians(hoodAngle));
 
-            double ydistance = Math.sin(newAngle) * newDistance;
-            double xdistance = Math.cos(newAngle) * newDistance;
+            double ydistance = Math.sin(Math.toRadians(newAngle)) * newDistance;
+            double xdistance = Math.cos(Math.toRadians(newAngle)) * newDistance;
 
             double dx = dxdt * (newDistance / velocity2D);
             double dy = dydt * (newDistance / velocity2D);
@@ -150,44 +141,11 @@ public class ShooterLookup {
             double newDistanceX = xdistance - dx;
             double newDistanceY = ydistance - dy;
 
+            newAngle = Math.toDegrees(Math.atan2(newDistanceY, newDistanceX));
             newDistance = Math.hypot(newDistanceX, newDistanceY);
         }
 
-        return newDistance;
-    }
-
-    public static final double RecurssiveFOTRotation(
-            double x, double y, double dxdt, double dydt, double hoodAngle, double angle, double distance) {
-
-        double newAngle = angle;
-        double newDistance = distance;
-
-        for (int i = 0; i < 5; i++) {
-
-            double velocity2D = (distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(hoodAngle));
-
-            double ydistance = Math.sin(newAngle) * newDistance;
-            double xdistance = Math.cos(newAngle) * newDistance;
-
-            double dx = dxdt * (newDistance / velocity2D);
-            double dy = dydt * (newDistance / velocity2D);
-
-            /*
-
-            double EndpointX = x+xdistance+dx;
-            double EndpointY = y+ydistance+dy;
-
-            double newEndpointX = x+xdistance-dx;
-            double newEndpointY = y+ydistance-dy;
-
-            */
-
-            double newDistanceX = xdistance - dx;
-            double newDistanceY = ydistance - dy;
-
-            newAngle = Math.atan(newDistanceY / newDistanceX);
-        }
-
-        return newAngle;
+        //x value is distance, y is angle in degrees
+        return new Translation2d(newDistance, (newAngle));
     }
 }
