@@ -88,7 +88,6 @@ public class ShooterLookup {
         }
     }
 
-
     public static final Translation2d CalculationDelayOffset(
             Pose2d robotPose, double dxdt, double dydt, double calculationLatency) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
@@ -120,7 +119,8 @@ public class ShooterLookup {
 
         for (int i = 0; i < 5; i++) {
 
-            double velocity2D = distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(Math.toRadians(hoodAngle));
+            double velocity2D =
+                    distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(Math.toRadians(hoodAngle));
 
             double ydistance = Math.sin(Math.toRadians(newAngle)) * newDistance;
             double xdistance = Math.cos(Math.toRadians(newAngle)) * newDistance;
@@ -145,7 +145,7 @@ public class ShooterLookup {
             newDistance = Math.hypot(newDistanceX, newDistanceY);
         }
 
-        //x value is distance, y is angle in degrees
+        // x value is distance, y is angle in degrees
         return new Translation2d(newDistance, (newAngle));
     }
 }

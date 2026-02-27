@@ -21,14 +21,6 @@ import frc.robot.constants.DrivebaseConstants;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.VisionConstants;
-import frc.robot.subsystems.Shooter.Feeder;
-import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterHood;
-import frc.robot.subsystems.Shooter.testShootingLookup;
-import frc.robot.subsystems.Shooter.testVDS;
-import frc.robot.subsystems.Shooter.testVariableRPMFlywheel;
-import frc.robot.subsystems.Spindexer.Spindexer;
-import frc.robot.subsystems.Spindexer.runSpindexer;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -42,6 +34,14 @@ import frc.robot.subsystems.intake.IntakeFixAngleBack;
 import frc.robot.subsystems.intake.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.IntakeForwardCommand;
 import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
+import frc.robot.subsystems.shooter.Feeder;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.shooterCommands.TestShootingLookup;
+import frc.robot.subsystems.shooter.shooterCommands.TestVDS;
+import frc.robot.subsystems.shooter.shooterCommands.TestVariableRPMFlywheel;
+import frc.robot.subsystems.spindexer.runSpindexer;
+import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -90,15 +90,15 @@ public class RobotContainer {
     Command spindexerRun = spindexer.runSpindexerMotor();
     Command spindexerStop = spindexer.stopSpindexerMotor();
 
-    private final testVariableRPMFlywheel testshooter = new testVariableRPMFlywheel(shooter); // test that feeder
+    private final TestVariableRPMFlywheel testshooter = new TestVariableRPMFlywheel(shooter); // test that feeder
 
     private final runSpindexer runspindexer = new runSpindexer(spindexer);
 
-    private final testVDS testvds = new testVDS(
+    private final TestVDS testvds = new TestVDS(
             shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through testing
 
-    private final testShootingLookup testlookup =
-            new testShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
+    private final TestShootingLookup testlookup =
+            new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -239,13 +239,6 @@ public class RobotContainer {
         joystick.getButton3().whileTrue(intakeFixAngleForwardCommand);
         joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         joystick.getButton5().whileTrue(intakeFixAngleBackCommand);
-        
-        /*
-        joystick.getButton3().whileTrue(intakeFixAngleCommand);
-        joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        joystick.getButton5().whileTrue(intakeBackCommand);
-        joystick.getButton6().whileTrue(intakeFixAngleReversedCommand);
-         */
 
         // Command shooterRunSequential = ShootRPM.alongWith(
         //         ShootAngle,
