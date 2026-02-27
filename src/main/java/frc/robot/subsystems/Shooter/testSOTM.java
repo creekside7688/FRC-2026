@@ -7,6 +7,7 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.Spindexer.Spindexer;
+import frc.robot.subsystems.drivebase.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 
@@ -20,11 +21,14 @@ public class testSOTM extends Command {
 
     private final Spindexer spindexer;
 
-    public testSOTM(Shooter shooter, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
+    private final SwerveDrive sd;
+
+    public testSOTM(Shooter shooter, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer, SwerveDrive sd) {
         this.shooter = shooter;
         this.feeder = feeder;
         this.shooterHood = shooterHood;
         this.spindexer = spindexer;
+        this.sd = sd;
         addRequirements(shooter, feeder, shooterHood, spindexer);
         // Use addRequirements() here to declare subsystem dependencies.
     }
@@ -37,15 +41,17 @@ public class testSOTM extends Command {
     @Override
     public void execute() {
         double distance = shooter.getVariableDistance();
-        double desiredRPM = ShooterLookup.lookupRPM(distance);
-        double desiredAngle = ShooterLookup.lookupAngle(distance);
 
-        shooter.SetRPM(desiredRPM);
+
+        double distance1 = ShooterLookup.CalculationDelayOffset(sd.getPose(), sd.getChassisSpeeds().vxMetersPerSecond, sd.getChassisSpeeds().vyMetersPerSecond, 0.2).getX();
+        
+
+        /*shooter.SetRPM(desiredRPM);
         shooterHood.setHoodPosition(desiredAngle);
         if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
             feeder.RunFeeder();
             spindexer.runIndexer();
-        }
+        }*/
 
         // shooter.setHoodPosition(ShooterLookup.lookupAngle(desiredAngle));
         /*

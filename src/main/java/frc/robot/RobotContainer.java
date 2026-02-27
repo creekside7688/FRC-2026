@@ -239,12 +239,13 @@ public class RobotContainer {
         joystick.getButton3().whileTrue(intakeFixAngleForwardCommand);
         joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         joystick.getButton5().whileTrue(intakeFixAngleBackCommand);
-        // joystick.getButton6().whileTrue(intakeRollerForwardCommand);
-        // driveController.getA().whileTrue(testhood);
-        // driveController.getLeftBumper().whileTrue(intakeBackCommand);
-        // driveController.getRightBumper().whileTrue(intakeForwardCommand);
-        // driveController.getLeftTrigger().whileTrue(intakeRollerBackCommand);
-        // driveController.getRightTrigger().whileTrue(intakeRollerForwardCommand);
+        
+        /*
+        joystick.getButton3().whileTrue(intakeFixAngleCommand);
+        joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        joystick.getButton5().whileTrue(intakeBackCommand);
+        joystick.getButton6().whileTrue(intakeFixAngleReversedCommand);
+         */
 
         // Command shooterRunSequential = ShootRPM.alongWith(
         //         ShootAngle,
@@ -254,12 +255,6 @@ public class RobotContainer {
         //                 () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
 
         // operatorController.getX().whileTrue(shooterRunSequential);
-
-        // Command DeployRunIntake = intakeForwardCommand.andThen(intakeRollerForwardCommand);
-        // driveController.getB().whileTrue(DeployRunIntake);
-
-        // Command StopStowIntake = intakeRollerStop.andThen(intakeRollerBackCommand);
-        // intake.setDefaultCommand(StopStowIntake);
     }
 
     /**
