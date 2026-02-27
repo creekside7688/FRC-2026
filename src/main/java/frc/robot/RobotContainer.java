@@ -28,15 +28,10 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeBackCommand;
-import frc.robot.subsystems.intake.IntakeFixAngleBack;
-import frc.robot.subsystems.intake.IntakeFixAngleForward;
-import frc.robot.subsystems.intake.IntakeForwardCommand;
-import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
 import frc.robot.subsystems.shooter.Feeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.shooterCommands.RunShooter;
 import frc.robot.subsystems.shooter.shooterCommands.TestShootingLookup;
 import frc.robot.subsystems.shooter.shooterCommands.TestVDS;
 import frc.robot.subsystems.shooter.shooterCommands.TestVariableRPMFlywheel;
@@ -64,12 +59,12 @@ import org.littletonrobotics.junction.Logger;
  */
 public class RobotContainer {
 
-    private final Intake intake = new Intake();
-    private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
-    private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
-    private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
-    private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
-    private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
+    //     private final Intake intake = new Intake();
+    //     private final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
+    //     private final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
+    //     private final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
+    //     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
+    //     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     //     private final Command intakeRollerStop = new Command() {};
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -99,6 +94,8 @@ public class RobotContainer {
 
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
+
+    private final RunShooter runShooter;
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -188,6 +185,8 @@ public class RobotContainer {
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
         camSystem = new Vision(sd, camIO1, camIO2);
 
+        runShooter = new RunShooter(shooter, sd, feeder, shooterhood);
+
         // ShootRPM = shooter.setShooterRPM(sd::getPose);
         // ShootAngle = shooterhood.setShooterAngle(sd::getPose);
 
@@ -224,21 +223,21 @@ public class RobotContainer {
                         sd,
                         () -> -driveController.getLeftY(),
                         () -> -driveController.getLeftX(),
-                        () -> SwerveUtils.lookAtPoint(
-                                sd.getPose().getTranslation(), GameConstants.HUB_BLUE.toTranslation2d())));
+                        () -> SwerveUtils.lookAtPoint(sd.getPose().getTranslation(), GameConstants.HUB_RED)));
 
         driveController
                 .getB()
                 .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
         driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+        driveController.getX().whileTrue(runShooter);
     }
 
     public void configureOperatorBindings() {
 
-        joystick.getButton1().whileTrue(testlookup);
-        joystick.getButton3().whileTrue(intakeFixAngleForwardCommand);
-        joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        joystick.getButton5().whileTrue(intakeFixAngleBackCommand);
+        // joystick.getButton1().whileTrue(testlookup);
+        // joystick.getButton3().whileTrue(intakeFixAngleForwardCommand);
+        // joystick.getButton4().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        // joystick.getButton5().whileTrue(intakeFixAngleBackCommand);
 
         // Command shooterRunSequential = ShootRPM.alongWith(
         //         ShootAngle,

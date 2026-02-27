@@ -15,7 +15,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -175,7 +175,7 @@ public class Shooter extends SubsystemBase {
 
     private double getRPMFromPose(Pose2d pose) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        Translation3d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        Translation2d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
         return Math.hypot(hubPose.getX() - pose.getX(), hubPose.getY() - pose.getY());
     }
