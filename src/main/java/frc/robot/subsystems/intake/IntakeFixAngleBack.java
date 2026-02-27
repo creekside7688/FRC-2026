@@ -14,7 +14,7 @@ public class IntakeFixAngleBack extends Command {
     }
 
     public void initialize() {
-        this.intake.goToAngle();
+        this.intake.setIntakeAngleBack();
         this.intake.stopIntakeRoller();
     }
 

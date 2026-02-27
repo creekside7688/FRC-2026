@@ -62,12 +62,12 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.encoder.positionConversionFactor(0.13392857142857142);
     }
 
-    public void goToAngle() {
-        this.intakeClosedLoopController.setSetpoint(0, ControlType.kPosition);
+    public void setIntakeAngleBack() {
+        this.intakeClosedLoopController.setSetpoint(0.331, ControlType.kPosition);
     }
 
-    public void setIntake(double Setpoint) {
-        this.intakeClosedLoopController.setSetpoint(Setpoint, ControlType.kVelocity);
+    public void setIntakeAngleForward() {
+        this.intakeClosedLoopController.setSetpoint(0, ControlType.kVelocity);
     }
 
     public double getVelocity() {
@@ -82,10 +82,6 @@ public class Intake extends SubsystemBase {
         this.intakeRoller.set(Speed);
     }
 
-    public void stopIntakeRoller() {
-        this.intakeRoller.set(0.0);
-    }
-
     public void setSpeedIntake(double Speed) {
         this.intake.set(Speed);
     }
@@ -94,8 +90,12 @@ public class Intake extends SubsystemBase {
         this.intake.set(0.0);
     }
 
+    public void stopIntakeRoller() {
+        this.intakeRoller.set(0.0);
+    }
+
     public void resetPosition() {
-        this.intakeEncoder.setPosition(0.0);
+        this.intakeEncoder.setPosition(0.331);
     }
 
     public boolean getForwardSoftLimitReached() {
@@ -116,6 +116,7 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         this.intake = new SparkMax(15, MotorType.kBrushless);
+        this.intakeConfig.encoder.inverted(true);
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
