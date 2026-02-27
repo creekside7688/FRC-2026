@@ -121,6 +121,7 @@ public class Intake extends SubsystemBase {
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
+        this.intakeConfig.encoder.inverted(true);
         this.intakeClosedLoopController = this.intake.getClosedLoopController();
         this.intakeTab = Shuffleboard.getTab("intakePID");
         this.intakeP = this.intakeTab.add("intakeP", 0).getEntry();
