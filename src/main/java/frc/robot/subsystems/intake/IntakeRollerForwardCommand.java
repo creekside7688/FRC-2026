@@ -16,7 +16,7 @@ public class IntakeRollerForwardCommand extends Command {
     public void initialize() {}
 
     public void execute() {
-        this.intake.setSpeedIntakeRoller(0.1);
+        this.intake.setSpeedIntakeRoller(0.6);
     }
 
     public void end(boolean interrupted) {

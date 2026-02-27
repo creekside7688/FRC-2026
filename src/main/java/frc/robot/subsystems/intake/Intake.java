@@ -116,10 +116,10 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         this.intake = new SparkMax(15, MotorType.kBrushless);
-        this.intakeConfig.encoder.inverted(true);
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
+        this.intakeConfig.encoder.inverted(true);
         this.intakeClosedLoopController = this.intake.getClosedLoopController();
         this.intakeTab = Shuffleboard.getTab("intakePID");
         this.intakeP = this.intakeTab.add("intakeP", 0).getEntry();
@@ -146,9 +146,9 @@ public class Intake extends SubsystemBase {
                 .closedLoop
                 .feedForward
                 .kG(IntakeConstants.INTAKE_FEEDFORWARD_G)
-                .kS(0.0)
-                .kV(IntakeConstants.INTAKE_SVA_V)
-                .kA(0.0)
+                .kS(IntakeConstants.INTAKE_FEEDFORWARD_S)
+                .kV(IntakeConstants.INTAKE_FEEDFORWARD_V)
+                .kA(IntakeConstants.INTAKE_FEEDFORWARD_A)
                 .kCos(0);
         // this.intakeConfig.closedLoopRampRate(10);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
