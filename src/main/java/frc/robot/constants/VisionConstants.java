@@ -26,7 +26,7 @@ public class VisionConstants {
 
     public static final Transform3d ROBOT_TO_HOPPER_CAM_TRANSFORM = new Transform3d(
             Inches.of(-9.87845),
-            Inches.of(-6.84597),
+            Inches.of(6.84597),
             Inches.of(20.37956),
             new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(0)));
 

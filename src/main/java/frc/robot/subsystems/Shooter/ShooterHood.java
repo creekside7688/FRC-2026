@@ -155,4 +155,8 @@ public class ShooterHood extends SubsystemBase {
         return this.runOnce(
                 () -> this.setHoodPosition(ShooterLookup.lookupAngle(getAngleFromPose(poseSupplier.get()))));
     }
+
+    public Command runHoodMotor(double voltage) {
+        return this.runOnce(() -> hoodMotor.setVoltage(voltage));
+    }
 }

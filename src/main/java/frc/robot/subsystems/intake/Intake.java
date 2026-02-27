@@ -63,11 +63,11 @@ public class Intake extends SubsystemBase {
     }
 
     public void setIntakeAngleBack() {
-        this.intakeClosedLoopController.setSetpoint(0.331, ControlType.kPosition);
+        this.intakeClosedLoopController.setSetpoint(0, ControlType.kPosition);
     }
 
     public void setIntakeAngleForward() {
-        this.intakeClosedLoopController.setSetpoint(0, ControlType.kVelocity);
+        this.intakeClosedLoopController.setSetpoint(0.331, ControlType.kVelocity);
     }
 
     public double getVelocity() {
@@ -95,7 +95,8 @@ public class Intake extends SubsystemBase {
     }
 
     public void resetPosition() {
-        this.intakeEncoder.setPosition(0.331);
+        // this.intakeEncoder.setPosition(0.331);
+        this.intakeEncoder.setPosition(0);
     }
 
     public boolean getForwardSoftLimitReached() {
@@ -116,7 +117,7 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         this.intake = new SparkMax(15, MotorType.kBrushless);
-        this.intakeConfig.encoder.inverted(true);
+        // this.intakeConfig.encoder.inverted(true);
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
@@ -146,9 +147,9 @@ public class Intake extends SubsystemBase {
                 .closedLoop
                 .feedForward
                 .kG(IntakeConstants.INTAKE_FEEDFORWARD_G)
-                .kS(0.0)
-                .kV(IntakeConstants.INTAKE_SVA_V)
-                .kA(0.0)
+                .kS(IntakeConstants.INTAKE_FEEDFORWARD_S)
+                .kV(IntakeConstants.INTAKE_FEEDFORWARD_V)
+                .kA(IntakeConstants.INTAKE_FEEDFORWARD_A)
                 .kCos(0);
         // this.intakeConfig.closedLoopRampRate(10);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

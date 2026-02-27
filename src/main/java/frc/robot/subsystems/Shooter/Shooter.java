@@ -185,6 +185,10 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
     }
 
+    public Command runQuickShooter() {
+        return this.runOnce(() -> this.shootMotor1.set(0.4));
+    }
+
     /**
      * Returns a command that will execute a dynamic test in the given direction.
      *

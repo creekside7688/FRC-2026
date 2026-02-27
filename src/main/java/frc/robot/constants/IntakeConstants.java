@@ -5,9 +5,9 @@ public class IntakeConstants {
     public static final double INTAKE_PID_P = 1.5;
     public static final double INTAKE_PID_I = 0;
     public static final double INTAKE_PID_D = 0;
-    public static final double INTAKE_SVA_S = 0;
-    public static final double INTAKE_SVA_V = 0;
-    public static final double INTAKE_SVA_A = 0;
+    public static final double INTAKE_FEEDFORWARD_S = 0;
+    public static final double INTAKE_FEEDFORWARD_V = 0;
+    public static final double INTAKE_FEEDFORWARD_A = 0;
     public static final double INTAKE_FEEDFORWARD_G = 0;
     public static final double INTAKE_SOFT_FORWARD_LIMIT = 30.0;
     public static final double INTAKE_SOFT_REVERSED_LIMIT = 0;

@@ -13,6 +13,7 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.shooter.Feeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunShooter extends Command {
@@ -21,14 +22,16 @@ public class RunShooter extends Command {
     private final SwerveDrive sd;
     private final Feeder feeder;
     private final ShooterHood shooterHood;
+    private final Spindexer spindexer;
     private double distance;
     /** Creates a new runShooter. */
-    public RunShooter(Shooter shooter, SwerveDrive sd, Feeder feeder, ShooterHood shooterHood) {
+    public RunShooter(Shooter shooter, SwerveDrive sd, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
         this.shooter = shooter;
         this.sd = sd;
         this.feeder = feeder;
         this.shooterHood = shooterHood;
-        addRequirements(shooter, feeder, shooterHood);
+        this.spindexer = spindexer;
+        addRequirements(shooter, feeder, shooterHood, spindexer);
     }
 
     private void getDistanceToHub() {
@@ -41,7 +44,7 @@ public class RunShooter extends Command {
         // (hubPose.getY() - sd.getPose().getY()5));
 
         distance =
-                hubPose.getDistance(sd.getPose().getTranslation().minus(new Translation2d(Inches.of(5), Inches.of(6))));
+                hubPose.getDistance(sd.getPose().getTranslation().plus(new Translation2d(Inches.of(-5), Inches.of(8))));
 
         SmartDashboard.putNumber("distance from hub", distance);
     }
@@ -61,6 +64,7 @@ public class RunShooter extends Command {
         shooterHood.setHoodPosition(ShooterLookup.lookupAngle(distance));
         if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
             feeder.RunFeeder();
+            spindexer.setIndexer(2);
         }
     }
 
@@ -69,6 +73,7 @@ public class RunShooter extends Command {
     public void end(boolean interrupted) {
         shooter.RunIdle();
         feeder.stopFeeder();
+        spindexer.stopIndexer();
     }
 
     // Returns true when the command should end.
