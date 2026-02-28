@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.util.StatusLogger;
@@ -39,6 +40,8 @@ public class Robot extends LoggedRobot {
     public Robot() {
         // Disable official auto-logging for REV devices, use URCL instead
         StatusLogger.disableAutoLogging();
+        // Disable CTRE signal logging
+        SignalLogger.enableAutoLogging(false);
 
         // GVersion logging (git)
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
