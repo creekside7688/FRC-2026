@@ -128,10 +128,10 @@ public class Intake extends SubsystemBase {
         this.intakeG = this.intakeTab.add("intakeG", 0).getEntry();
         this.intakeAngle = this.intakeTab.add("intakeAngle", 0).getEntry();
         this.intakeRoutine = new SysIdRoutine(
-                new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this.intake::setVoltage, (Consumer) null, this));
+                new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this.intake::setVoltage, null, this));
         this.intakeRollerRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(),
-                new SysIdRoutine.Mechanism(this.intakeRoller::setVoltage, (Consumer) null, this));
+                new SysIdRoutine.Mechanism(this.intakeRoller::setVoltage, null, this));
         this.intakeConfig.closedLoop.pid(IntakeConstants.INTAKE_PID_P, 0.0, 0.0);
         this.intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         this.intakeConfig

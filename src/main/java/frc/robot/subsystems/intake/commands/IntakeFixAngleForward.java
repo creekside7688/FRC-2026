@@ -1,8 +1,9 @@
 // Source code is decompiled from a .class file using FernFlower decompiler.
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.intake.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystems.intake.Intake;
 
 public class IntakeFixAngleForward extends Command {
     Intake intake;

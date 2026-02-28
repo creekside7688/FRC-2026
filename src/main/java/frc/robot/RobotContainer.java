@@ -32,20 +32,21 @@ import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeBackCommand;
-import frc.robot.subsystems.intake.IntakeFixAngleBack;
-import frc.robot.subsystems.intake.IntakeFixAngleForward;
-import frc.robot.subsystems.intake.IntakeForwardCommand;
-import frc.robot.subsystems.intake.IntakeRollerForwardCommand;
-import frc.robot.subsystems.shooter.Feeder;
+import frc.robot.subsystems.intake.commands.IntakeBackCommand;
+import frc.robot.subsystems.intake.commands.IntakeFixAngleBack;
+import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
+import frc.robot.subsystems.intake.commands.IntakeForwardCommand;
+import frc.robot.subsystems.intake.commands.IntakeRollerForwardCommand;
+import frc.robot.subsystems.led.LEDLights;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.shooterCommands.RunShooter;
-import frc.robot.subsystems.shooter.shooterCommands.TestShootingLookup;
-import frc.robot.subsystems.shooter.shooterCommands.TestVDS;
-import frc.robot.subsystems.shooter.shooterCommands.TestVariableRPMFlywheel;
-import frc.robot.subsystems.spindexer.runSpindexer;
-import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
+import frc.robot.subsystems.shooter.commands.RunShooter;
+import frc.robot.subsystems.shooter.commands.TestShootingLookup;
+import frc.robot.subsystems.shooter.commands.TestVDS;
+import frc.robot.subsystems.shooter.commands.TestVariableRPMFlywheel;
+import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -84,7 +85,7 @@ public class RobotContainer {
 
     private final Shooter shooter = new Shooter();
     private final ShooterHood shooterhood = new ShooterHood();
-    private final Feeder feeder = new Feeder();
+    private final ShooterFeeder feeder = new ShooterFeeder();
     private final Spindexer spindexer = new Spindexer();
 
     Command ShootRPM;
@@ -96,7 +97,7 @@ public class RobotContainer {
 
     private final TestVariableRPMFlywheel testshooter = new TestVariableRPMFlywheel(shooter); // test that feeder
 
-    private final runSpindexer runspindexer = new runSpindexer(spindexer);
+    private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
     private final TestVDS testvds = new TestVDS(
             shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through testing
@@ -105,6 +106,8 @@ public class RobotContainer {
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
 
     private final RunShooter runShooter;
+
+    // private final LEDLights ledLights = new LEDLights();
 
     @SuppressWarnings("unused")
     private final Vision camSystem;
@@ -239,7 +242,7 @@ public class RobotContainer {
         driveController
                 .getB()
                 .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
-        driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+        // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
         // driveController.getX().whileTrue(shooterhood.runHoodMotor(4)).whileFalse(shooterhood.runHoodMotor(0));
         // driveController.getY().whileTrue(shooterhood.runHoodMotor(-4)).whileFalse(shooterhood.runHoodMotor(0));
         driveController.getX().whileTrue(testshooter);

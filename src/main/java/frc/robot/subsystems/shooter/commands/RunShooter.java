@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter.shooterCommands;
+package frc.robot.subsystems.shooter.commands;
 
 import static edu.wpi.first.units.Units.Inches;
 
@@ -10,22 +10,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.drivebase.SwerveDrive;
-import frc.robot.subsystems.shooter.Feeder;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
+import frc.robot.subsystems.spindexer.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunShooter extends Command {
 
     private final Shooter shooter;
     private final SwerveDrive sd;
-    private final Feeder feeder;
+    private final ShooterFeeder feeder;
     private final ShooterHood shooterHood;
     private final Spindexer spindexer;
     private double distance;
     /** Creates a new runShooter. */
-    public RunShooter(Shooter shooter, SwerveDrive sd, Feeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
+    public RunShooter(
+            Shooter shooter, SwerveDrive sd, ShooterFeeder feeder, ShooterHood shooterHood, Spindexer spindexer) {
         this.shooter = shooter;
         this.sd = sd;
         this.feeder = feeder;

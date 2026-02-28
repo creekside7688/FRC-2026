@@ -2,26 +2,27 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.spindexer;
+package frc.robot.subsystems.climber.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
+import frc.robot.subsystems.climber.Climber;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class runSpindexer extends Command {
-    /** Creates a new runSpindexer. */
-    private final Spindexer spindexer;
+public class ClimberPost extends Command {
+    private final Climber climber;
 
-    public runSpindexer(Spindexer spindexer) {
-        this.spindexer = spindexer;
-        addRequirements(spindexer);
+    /** Creates a new ClimberPost. */
+    public ClimberPost(Climber climber) {
+        this.climber = climber;
+        addRequirements(climber);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        spindexer.runIndexer();
+
+        climber.largeHookPost();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -30,13 +31,11 @@ public class runSpindexer extends Command {
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-        spindexer.stopIndexer();
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return climber.focus;
     }
 }

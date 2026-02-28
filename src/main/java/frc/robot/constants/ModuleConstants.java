@@ -67,7 +67,6 @@ public class ModuleConstants {
         new Translation2d(-DrivebaseConstants.TRACK_WIDTH / 2.0, -DrivebaseConstants.WHEEL_BASE / 2.0)
     };
 
-    // TODO: sim characterization(?)
     public static final double SIM_DRIVE_KV = 0.010;
     public static final double SIM_DRIVE_KS = 0.1;
 }

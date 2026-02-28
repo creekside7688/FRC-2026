@@ -1,14 +1,15 @@
 // Source code is decompiled from a .class file using FernFlower decompiler.
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.intake.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystems.intake.Intake;
 
-public class IntakeRollerForwardCommand extends Command {
+public class IntakeBackCommand extends Command {
     Intake intake;
     double motorInput;
 
-    public IntakeRollerForwardCommand(Intake inputIntake) {
+    public IntakeBackCommand(Intake inputIntake) {
         this.intake = inputIntake;
         this.addRequirements(new Subsystem[] {inputIntake});
     }
@@ -16,14 +17,14 @@ public class IntakeRollerForwardCommand extends Command {
     public void initialize() {}
 
     public void execute() {
-        this.intake.setSpeedIntakeRoller(-0.6);
+        this.intake.setSpeedIntake(-0.4);
     }
 
     public void end(boolean interrupted) {
-        this.intake.stopIntakeRoller();
+        this.intake.setSpeedIntake(0.0);
     }
 
     public boolean isFinished() {
-        return false;
+        return this.intake.getReversedSoftLimitReached();
     }
 }

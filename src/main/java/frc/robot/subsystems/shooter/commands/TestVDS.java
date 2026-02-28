@@ -2,13 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter.shooterCommands;
+package frc.robot.subsystems.shooter.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.shooter.Feeder;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.spindexer.spindexerCommands.Spindexer;
+import frc.robot.subsystems.spindexer.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class TestVDS extends Command {
@@ -17,11 +17,11 @@ public class TestVDS extends Command {
 
     private final ShooterHood shooterhood;
 
-    private final Feeder feeder;
+    private final ShooterFeeder feeder;
 
     private final Spindexer spindexer;
 
-    public TestVDS(Shooter shooter, ShooterHood shooterhood, Feeder feeder, Spindexer spindexer) {
+    public TestVDS(Shooter shooter, ShooterHood shooterhood, ShooterFeeder feeder, Spindexer spindexer) {
         this.shooter = shooter;
         this.shooterhood = shooterhood;
         this.feeder = feeder;
