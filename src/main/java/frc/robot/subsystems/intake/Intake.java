@@ -115,7 +115,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Intake() {
-        this.intake = new SparkMax(15, MotorType.kBrushless);        
+        this.intake = new SparkMax(15, MotorType.kBrushless);
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
@@ -148,7 +148,7 @@ public class Intake extends SubsystemBase {
                 .kS(IntakeConstants.INTAKE_FEEDFORWARD_S)
                 .kV(IntakeConstants.INTAKE_FEEDFORWARD_V)
                 .kA(IntakeConstants.INTAKE_FEEDFORWARD_A)
-                .kCos(0);        
+                .kCos(0);
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 

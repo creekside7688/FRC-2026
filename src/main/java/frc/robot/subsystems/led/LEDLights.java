@@ -16,86 +16,84 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.LEDConstants;
 
 public class LEDLights extends SubsystemBase {
-  AddressableLED led;
-  AddressableLEDBuffer ledBuffer;
-  final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
-  final Distance kLedSpacing = Meters.of(4 / 60.0);
-  final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(4), kLedSpacing);
-  final LEDPattern black = LEDPattern.solid(Color.kBlack);
+    AddressableLED led;
+    AddressableLEDBuffer ledBuffer;
+    final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
+    final Distance kLedSpacing = Meters.of(4 / 60.0);
+    final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(MetersPerSecond.of(4), kLedSpacing);
+    final LEDPattern black = LEDPattern.solid(Color.kBlack);
 
+    /**
+     * Creates a new RGBLEDs.
+     *
+     * @return
+     */
+    public LEDLights() {
+        led = new AddressableLED(LEDConstants.LED_PORT);
+        ledBuffer = new AddressableLEDBuffer(LEDConstants.LED_BUFFER_PIXEL_LENGTH);
 
-  /**
-   * Creates a new RGBLEDs.
-   * 
-   * @return
-   */
-  public LEDLights() {
-    led = new AddressableLED(LEDConstants.LED_PORT);
-    ledBuffer = new AddressableLEDBuffer(LEDConstants.LED_BUFFER_PIXEL_LENGTH);
+        led.setLength(ledBuffer.getLength());
 
-    led.setLength(ledBuffer.getLength());
+        led.setData(ledBuffer);
+        led.start();
 
-    led.setData(ledBuffer);
-    led.start();
+        // RgbSolidRed();
+        setDefaultCommand(runPattern(black).withName("Off"));
+    }
 
-    // RgbSolidRed();
-    setDefaultCommand(runPattern(black).withName("Off"));
-  }
+    public Command RGBSolidRed() {
+        LEDPattern red = LEDPattern.solid(Color.kRed);
+        return runPattern(red);
+    }
 
-  public Command RGBSolidRed() {
-    LEDPattern red = LEDPattern.solid(Color.kRed);
-    return runPattern(red);
-  }
+    public Command RGBRainbow() {
+        return runPattern(scrollingRainbow);
+    }
 
-  public Command RGBRainbow() {
-    return runPattern(scrollingRainbow);
-  }
-  
-  public Command colorGradient(Color color1, Color color2) {
-    LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
-    return runPattern(gradient);
-  }
+    public Command colorGradient(Color color1, Color color2) {
+        LEDPattern gradient = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+        return runPattern(gradient);
+    }
 
-  public Command colorBreathe(Color color1, Color color2) {
-  LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
-  LEDPattern breathe = base.breathe(Seconds.of(1));
-  return runPattern(breathe);
-  }
+    public Command colorBreathe(Color color1, Color color2) {
+        LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+        LEDPattern breathe = base.breathe(Seconds.of(1));
+        return runPattern(breathe);
+    }
 
-  public Command colorScroll(Color color1, Color color2) {
-    LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
-    LEDPattern scroll = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
-    return runPattern(scroll);
-  }
+    public Command colorScroll(Color color1, Color color2) {
+        LEDPattern base = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, color1, color2);
+        LEDPattern scroll = base.scrollAtRelativeSpeed(Percent.per(Second).of(25));
+        return runPattern(scroll);
+    }
 
-  public Command rgbSolid(int r, int g, int b) {
-    LEDPattern color = LEDPattern.solid(new Color(r, g, b));
-    return runPattern(color);
-  }
+    public Command rgbSolid(int r, int g, int b) {
+        LEDPattern color = LEDPattern.solid(new Color(r, g, b));
+        return runPattern(color);
+    }
 
-  public Command ledBlink(LEDPattern pattern, double delay) {
-    LEDPattern blink = pattern.blink(Seconds.of(delay));
-    return runPattern(blink);
-  }
+    public Command ledBlink(LEDPattern pattern, double delay) {
+        LEDPattern blink = pattern.blink(Seconds.of(delay));
+        return runPattern(blink);
+    }
 
-  public Command runPattern(LEDPattern pattern) {
-    return run(() -> pattern.applyTo(ledBuffer));
-  }
+    public Command runPattern(LEDPattern pattern) {
+        return run(() -> pattern.applyTo(ledBuffer));
+    }
 
-  public void RGBflash() {
-    LEDPattern white = LEDPattern.solid(Color.kWhite);
-    LEDPattern pattern = white.blink(Seconds.of(1.5));
-    pattern = pattern.atBrightness(Percent.of(200));
-    runPattern(pattern);
-  }
+    public void RGBflash() {
+        LEDPattern white = LEDPattern.solid(Color.kWhite);
+        LEDPattern pattern = white.blink(Seconds.of(1.5));
+        pattern = pattern.atBrightness(Percent.of(200));
+        runPattern(pattern);
+    }
 
-  @Override
-  public void periodic() {
-    led.setData(ledBuffer);
-  }
+    @Override
+    public void periodic() {
+        led.setData(ledBuffer);
+    }
 }
