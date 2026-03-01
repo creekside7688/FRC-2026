@@ -8,4 +8,7 @@ public class HoodConstants {
     public static final double HOOD_D = 0;
 
     public static final double ANGLECHANGE_PER_ROTATION = (360.0 / 52);
+
+    public static final int STALL_CURRENT_LIMIT = 20;
+    public static final int FREE_CURRENT_LIMIT = 10;
 }

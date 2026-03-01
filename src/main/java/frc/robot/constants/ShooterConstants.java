@@ -19,4 +19,7 @@ public class ShooterConstants {
     public static final double RUN_FEEDER_OUTPUT = -0.9;
 
     public static final double INDEXER_VOLTAGE = 5;
+
+    public static final int STALL_CURRENT_LIMIT = 50;
+    public static final int FREE_CURRENT_LIMIT = 40;
 }

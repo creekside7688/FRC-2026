@@ -89,8 +89,8 @@ public class Shooter extends SubsystemBase {
         config1.signals.primaryEncoderVelocityAlwaysOn(true);
         config1.signals.primaryEncoderPositionAlwaysOn(true);
 
-        config1.smartCurrentLimit(50);
-        config2.smartCurrentLimit(50);
+        config1.smartCurrentLimit(ShooterConstants.STALL_CURRENT_LIMIT);
+        config2.smartCurrentLimit(ShooterConstants.STALL_CURRENT_LIMIT);
 
         config1.idleMode(IdleMode.kCoast);
         config2.idleMode(IdleMode.kCoast);

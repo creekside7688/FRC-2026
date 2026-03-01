@@ -24,6 +24,7 @@ public class Intake extends SubsystemBase {
     SparkMax intake;
     SparkMax intakeRoller;
     SparkMaxConfig intakeConfig;
+    SparkMaxConfig intakeRollerConfig;
     RelativeEncoder intakeEncoder;
     SparkClosedLoopController intakeClosedLoopController;
     ShuffleboardTab intakeTab;
@@ -119,7 +120,8 @@ public class Intake extends SubsystemBase {
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
-        this.intakeConfig.encoder.inverted(true);
+        this.intakeConfig.smartCurrentLimit(IntakeConstants.PIVOT_STALL_CURRENT_LIMIT,IntakeConstants.PIVOT_FREE_CURRENT_LIMIT);     
+        this.intakeRollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_STALL_CURRENT_LIMIT, IntakeConstants.ROLLER_FREE_CURRENT_LIMIT);   
         this.intakeClosedLoopController = this.intake.getClosedLoopController();
         this.intakeTab = Shuffleboard.getTab("intakePID");
         this.intakeP = this.intakeTab.add("intakeP", 0).getEntry();
