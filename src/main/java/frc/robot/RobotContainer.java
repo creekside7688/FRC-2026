@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -37,14 +36,11 @@ import frc.robot.subsystems.intake.commands.IntakeFixAngleBack;
 import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.commands.IntakeForwardCommand;
 import frc.robot.subsystems.intake.commands.IntakeRollerForwardCommand;
-import frc.robot.subsystems.led.LEDLights;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
 import frc.robot.subsystems.shooter.commands.TestShootingLookup;
-import frc.robot.subsystems.shooter.commands.TestVDS;
-import frc.robot.subsystems.shooter.commands.TestVariableRPMFlywheel;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
@@ -95,12 +91,7 @@ public class RobotContainer {
     Command spindexerRun = spindexer.runSpindexerMotor();
     Command spindexerStop = spindexer.stopSpindexerMotor();
 
-    private final TestVariableRPMFlywheel testshooter = new TestVariableRPMFlywheel(shooter); // test that feeder
-
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
-
-    private final TestVDS testvds = new TestVDS(
-            shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through testing
 
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
@@ -245,7 +236,7 @@ public class RobotContainer {
         // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
         // driveController.getX().whileTrue(shooterhood.runHoodMotor(4)).whileFalse(shooterhood.runHoodMotor(0));
         // driveController.getY().whileTrue(shooterhood.runHoodMotor(-4)).whileFalse(shooterhood.runHoodMotor(0));
-        driveController.getX().whileTrue(testshooter);
+        // driveController.getX().whileTrue(testshooter);
         driveController.getY().whileTrue(runShooter);
         driveController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         driveController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);

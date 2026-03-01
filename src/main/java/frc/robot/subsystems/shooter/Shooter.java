@@ -5,10 +5,10 @@
 package frc.robot.subsystems.shooter;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -39,9 +39,9 @@ public class Shooter extends SubsystemBase {
 
     private ShuffleboardTab tab = Shuffleboard.getTab("shooter");
 
-    private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
+    // private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
-    private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
+    // private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
     private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
 
@@ -116,6 +116,7 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
+    /*
     public boolean checkVariableRPMTolerance() {
         double targetRPM = shootRPM.getDouble(0);
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
@@ -126,16 +127,19 @@ public class Shooter extends SubsystemBase {
         }
         return false;
     }
+        */
 
     public void SetRPM(double rpm) {
         desiredRPM = rpm;
         sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
     }
 
+    /*
     public void SetVariableRPM() {
         int rpm = (int) shootRPM.getDouble(0);
         SetRPM(rpm);
     }
+    */
 
     public void RunIdle() {
         SetRPM(ShooterConstants.IDLE_RPM);
@@ -145,24 +149,21 @@ public class Shooter extends SubsystemBase {
         shootMotor1.setVoltage(volts);
     }
 
+    /*
     public void runVariableVoltage() {
         SmartDashboard.putBoolean("t", true);
         double retrievedVoltage = voltage.getDouble(0);
         shootMotor1.setVoltage(retrievedVoltage);
         SmartDashboard.putNumber("set voltage", retrievedVoltage);
     }
+        */
 
     // feeder
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
-
-        SmartDashboard.putNumber("Shooter 1 Pos", shootMotor1.getEncoder().getPosition());
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
-
-        SmartDashboard.putNumber("Shooter 2 Pos", shootMotor2.getEncoder().getPosition());
-        SmartDashboard.putNumber("Shooter 2 Velocity", shootMotor2.getEncoder().getVelocity());
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
