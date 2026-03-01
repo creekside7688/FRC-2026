@@ -5,14 +5,20 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static frc.robot.constants.VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM;
+import static frc.robot.constants.VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -37,7 +43,6 @@ import frc.robot.subsystems.intake.commands.IntakeFixAngleBack;
 import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.commands.IntakeForwardCommand;
 import frc.robot.subsystems.intake.commands.IntakeRollerForwardCommand;
-import frc.robot.subsystems.led.LEDLights;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -99,11 +104,18 @@ public class RobotContainer {
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
-    private final TestVDS testvds = new TestVDS(
-            shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through testing
+    private final TestVDS testvds =
+            new TestVDS(shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through
+    // testing
 
     private final TestShootingLookup testlookup =
-            new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for when we do lookup table testing
+            new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
+    // when
+    // we
+    // do
+    // lookup
+    // table
+    // testing
 
     private final RunShooter runShooter;
 
@@ -172,6 +184,7 @@ public class RobotContainer {
                 br = new ModuleIOMapleSim(driveSimulation.getModules()[3]);
 
                 gyro = new GyroIOSim(driveSimulation.getGyroSimulation());
+
                 camIO1 = new VisionIOPhotonVisionSim(
                         "SWERVE_CAM",
                         VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM,
@@ -221,6 +234,9 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
      * joysticks}.
      */
+    private final Transform2d shooTransform2d =
+            new Transform2d(new Translation2d(Inches.of(-5), Inches.of(-8)), Rotation2d.kZero);
+
     private void configureDriveBindings() {
 
         sd.setDefaultCommand(TeleopDrive.joystickDrive(
@@ -236,13 +252,13 @@ public class RobotContainer {
                         () -> -driveController.getLeftY(),
                         () -> -driveController.getLeftX(),
                         () -> SwerveUtils.lookAtPoint(
-                                sd.getPose().getTranslation().plus(new Translation2d(Inches.of(-5), Inches.of(8))),
-                                GameConstants.HUB_RED)));
+                                sd.getPose().plus(shooTransform2d).getTranslation(), GameConstants.HUB_RED)));
 
         driveController
                 .getB()
                 .whileTrue(TeleopDrive.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
-        // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(), sd));
+        // driveController.getDown().whileTrue(new RunCommand(() -> sd.zeroHeading(),
+        // sd));
         // driveController.getX().whileTrue(shooterhood.runHoodMotor(4)).whileFalse(shooterhood.runHoodMotor(0));
         // driveController.getY().whileTrue(shooterhood.runHoodMotor(-4)).whileFalse(shooterhood.runHoodMotor(0));
         driveController.getX().whileTrue(testshooter);
@@ -256,11 +272,13 @@ public class RobotContainer {
         // joystick.getButton1().whileTrue(testlookup);
 
         // Command shooterRunSequential = ShootRPM.alongWith(
-        //         ShootAngle,
-        //         ShootFeederRun.onlyIf(
-        //                 () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()),
-        //         spindexerRun.onlyIf(
-        //                 () -> shooter.checkShooterRPMTolerance() && shooterhood.checkShooterPositionTolerance()));
+        // ShootAngle,
+        // ShootFeederRun.onlyIf(
+        // () -> shooter.checkShooterRPMTolerance() &&
+        // shooterhood.checkShooterPositionTolerance()),
+        // spindexerRun.onlyIf(
+        // () -> shooter.checkShooterRPMTolerance() &&
+        // shooterhood.checkShooterPositionTolerance()));
 
         // operatorController.getX().whileTrue(shooterRunSequential);
     }
@@ -283,5 +301,14 @@ public class RobotContainer {
 
         // Game-Specific Simulation
         Logger.recordOutput("FieldSimulation/Fuel", SimulatedArena.getInstance().getGamePiecesArrayByType("Fuel"));
+
+        Pose3d robotPose = new Pose3d(driveSimulation.getSimulatedDriveTrainPose());
+        Logger.recordOutput("SwerveOffset", robotPose.plus(ROBOT_TO_SWERVE_CAM_TRANSFORM));
+        Logger.recordOutput("HopperOffset", robotPose.plus(ROBOT_TO_HOPPER_CAM_TRANSFORM));
+        Logger.recordOutput(
+                "ShooterOffset",
+                new Pose3d(driveSimulation.getSimulatedDriveTrainPose().plus(shooTransform2d))
+                        .plus(new Transform3d(
+                                new Translation3d(Inches.of(0), Inches.of(0), Inches.of(17)), Rotation3d.kZero)));
     }
 }
