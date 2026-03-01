@@ -19,16 +19,16 @@ public class VisionConstants {
     public static final String CAMERA_NAME_2 = "HOPPER_CAM";
 
     public static final Transform3d ROBOT_TO_SWERVE_CAM_TRANSFORM = new Transform3d(
-            Inches.of(12.25345),
             Inches.of(-13.3305),
+            Inches.of(-12.25345),
             Inches.of(8.54079),
-            new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(180)));
+            new Rotation3d(Degrees.of(0), Degrees.of(-15), Degrees.of(180)));
 
     public static final Transform3d ROBOT_TO_HOPPER_CAM_TRANSFORM = new Transform3d(
-            Inches.of(-9.87845),
-            Inches.of(6.84597),
+            Inches.of(-6.84597),
+            Inches.of(9.87845),
             Inches.of(20.37956),
-            new Rotation3d(Degrees.of(0), Degrees.of(15), Degrees.of(0)));
+            new Rotation3d(Degrees.of(0), Degrees.of(-15), Degrees.of(0)));
 
     public static final double HIGHEST_AMBIGUITY = 0.2;
     public static final double MAX_Z_ERROR = 0.75;
