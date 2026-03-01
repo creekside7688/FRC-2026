@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.IntakeConstants;
-import java.util.function.Consumer;
 
 public class Intake extends SubsystemBase {
     SparkMax intake;
@@ -116,8 +115,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Intake() {
-        this.intake = new SparkMax(15, MotorType.kBrushless);
-        // this.intakeConfig.encoder.inverted(true);
+        this.intake = new SparkMax(15, MotorType.kBrushless);        
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
@@ -130,8 +128,7 @@ public class Intake extends SubsystemBase {
         this.intakeRoutine = new SysIdRoutine(
                 new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this.intake::setVoltage, null, this));
         this.intakeRollerRoutine = new SysIdRoutine(
-                new SysIdRoutine.Config(),
-                new SysIdRoutine.Mechanism(this.intakeRoller::setVoltage, null, this));
+                new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this.intakeRoller::setVoltage, null, this));
         this.intakeConfig.closedLoop.pid(IntakeConstants.INTAKE_PID_P, 0.0, 0.0);
         this.intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         this.intakeConfig
@@ -151,13 +148,12 @@ public class Intake extends SubsystemBase {
                 .kS(IntakeConstants.INTAKE_FEEDFORWARD_S)
                 .kV(IntakeConstants.INTAKE_FEEDFORWARD_V)
                 .kA(IntakeConstants.INTAKE_FEEDFORWARD_A)
-                .kCos(0);
-        // this.intakeConfig.closedLoopRampRate(10);
+                .kCos(0);        
         this.intake.configure(this.intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public void periodic() {
-        this.printPosition();
-        this.printVelocity();
+        // this.printPosition();
+        // this.printVelocity();
     }
 }
