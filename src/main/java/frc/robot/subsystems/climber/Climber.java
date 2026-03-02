@@ -4,20 +4,22 @@
 
 package frc.robot.subsystems.climber;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.ResetMode;
+import com.revrobotics.*;
+import com.revrobotics.spark.*;
 // import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
     public boolean focus = true;
+    public boolean test;
     public final SparkMax largeHookMotor = new SparkMax(ClimberConstants.LARGE_HOOK_MOTOR_ID, MotorType.kBrushless);
     // private final SparkMax smallHookMotor = new SparkMax(ClimberConstants.SMALL_HOOK_MOTOR_ID, MotorType.kBrushless);
     // private final SparkMax gapBlockerMotor = new SparkMax(ClimberConstants.GAP_BLOCKER_MOTOR_ID,
@@ -37,8 +39,13 @@ public class Climber extends SubsystemBase {
     // private double targetSmallHookPosition = 0;
 
     /** Creates a new Climber. */
-    public Climber() {
+    public Climber(boolean is_a_test) {
+        this.test = is_a_test;
 
+        if (this.test) {
+            this.focus = false;
+        }
+        
         // largeHookConfig.inverted(true);
         largeHookConfig.smartCurrentLimit(ClimberConstants.STALL_CURRENT_LIMIT);
         largeHookConfig.idleMode(IdleMode.kBrake);
@@ -77,13 +84,21 @@ public class Climber extends SubsystemBase {
     // }
 
     public void largeHookPre() {
-        focus = false;
-        targetLargeHookPosition = ClimberConstants.HOOK_POST_TARGET_POSITION_INCHES;
+        if (test) {
+            largeHookMotor.set(ClimberConstants.CLIMBER_TEST_SPEED);
+        } else {
+            focus = false;
+            targetLargeHookPosition = ClimberConstants.HOOK_PRE_TARGET_POSITION_INCHES;
+        }
     }
 
     public void largeHookPost() {
-        focus = false;
-        targetLargeHookPosition = ClimberConstants.HOOK_POST_TARGET_POSITION_INCHES;
+        if (test) {
+            largeHookMotor.set(-ClimberConstants.CLIMBER_TEST_SPEED);
+        } else {
+            focus = false;
+            targetLargeHookPosition = ClimberConstants.HOOK_POST_TARGET_POSITION_INCHES;
+        }
     }
 
     // public void largeHookPull() {
@@ -126,18 +141,26 @@ public class Climber extends SubsystemBase {
         double diff = currentPos - targetPos;
         // motor.set(speed * Math.max(-1, Math.min(1, diff / accuracy)));
         if (Math.abs(diff) <= ClimberConstants.HOOK_FOCUS_ACCURACY_INCHES) {
+            motor.set(0);
             focus = true;
-        }
-        if (Math.abs(diff) <= ClimberConstants.HOOK_ACCURACY_INCHES) {
+        } else if (Math.abs(diff) <= ClimberConstants.HOOK_ACCURACY_INCHES) {
             motor.set(ClimberConstants.HOOK_MOTOR_SPEED
+                    * -1
                     *
                     // ClimberConstants.SMALL_HOOK_CLOCKWISE *
                     (diff / ClimberConstants.HOOK_ACCURACY_INCHES));
         } else if (Math.abs(diff) > ClimberConstants.HOOK_ACCURACY_INCHES) {
             motor.set(ClimberConstants.HOOK_MOTOR_SPEED
+                    * -1
                     *
                     // ClimberConstants.SMALL_HOOK_CLOCKWISE *
                     Math.signum(diff));
+        }
+    }
+    public void testIfEnd() {
+        if (test) {
+            largeHookMotor.set(0);
+            largeHookMotor.stopMotor();
         }
     }
 
@@ -151,7 +174,7 @@ public class Climber extends SubsystemBase {
         //         ClimberConstants.GAP_BLOCKER_ACCURACY_ROTATIONS,
         //         ClimberConstants.GAP_BLOCKER_MOTOR_SPEED * (ClimberConstants.GAP_BLOCKER_CLOCKWISE ? -1 : 1));
 
-        setMotor(largeHookMotor, largeHookEncoder.getPosition(), targetLargeHookPosition);
+        if (!test) {setMotor(largeHookMotor, largeHookEncoder.getPosition(), targetLargeHookPosition);}
         SmartDashboard.putNumber("climber encoder pos", largeHookEncoder.getPosition());
 
         // setMotor(
@@ -160,5 +183,12 @@ public class Climber extends SubsystemBase {
         //         targetSmallHookPosition,
         //         ClimberConstants.HOOK_ACCURACY_INCHES,
         //         ClimberConstants.HOOK_MOTOR_SPEED);
+    }
+
+    public Command getSequence (Command climberReset, Command climberPre, Command climberPost) {
+        return test
+            ? new InstantCommand()
+            : new SequentialCommandGroup(climberReset, climberPre, climberPost);
+
     }
 }
