@@ -5,6 +5,9 @@
 package frc.robot.subsystems.spindexer;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,8 +16,13 @@ import frc.robot.constants.SpindexerConstants;
 public class Spindexer extends SubsystemBase {
     /** Creates a new Spindexer. */
     private final SparkMax indexerMotor = new SparkMax(SpindexerConstants.BALL_INDEXER_MOTOR_ID, MotorType.kBrushless);
+    private final SparkMaxConfig indexerConfig = new SparkMaxConfig();
 
-    public Spindexer() {}
+    public Spindexer() 
+    {
+        indexerConfig.smartCurrentLimit(SpindexerConstants.STALL_CURRENT_LIMIT, SpindexerConstants.FREE_CURRENT_LIMIT);
+        indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
 
     public void setIndexer(double IndexerVoltage) {
         indexerMotor.setVoltage(IndexerVoltage);

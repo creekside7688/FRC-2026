@@ -44,4 +44,8 @@ public class ClimberConstants {
     //     public static final boolean GAP_BLOCKER_CLOCKWISE = false;
 
     public static final double CLIMBER_TEST_SPEED = 1; // percent output
+
+
+    public static final int STALL_CURRENT_LIMIT = 50;
+    public static final int FREE_CURRENT_LIMIT = 30;
 }

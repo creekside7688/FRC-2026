@@ -56,6 +56,7 @@ public class ShooterHood extends SubsystemBase {
         configHood = new SparkMaxConfig();
 
         configHood.closedLoop.p(HoodConstants.HOOD_P).i(0).d(0).outputRange(-0.2, 0.2);
+        configHood.smartCurrentLimit(HoodConstants.STALL_CURRENT_LIMIT, HoodConstants.FREE_CURRENT_LIMIT);
 
         configHood.encoder.positionConversionFactor(HoodConstants.ANGLECHANGE_PER_ROTATION);
 

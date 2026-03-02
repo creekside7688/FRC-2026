@@ -16,4 +16,10 @@ public class IntakeConstants {
 
     public static final double INTAKE_SPEED = 0.2;
     public static final double INTAKE_ROLLER_SPEED = 0.1;
+
+    public static final int PIVOT_STALL_CURRENT_LIMIT = 40;
+    public static final int PIVOT_FREE_CURRENT_LIMIT = 30;
+
+    public static final int ROLLER_STALL_CURRENT_LIMIT = 30;
+    public static final int ROLLER_FREE_CURRENT_LIMIT = 20;
 }

@@ -57,8 +57,6 @@ import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
 import frc.robot.subsystems.shooter.commands.TestShootingLookup;
-import frc.robot.subsystems.shooter.commands.TestVDS;
-import frc.robot.subsystems.shooter.commands.TestVariableRPMFlywheel;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
@@ -109,13 +107,7 @@ public class RobotContainer {
     public final Command testZeroHood = new Command() {};
         
 
-    private final TestVariableRPMFlywheel testshooter = new TestVariableRPMFlywheel(shooter); // test that feeder
-
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
-
-    private final TestVDS testvds =
-            new TestVDS(shooter, shooterhood, feeder, spindexer); // for when we get values for lookup table through
-    // testing
 
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for

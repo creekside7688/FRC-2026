@@ -28,4 +28,7 @@ public class ShooterConstants {
 
     public static final Transform2d ROBOT_TO_SHOOTER =
             new Transform2d(new Translation2d(Inches.of(-5), Inches.of(-8)), Rotation2d.kZero);
+
+    public static final int STALL_CURRENT_LIMIT = 50;
+    public static final int FREE_CURRENT_LIMIT = 40;
 }

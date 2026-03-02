@@ -40,6 +40,7 @@ public class Climber extends SubsystemBase {
     public Climber() {
 
         // largeHookConfig.inverted(true);
+        largeHookConfig.smartCurrentLimit(ClimberConstants.STALL_CURRENT_LIMIT);
         largeHookConfig.idleMode(IdleMode.kBrake);
         largeHookConfig.encoder.positionConversionFactor(ClimberConstants.POSITION_CONVERSION_FACTOR);
         largeHookConfig.closedLoop.positionWrappingEnabled(true);
