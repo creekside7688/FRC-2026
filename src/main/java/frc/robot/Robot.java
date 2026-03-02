@@ -9,6 +9,8 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.LocalADStarAK;
@@ -170,6 +172,12 @@ public class Robot extends LoggedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+        SmartDashboard.putData(m_robotContainer.testFeeder);
+        SmartDashboard.putData(m_robotContainer.testFlywheel);
+        SmartDashboard.putData(m_robotContainer.testHood);
+        SmartDashboard.putData(m_robotContainer.testSpindexer);
+        SmartDashboard.putData(m_robotContainer.testZeroHood);
+        SmartDashboard.putData(m_robotContainer.testZeroHood);
     }
 
     /** This function is called periodically during test mode. */

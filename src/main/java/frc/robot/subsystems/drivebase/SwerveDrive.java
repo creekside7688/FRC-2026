@@ -80,7 +80,7 @@ public class SwerveDrive extends SubsystemBase implements Vision.VisionConsumer 
                 this::setPose,
                 this::getChassisSpeeds,
                 this::runVelocity,
-                AutonomousConstants.pfc,
+                AutonomousConstants.PATHFINDING_CONTROLLER,
                 AutonomousConstants.ROBOT_CONFIG,
                 () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
                 this);

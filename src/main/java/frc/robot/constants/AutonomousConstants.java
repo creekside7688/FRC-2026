@@ -14,7 +14,7 @@ public class AutonomousConstants {
     public static final double PATH_THETA_D = 0;
 
     // Constraint for the motion profiled robot angle controller
-    public static final PPHolonomicDriveController pfc = new PPHolonomicDriveController(
+    public static final PPHolonomicDriveController PATHFINDING_CONTROLLER = new PPHolonomicDriveController(
             new PIDConstants(PATH_TRANSLATION_P, PATH_TRANSLATION_I, PATH_THETA_D),
             new PIDConstants(PATH_THETA_P, PATH_THETA_I, PATH_THETA_D));
 

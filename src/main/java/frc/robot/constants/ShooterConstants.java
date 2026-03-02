@@ -1,5 +1,11 @@
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+
 public class ShooterConstants {
     public static final int BALL_SHOOTING_MOTOR_ID1 = 18; // "leader" motor
     public static final int BALL_SHOOTING_MOTOR_ID2 = 12;
@@ -19,4 +25,7 @@ public class ShooterConstants {
     public static final double RUN_FEEDER_OUTPUT = -0.9;
 
     public static final double INDEXER_VOLTAGE = 5;
+
+    public static final Transform2d ROBOT_TO_SHOOTER =
+            new Transform2d(new Translation2d(Inches.of(-5), Inches.of(-8)), Rotation2d.kZero);
 }

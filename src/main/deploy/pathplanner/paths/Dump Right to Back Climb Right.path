@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4,
-        "y": 0.634
+        "x": 3.3,
+        "y": 0.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.399999999999999,
-        "y": 0.6340000000000003
+        "x": 1.8835132575757574,
+        "y": 1.344204545454545
+      },
+      "isLocked": false,
+      "linkedName": "Dump Right"
+    },
+    {
+      "anchor": {
+        "x": 0.45,
+        "y": 2.7809564393939388
+      },
+      "prevControl": {
+        "x": 0.44999999999999984,
+        "y": 1.8839249595781333
+      },
+      "nextControl": {
+        "x": 0.45000000000000007,
+        "y": 3.268730395096055
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.7,
-        "y": 0.634
+        "x": 0.45,
+        "y": 3.6
       },
       "prevControl": {
-        "x": 4.7,
-        "y": 0.6340000000000003
+        "x": 0.44021269269082386,
+        "y": 3.039285539788846
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Back Climb Right"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +57,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.93,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Stolen",
   "idealStartingState": {
-    "velocity": 1.93,
-    "rotation": 0.0
+    "velocity": 0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

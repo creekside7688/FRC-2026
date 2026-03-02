@@ -19,9 +19,9 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class TeleopDrive {
+public class DriveCommands {
 
-    private TeleopDrive() {}
+    private DriveCommands() {}
 
     private static final PIDController angleController =
             new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
@@ -79,7 +79,8 @@ public class TeleopDrive {
             Supplier<Rotation2d> rotationSupplier) {
 
         // Construct command
-        return Commands.run(
+        return Commands.startRun(
+                () -> angleController.reset(),
                 () -> {
                     // Get linear velocity
                     Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(
@@ -148,5 +149,42 @@ public class TeleopDrive {
             return GameConstants.FIELD_WIDTH.minus(GameConstants.TRENCH_CENTER).in(Meters);
         }
         return GameConstants.TRENCH_CENTER.in(Meters);
+    }
+
+    public static class AutonomousHubAlign extends Command {
+        private final SwerveDrive drive;
+        private final Supplier<Rotation2d> sup;
+
+        public AutonomousHubAlign(SwerveDrive drive, Supplier<Rotation2d> sup) {
+            this.drive = drive;
+            this.sup = sup;
+            this.addRequirements(drive);
+        }
+
+        @Override
+        public void initialize() {
+            angleController.reset();
+        }
+
+        @Override
+        public void execute() {
+            double omega = angleController.calculate(
+                    drive.getRotation2d().getRadians(), sup.get().getRadians());
+            ChassisSpeeds speeds = new ChassisSpeeds(0, 0, omega);
+
+            boolean isFlipped = DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red;
+            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                    speeds, isFlipped ? drive.getRotation2d().plus(new Rotation2d(Math.PI)) : drive.getRotation2d()));
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            drive.runVelocity(new ChassisSpeeds());
+        }
+
+        public boolean isFinished() {
+            return angleController.atSetpoint();
+        }
     }
 }

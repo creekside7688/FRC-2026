@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5229807152546635,
+        "y": 5.984891057618906
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1368807152546636,
+        "y": 6.018996613174463
+      },
+      "isLocked": false,
+      "linkedName": "Depot"
+    },
+    {
+      "anchor": {
+        "x": 2.033336046245737,
+        "y": 7.402878240128638
+      },
+      "prevControl": {
+        "x": 1.501820894730585,
+        "y": 6.971022179522577
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Dump Left"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Stolen",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

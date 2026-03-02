@@ -38,7 +38,6 @@ public class ModuleConstants {
     public static final double TURN_PID_MINIMUM_INPUT = 0; // Radians
     public static final double TURN_PID_MAXIMUM_INPUT = TURN_ENCODER_POSITION_FACTOR; // Radians
 
-    // TODO: Drivebase characterization
     public static final double DRIVE_P = 0.04;
     public static final double DRIVE_I = 0;
     public static final double DRIVE_D = 0;

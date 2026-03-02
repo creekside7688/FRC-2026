@@ -1,0 +1,50 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hub Start To Climb Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Hub"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb On Right"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": "Hub Start",
+  "choreoAuto": false
+}
