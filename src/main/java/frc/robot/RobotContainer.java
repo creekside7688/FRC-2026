@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
@@ -108,6 +107,7 @@ public class RobotContainer {
     private final ClimberPost climberPost = new ClimberPost(climber);
     private final ClimberZero climberZero = new ClimberZero(climber);
 
+    // UNTESTED "UNIT TEST" COMMANDS FOR PIT USE
     public final Command testFlywheel =
             shooter.startEnd(() -> shooter.SetRPM(3000), () -> shooter.setShooterMotor1Voltage(0));
     public final Command testHood =
@@ -122,7 +122,8 @@ public class RobotContainer {
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
 
-    private SendableChooser sendableChooser;
+    private final Command autoClimbLeft;
+    private final Command autoClimbRight;
     // when
     // we
     // do
@@ -227,6 +228,9 @@ public class RobotContainer {
 
         runShooter = new RunShooter(shooter, sd, feeder, shooterhood, spindexer);
 
+        autoClimbRight = PositionPIDCommand.generateCommand(sd, false, 3);
+
+        autoClimbLeft = PositionPIDCommand.generateCommand(sd, true, 3);
         // ShootRPM = shooter.setShooterRPM(sd::getPose);
         // ShootAngle = shooterhood.setShooterAngle(sd::getPose);
 
@@ -245,10 +249,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand); // TODO: REPLACE WITH REAL CMD
         NamedCommands.registerCommand("Stow Intake", intakeBackCommand); // TODO: REPLACE WITH REAL CMD
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
-        NamedCommands.registerCommand(
-                "Climb On Right",
-                PositionPIDCommand.generateCommand(
-                        sd, new Pose2d(new Translation2d(15.024, 3.909), Rotation2d.k180deg), 3));
+        NamedCommands.registerCommand("Climb On Right", autoClimbRight);
+        NamedCommands.registerCommand("Climb On Left", autoClimbLeft);
         NamedCommands.registerCommand("Climb Motors Run", climberPost);
 
         autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -292,9 +294,11 @@ public class RobotContainer {
                                         .getTranslation(),
                                 GameConstants.HUB_RED)));
 
-        driveController
-                .getRightBumper()
-                .whileTrue(DriveCommands.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
+        // driveController
+        //         .getRightBumper()
+        //         .whileTrue(DriveCommands.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
+        driveController.getRightBumper().whileTrue(autoClimbRight);
+        driveController.getLeftBumper().whileTrue(autoClimbLeft);
     }
 
     public void configureOperatorBindings() {
@@ -349,5 +353,6 @@ public class RobotContainer {
                 new Pose3d(driveSimulation.getSimulatedDriveTrainPose().plus(ShooterConstants.ROBOT_TO_SHOOTER))
                         .plus(new Transform3d(
                                 new Translation3d(Inches.of(0), Inches.of(0), Inches.of(17)), Rotation3d.kZero)));
+        Logger.recordOutput("test dist", driveSimulation.getSimulatedDriveTrainPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation().getDistance((GameConstants.HUB_RED)));
     }
 }

@@ -2,27 +2,44 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.AutonomousConstants;
 import frc.robot.subsystems.drivebase.SwerveDrive;
+import java.util.function.Supplier;
 
 public class PositionPIDCommand extends Command {
 
     public SwerveDrive drive;
-    public final Pose2d goalPose;
+    private Pose2d goalPose;
     private PPHolonomicDriveController mDriveController = AutonomousConstants.PATHFINDING_CONTROLLER;
 
     private final Trigger endTrigger;
     private final Trigger endTriggerDebounced;
 
-    private PositionPIDCommand(SwerveDrive drive, Pose2d goalPose) {
+    private final boolean isLeft;
+
+    private static final Supplier<Pose2d> LEFT_CLIMB_POSE =
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                    ? FlippingUtil.flipFieldPose(AutonomousConstants.LEFT_RED_CLIMB)
+                    : AutonomousConstants.LEFT_RED_CLIMB;
+    private static final Supplier<Pose2d> RIGHT_CLIMB_POSE =
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                    ? FlippingUtil.flipFieldPose(AutonomousConstants.RIGHT_RED_CLIMB)
+                    : AutonomousConstants.RIGHT_RED_CLIMB;
+
+    private PositionPIDCommand(SwerveDrive drive, boolean isLeft) {
         this.drive = drive;
-        this.goalPose = goalPose;
+        this.isLeft = isLeft;
+
+        goalPose = Pose2d.kZero;
 
         endTrigger = new Trigger(() -> {
             Pose2d diff = drive.getPose().relativeTo(goalPose);
@@ -42,8 +59,8 @@ public class PositionPIDCommand extends Command {
         endTriggerDebounced = endTrigger.debounce(0.1);
     }
 
-    public static Command generateCommand(SwerveDrive swerve, Pose2d goalPose, double timeoutSeconds) {
-        return new PositionPIDCommand(swerve, goalPose)
+    public static Command generateCommand(SwerveDrive swerve, boolean isLeft, double timeoutSeconds) {
+        return new PositionPIDCommand(swerve, isLeft)
                 .withTimeout(timeoutSeconds)
                 .finallyDo(() -> {
                     swerve.runVelocity(new ChassisSpeeds(0, 0, 0));
@@ -51,7 +68,13 @@ public class PositionPIDCommand extends Command {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        if (isLeft) {
+            this.goalPose = LEFT_CLIMB_POSE.get();
+        } else {
+            this.goalPose = RIGHT_CLIMB_POSE.get();
+        }
+    }
 
     @Override
     public void execute() {

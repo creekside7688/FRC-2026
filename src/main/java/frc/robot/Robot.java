@@ -171,12 +171,10 @@ public class Robot extends LoggedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
-        SmartDashboard.putData("test feeder", m_robotContainer.testFeeder);
-        SmartDashboard.putData(m_robotContainer.testFlywheel);
-        SmartDashboard.putData(m_robotContainer.testHood);
-        SmartDashboard.putData(m_robotContainer.testSpindexer);
-        SmartDashboard.putData(m_robotContainer.testZeroHood);
-        SmartDashboard.putData(m_robotContainer.testZeroHood);
+        SmartDashboard.putData("TESTING/TestFeeder", m_robotContainer.testFeeder);
+        SmartDashboard.putData("TESTING/TestFlywheel", m_robotContainer.testFlywheel);
+        SmartDashboard.putData("TESTING/TestHood", m_robotContainer.testHood);
+        SmartDashboard.putData("TESTING/TestSpindexer", m_robotContainer.testSpindexer);
     }
 
     /** This function is called periodically during test mode. */

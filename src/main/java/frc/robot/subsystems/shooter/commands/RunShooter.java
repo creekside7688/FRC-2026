@@ -43,7 +43,8 @@ public class RunShooter extends Command {
         // (hubPose.getY() - sd.getPose().getY()5));
 
         distance = hubPose.getDistance(
-                sd.getPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation());
+                sd.getPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation()
+                );
 
         SmartDashboard.putNumber("distance from hub", distance);
     }

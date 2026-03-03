@@ -3,6 +3,10 @@ package frc.robot.constants;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public class AutonomousConstants {
     public static final double PATH_TRANSLATION_P = 5.0;
@@ -27,4 +31,8 @@ public class AutonomousConstants {
             e.printStackTrace();
         }
     }
+
+    public static final Pose2d LEFT_RED_CLIMB = new Pose2d(new Translation2d(15.024, 3.909), Rotation2d.k180deg);
+    public static final Pose2d RIGHT_RED_CLIMB =
+            new Pose2d(new Translation2d(15.024, 3.909 + Units.inchesToMeters(32.25 + 1.5 * 1.5)), Rotation2d.k180deg);
 }

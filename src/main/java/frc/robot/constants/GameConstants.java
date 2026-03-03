@@ -14,7 +14,7 @@ public class GameConstants {
 
     // Goal/Hub Positions
     public static final Translation2d HUB_RED = new Translation2d(Inches.of(469.11), Inches.of(158.84));
-    public static final Translation2d HUB_BLUE = Translation2d.kZero;
+    public static final Translation2d HUB_BLUE = new Translation2d(Inches.of(182.11), Inches.of(158.84));
     public static final Distance FUNNEL_RADIUS = Meters.of(0.6096);
     public static final Distance FUNNEL_HEIGHT = Meters.of(0.39624);
 
