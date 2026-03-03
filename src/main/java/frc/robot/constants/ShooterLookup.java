@@ -103,7 +103,7 @@ public class ShooterLookup {
 
         if (distx == 0 && disty == 0) return new Translation2d(0, 0);
 
-        double dAngle = (((dy * distx) - (dx * disty))) / (Math.pow((distx), 2) + Math.pow((disty), 2));
+        double dAngle = (((dy * distx) - (dx * disty))) / (Math.pow((distx), 2) + Math.pow((disty), 2)) * 180/Math.PI;
 
         double dDistance = (((distx * dx) + (disty * dy)) / (Math.sqrt(Math.pow(distx, 2) + Math.pow(disty, 2))));
         return new Translation2d(dDistance, dAngle); // in meters
@@ -118,8 +118,11 @@ public class ShooterLookup {
 
         for (int i = 0; i < 5; i++) {
 
-            double velocity2D =
-                    distanceVelocitiesTable.get(newDistance * 39.3701) * Math.cos(Math.toRadians(hoodAngle));
+            double ballVel = distanceVelocitiesTable.get(newDistance * 39.3701);
+
+            double velocity2D = (ballVel > 0) ? ballVel * Math.cos(Math.toRadians(hoodAngle)) : 5.0; 
+
+            if (velocity2D < 0.1) velocity2D = 0.1;
 
             double ydistance = Math.sin(Math.toRadians(newAngle)) * newDistance;
             double xdistance = Math.cos(Math.toRadians(newAngle)) * newDistance;

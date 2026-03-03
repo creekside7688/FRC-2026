@@ -181,6 +181,13 @@ public class Shooter extends SubsystemBase {
         return Math.hypot(hubPose.getX() - pose.getX(), hubPose.getY() - pose.getY());
     }
 
+    public double getRobotAngleFromPose(Translation2d pose) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Translation2d hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+
+        return Math.atan2(hubPose.getX() - pose.getX(), hubPose.getY() - pose.getY());
+    }
+
     public Command setShooterRPM(Supplier<Pose2d> poseSupplier) {
         // implicitly requires `this`
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));

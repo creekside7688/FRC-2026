@@ -6,9 +6,16 @@ package frc.robot.subsystems.shooter.commands;
 
 import java.util.function.Supplier;
 
+import static edu.wpi.first.units.Units.Inches;
+
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.shooter.Shooter;
@@ -55,39 +62,42 @@ public class TestSOTM extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double distance = shooter.getVariableDistance();
-        double angle = sd.getPose().getRotation().getDegrees();
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        // var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
+        var hubPose = GameConstants.HUB_RED;
+        double distance =
+                hubPose.getDistance(sd.getPose().getTranslation().plus(new Translation2d(Inches.of(-5), Inches.of(8))));
+        double angle = shooter.getRobotAngleFromPose(sd.getPose().getTranslation().plus(new Translation2d(Inches.of(-5), Inches.of(8))));
 
-        angle = angle + ShooterLookup.CalculationDelayOffset(
-                        sd.getPose(),
-                        sd.getChassisSpeeds().vxMetersPerSecond,
-                        sd.getChassisSpeeds().vyMetersPerSecond,
-                        0.2)
-                .getY();
         
+        Translation2d latencyOffset = ShooterLookup.CalculationDelayOffset(
+            sd.getPose(),
+            sd.getChassisSpeeds().vxMetersPerSecond,
+            sd.getChassisSpeeds().vyMetersPerSecond,
+            0.02);
+            
+        distance += latencyOffset.getX();
+        angle += latencyOffset.getY();
 
-        distance = distance + ShooterLookup.CalculationDelayOffset(
-                        sd.getPose(),
-                        sd.getChassisSpeeds().vxMetersPerSecond,
-                        sd.getChassisSpeeds().vyMetersPerSecond,
-                        0.2)
-                .getX();
+        Translation2d predictedTarget = ShooterLookup.RecurssiveFOT(sd.getChassisSpeeds().vxMetersPerSecond, sd.getChassisSpeeds().vyMetersPerSecond, shooterHood.getHoodPosition(), angle, distance);
+            
+        final double finalAngle = predictedTarget.getY();
+
+        final double finalDistance= predictedTarget.getX();
         
-        final double finalDistance = distance + ShooterLookup.RecurssiveFOT(sd.getChassisSpeeds().vxMetersPerSecond, sd.getChassisSpeeds().vyMetersPerSecond, shooterHood.getHoodPosition(), sd.getPose().getRotation().getDegrees(), distance).getX();
         
-        final double finalAngle = angle + ShooterLookup.RecurssiveFOT(sd.getChassisSpeeds().vxMetersPerSecond, sd.getChassisSpeeds().vyMetersPerSecond, shooterHood.getHoodPosition(), sd.getPose().getRotation().getDegrees(), distance).getY();
         
         double desiredRPM = ShooterLookup.lookupRPM(finalDistance);
         double desiredAngle = ShooterLookup.lookupAngle(finalDistance);
 
         shooter.SetRPM(desiredRPM);
         shooterHood.setHoodPosition(desiredAngle);
-        if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
+        DriveCommands.joystickDriveWithRotationalOverride(sd, () -> getControllerX.get(), () -> getControllerY.get(), () -> Rotation2d.fromDegrees(finalAngle));
+        if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance() && sd.getPose().getRotation().getDegrees() <= finalAngle+1 &&  sd.getPose().getRotation().getDegrees() >= finalAngle-1) {
             feeder.RunFeeder();
             spindexer.runIndexer();
         }
 
-        DriveCommands.joystickDriveWithRotationalOverride(sd, () -> getControllerX.get(), () -> getControllerY.get(), () -> Rotation2d.fromRadians(finalAngle));
 
         
 
