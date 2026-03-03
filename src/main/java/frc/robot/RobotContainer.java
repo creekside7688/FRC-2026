@@ -109,16 +109,6 @@ public class RobotContainer {
     private final ClimberPost climberPost = new ClimberPost(climber);
     private final ClimberZero climberZero = new ClimberZero(climber);
 
-    // UNTESTED "UNIT TEST" COMMANDS FOR PIT USE
-    public final Command testFlywheel =
-            shooter.startEnd(() -> shooter.SetRPM(3000), () -> shooter.setShooterMotor1Voltage(0));
-    public final Command testHood =
-            shooterhood.startEnd(() -> shooterhood.setHoodPosition(60), () -> shooterhood.setHoodPosition(75));
-    public final Command testFeeder = feeder.startEnd(() -> feeder.RunFeeder(), () -> feeder.stopFeeder());
-    public final Command testSpindexer =
-            spindexer.startEnd(() -> spindexer.runIndexer(), () -> spindexer.stopIndexer());
-    public final Command testZeroHood = new Command() {};
-
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
     private final TestShootingLookup testlookup =
@@ -248,8 +238,8 @@ public class RobotContainer {
                                         ? GameConstants.HUB_RED
                                         : GameConstants.HUB_BLUE)));
         NamedCommands.registerCommand("Shoot", runShooter);
-        NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand); // TODO: REPLACE WITH REAL CMD
-        NamedCommands.registerCommand("Stow Intake", intakeBackCommand); // TODO: REPLACE WITH REAL CMD
+        NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand); 
+        NamedCommands.registerCommand("Stow Intake", intakeBackCommand); 
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
         NamedCommands.registerCommand("Climb On Right", autoClimbRight);
         NamedCommands.registerCommand("Climb On Left", autoClimbLeft);
@@ -294,7 +284,9 @@ public class RobotContainer {
                                 sd.getPose()
                                         .plus(ShooterConstants.ROBOT_TO_SHOOTER)
                                         .getTranslation(),
-                                GameConstants.HUB_RED)));
+                                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
+                                ? GameConstants.HUB_RED
+                                : GameConstants.HUB_BLUE)));
 
         // driveController
         //         .getRightBumper()
