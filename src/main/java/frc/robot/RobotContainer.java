@@ -298,18 +298,19 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        operatorController.getX().whileTrue(runShooter);
-        operatorController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        operatorController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);
-        operatorController.getRightBumper().whileTrue(intakeStopCommand);
+        // operatorController.getX().whileTrue(runShooter);
+        // operatorController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        // operatorController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);
+        // operatorController.getRightBumper().whileTrue(intakeStopCommand);
 
-        operatorController.getLeftTrigger().whileTrue(climberPre);
-        operatorController.getRightTrigger().whileTrue(climberPost);
-        operatorController.getA().whileTrue(climberZero);
+        // operatorController.getLeftTrigger().whileTrue(climberPre);
+        // operatorController.getRightTrigger().whileTrue(climberPost);
+        // operatorController.getA().whileTrue(climberZero);
 
         shooterhood.setDefaultCommand(shooterhood.runOnce(() -> shooterhood.setHoodPosition(75)));
-        // joystick.getButton1().whileTrue(testlookup);
 
+        joystick.getButton1().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        joystick.getButton2().whileTrue(intakeFixAngleBackCommand);
         // Command shooterRunSequential = ShootRPM.alongWith(
         // ShootAngle,
         // ShootFeederRun.onlyIf(

@@ -186,6 +186,11 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
     }
 
+    public Command setSpecificShooterRPM(int rpm) {
+        // implicitly requires `this`
+        return this.runOnce(() -> this.SetRPM(rpm));
+    }
+
     public Command runQuickShooter() {
         return this.runOnce(() -> this.shootMotor1.set(0.4));
     }
