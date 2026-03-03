@@ -33,7 +33,7 @@ public class VisionConstants {
     public static final double HIGHEST_AMBIGUITY = 0.2;
     public static final double MAX_Z_ERROR = 0.75;
 
-    public static double LINEAR_STDDEV_BASE = 0.02; // Meters
+    public static double LINEAR_STDDEV_BASE = 0.1; // Meters
     public static double ANGULAR_STDDEV_BASE = 0.06; // Radians
 
     public static double[] CAM_STD_DEVS = new double[] {

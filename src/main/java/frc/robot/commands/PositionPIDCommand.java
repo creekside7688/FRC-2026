@@ -32,7 +32,9 @@ public class PositionPIDCommand extends Command {
 
             boolean position = diff.getTranslation().getNorm() < 0.01;
 
-            boolean speed = Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond) < 0.1;
+            boolean speed =
+                    Math.hypot(drive.getChassisSpeeds().vxMetersPerSecond, drive.getChassisSpeeds().vyMetersPerSecond)
+                            < 0.1;
 
             return rotation && position && speed;
         });

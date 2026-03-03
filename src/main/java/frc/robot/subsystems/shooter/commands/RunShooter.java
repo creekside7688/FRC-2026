@@ -1,13 +1,11 @@
 package frc.robot.subsystems.shooter.commands;
 
-import static edu.wpi.first.units.Units.Inches;
-
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterLookup;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.shooter.Shooter;
@@ -44,8 +42,8 @@ public class RunShooter extends Command {
         // (hubPose.getX() - sd.getPose().getX()),
         // (hubPose.getY() - sd.getPose().getY()5));
 
-        distance =
-                hubPose.getDistance(sd.getPose().getTranslation().plus(new Translation2d(Inches.of(-5), Inches.of(8))));
+        distance = hubPose.getDistance(
+                sd.getPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation());
 
         SmartDashboard.putNumber("distance from hub", distance);
     }
@@ -66,6 +64,8 @@ public class RunShooter extends Command {
         if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
             feeder.RunFeeder();
             spindexer.setIndexer(2);
+        } else {
+            feeder.stopFeeder();
         }
     }
 

@@ -119,9 +119,12 @@ public class Intake extends SubsystemBase {
         this.intake = new SparkMax(15, MotorType.kBrushless);
         this.intakeRoller = new SparkMax(14, MotorType.kBrushless);
         this.intakeConfig = new SparkMaxConfig();
+        this.intakeRollerConfig = new SparkMaxConfig();
         this.intakeEncoder = this.intake.getEncoder();
-        this.intakeConfig.smartCurrentLimit(IntakeConstants.PIVOT_STALL_CURRENT_LIMIT,IntakeConstants.PIVOT_FREE_CURRENT_LIMIT);     
-        this.intakeRollerConfig.smartCurrentLimit(IntakeConstants.ROLLER_STALL_CURRENT_LIMIT, IntakeConstants.ROLLER_FREE_CURRENT_LIMIT);   
+        this.intakeConfig.smartCurrentLimit(
+                IntakeConstants.PIVOT_STALL_CURRENT_LIMIT, IntakeConstants.PIVOT_FREE_CURRENT_LIMIT);
+        this.intakeRollerConfig.smartCurrentLimit(
+                IntakeConstants.ROLLER_STALL_CURRENT_LIMIT, IntakeConstants.ROLLER_FREE_CURRENT_LIMIT);
         this.intakeClosedLoopController = this.intake.getClosedLoopController();
         this.intakeTab = Shuffleboard.getTab("intakePID");
         this.intakeP = this.intakeTab.add("intakeP", 0).getEntry();
@@ -142,7 +145,7 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.idleMode(IdleMode.kBrake);
         this.resetPosition();
         this.setPositionConversionFactor();
-        this.intakeConfig.closedLoop.outputRange(-0.4, 0.2);
+        this.intakeConfig.closedLoop.outputRange(-1, 0.2);
         this.intakeConfig
                 .closedLoop
                 .feedForward

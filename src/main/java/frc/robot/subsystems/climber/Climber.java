@@ -76,9 +76,14 @@ public class Climber extends SubsystemBase {
     //     gapBlockerMotor.set(ClimberConstants.GAP_BLOCKER_MOTOR_SPEED);
     // }
 
+    public void largeHookZero() {
+        focus = false;
+        targetLargeHookPosition = 0;
+    }
+
     public void largeHookPre() {
         focus = false;
-        targetLargeHookPosition = ClimberConstants.HOOK_POST_TARGET_POSITION_INCHES;
+        targetLargeHookPosition = ClimberConstants.HOOK_PRE_TARGET_POSITION_INCHES;
     }
 
     public void largeHookPost() {
@@ -129,12 +134,14 @@ public class Climber extends SubsystemBase {
             focus = true;
         }
         if (Math.abs(diff) <= ClimberConstants.HOOK_ACCURACY_INCHES) {
-            motor.set(ClimberConstants.HOOK_MOTOR_SPEED
+            motor.set(-1
+                    * ClimberConstants.HOOK_MOTOR_SPEED
                     *
                     // ClimberConstants.SMALL_HOOK_CLOCKWISE *
                     (diff / ClimberConstants.HOOK_ACCURACY_INCHES));
         } else if (Math.abs(diff) > ClimberConstants.HOOK_ACCURACY_INCHES) {
-            motor.set(ClimberConstants.HOOK_MOTOR_SPEED
+            motor.set(-1
+                    * ClimberConstants.HOOK_MOTOR_SPEED
                     *
                     // ClimberConstants.SMALL_HOOK_CLOCKWISE *
                     Math.signum(diff));

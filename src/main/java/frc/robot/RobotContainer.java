@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.constants.VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM;
 import static frc.robot.constants.VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM;
 
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,9 +21,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Controller;
@@ -39,6 +36,10 @@ import frc.robot.constants.GameConstants;
 import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.commands.ClimberPost;
+import frc.robot.subsystems.climber.commands.ClimberPre;
+import frc.robot.subsystems.climber.commands.ClimberZero;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
 import frc.robot.subsystems.drivebase.GyroIOSim;
@@ -52,6 +53,7 @@ import frc.robot.subsystems.intake.commands.IntakeFixAngleBack;
 import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.commands.IntakeForwardCommand;
 import frc.robot.subsystems.intake.commands.IntakeRollerForwardCommand;
+import frc.robot.subsystems.intake.commands.IntakeStopCommand;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -88,6 +90,7 @@ public class RobotContainer {
     public final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
+    private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -100,17 +103,26 @@ public class RobotContainer {
     private final ShooterFeeder feeder = new ShooterFeeder();
     private final Spindexer spindexer = new Spindexer();
 
-    public final Command testFlywheel = shooter.startEnd(() -> shooter.SetRPM(3000), () -> shooter.setShooterMotor1Voltage(0));
-    public final Command testHood = shooterhood.startEnd(() -> shooterhood.setHoodPosition(60), () -> shooterhood.setHoodPosition(75));
+    private final Climber climber = new Climber();
+    private final ClimberPre climberPre = new ClimberPre(climber);
+    private final ClimberPost climberPost = new ClimberPost(climber);
+    private final ClimberZero climberZero = new ClimberZero(climber);
+
+    public final Command testFlywheel =
+            shooter.startEnd(() -> shooter.SetRPM(3000), () -> shooter.setShooterMotor1Voltage(0));
+    public final Command testHood =
+            shooterhood.startEnd(() -> shooterhood.setHoodPosition(60), () -> shooterhood.setHoodPosition(75));
     public final Command testFeeder = feeder.startEnd(() -> feeder.RunFeeder(), () -> feeder.stopFeeder());
-    public final Command testSpindexer = spindexer.startEnd(() -> spindexer.runIndexer(), () -> spindexer.stopIndexer());
+    public final Command testSpindexer =
+            spindexer.startEnd(() -> spindexer.runIndexer(), () -> spindexer.stopIndexer());
     public final Command testZeroHood = new Command() {};
-        
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
+
+    private SendableChooser sendableChooser;
     // when
     // we
     // do
@@ -227,16 +239,17 @@ public class RobotContainer {
                                         .plus(ShooterConstants.ROBOT_TO_SHOOTER)
                                         .getTranslation(),
                                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
-                                 ? GameConstants.HUB_RED
-                                 : GameConstants.HUB_BLUE)));
+                                        ? GameConstants.HUB_RED
+                                        : GameConstants.HUB_BLUE)));
         NamedCommands.registerCommand("Shoot", runShooter);
-        NamedCommands.registerCommand("Deploy Intake", new WaitCommand(1)); // TODO: REPLACE WITH REAL CMD
-        NamedCommands.registerCommand("Stow Intake", new WaitCommand(1)); // TODO: REPLACE WITH REAL CMD
+        NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand); // TODO: REPLACE WITH REAL CMD
+        NamedCommands.registerCommand("Stow Intake", intakeBackCommand); // TODO: REPLACE WITH REAL CMD
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
         NamedCommands.registerCommand(
                 "Climb On Right",
                 PositionPIDCommand.generateCommand(
                         sd, new Pose2d(new Translation2d(15.024, 3.909), Rotation2d.k180deg), 3));
+        NamedCommands.registerCommand("Climb Motors Run", climberPost);
 
         autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
 
@@ -268,7 +281,7 @@ public class RobotContainer {
                 () -> -driveController.getRightX()));
 
         driveController
-                .getA()
+                .getRightTrigger()
                 .whileTrue(DriveCommands.joystickDriveWithRotationalOverride(
                         sd,
                         () -> -driveController.getLeftY(),
@@ -280,15 +293,21 @@ public class RobotContainer {
                                 GameConstants.HUB_RED)));
 
         driveController
-                .getB()
+                .getRightBumper()
                 .whileTrue(DriveCommands.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
-        driveController.getX().whileTrue(runShooter);
-        driveController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        driveController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);
     }
 
     public void configureOperatorBindings() {
+        operatorController.getX().whileTrue(runShooter);
+        operatorController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        operatorController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);
+        operatorController.getRightBumper().whileTrue(intakeStopCommand);
 
+        operatorController.getLeftTrigger().whileTrue(climberPre);
+        operatorController.getRightTrigger().whileTrue(climberPost);
+        operatorController.getA().whileTrue(climberZero);
+
+        shooterhood.setDefaultCommand(shooterhood.runOnce(() -> shooterhood.setHoodPosition(75)));
         // joystick.getButton1().whileTrue(testlookup);
 
         // Command shooterRunSequential = ShootRPM.alongWith(

@@ -23,7 +23,7 @@ public class ClimberConstants {
     //     CHAIN_CENTERS_DISTANCE_INCHES * HOOK_RESET_PERCENT; // inches
     //     3.5; // inches.
 
-    public static final double HOOK_PRE_TARGET_POSITION_INCHES = -4.81;
+    public static final double HOOK_PRE_TARGET_POSITION_INCHES = -4.5;
 
     //     CHAIN_CIRCUMFERENCE_INCHES * 3 / 8; // 45 deg from hook point)
     public static final double HOOK_POST_TARGET_POSITION_INCHES = -13;
@@ -32,7 +32,7 @@ public class ClimberConstants {
     //     public static final double HOOK_PULL_TARGET_POSITION_INCHES =
     //     CHAIN_CIRCUMFERENCE_INCHES * .5 + HOOK_PULL_PERCENT * CHAIN_CENTERS_DISTANCE_INCHES; // pull down the chain
 
-    public static final double HOOK_MOTOR_SPEED = .5; // percent output
+    public static final double HOOK_MOTOR_SPEED = .75; // percent output
     //     public static final double GAP_BLOCKER_MOTOR_SPEED = 0.5; // percent output
 
     public static final double HOOK_ACCURACY_INCHES = 0.5; // inches
@@ -44,7 +44,6 @@ public class ClimberConstants {
     //     public static final boolean GAP_BLOCKER_CLOCKWISE = false;
 
     public static final double CLIMBER_TEST_SPEED = 1; // percent output
-
 
     public static final int STALL_CURRENT_LIMIT = 50;
     public static final int FREE_CURRENT_LIMIT = 30;

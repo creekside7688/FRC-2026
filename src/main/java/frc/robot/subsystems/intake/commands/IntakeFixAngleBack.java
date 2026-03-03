@@ -24,6 +24,6 @@ public class IntakeFixAngleBack extends Command {
     public void end(boolean interrupted) {}
 
     public boolean isFinished() {
-        return false;
+        return this.intake.getReversedSoftLimitReached();
     }
 }

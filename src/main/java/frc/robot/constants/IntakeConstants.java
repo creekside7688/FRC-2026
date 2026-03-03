@@ -2,7 +2,7 @@ package frc.robot.constants;
 
 public class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 15;
-    public static final double INTAKE_PID_P = 1.5;
+    public static final double INTAKE_PID_P = 4;
     public static final double INTAKE_PID_I = 0;
     public static final double INTAKE_PID_D = 0;
     public static final double INTAKE_FEEDFORWARD_S = 0;
@@ -17,9 +17,9 @@ public class IntakeConstants {
     public static final double INTAKE_SPEED = 0.2;
     public static final double INTAKE_ROLLER_SPEED = 0.1;
 
-    public static final int PIVOT_STALL_CURRENT_LIMIT = 40;
-    public static final int PIVOT_FREE_CURRENT_LIMIT = 30;
+    public static final int PIVOT_STALL_CURRENT_LIMIT = 70;
+    public static final int PIVOT_FREE_CURRENT_LIMIT = 60;
 
-    public static final int ROLLER_STALL_CURRENT_LIMIT = 30;
-    public static final int ROLLER_FREE_CURRENT_LIMIT = 20;
+    public static final int ROLLER_STALL_CURRENT_LIMIT = 50;
+    public static final int ROLLER_FREE_CURRENT_LIMIT = 40;
 }
