@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterLookup;
+import frc.robot.constants.SpindexerConstants;
 import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
@@ -63,7 +64,7 @@ public class RunShooter extends Command {
         shooterHood.setHoodPosition(ShooterLookup.lookupAngle(distance));
         if (shooter.checkShooterRPMTolerance() && shooterHood.checkShooterPositionTolerance()) {
             feeder.RunFeeder();
-            spindexer.setIndexer(2);
+            spindexer.setIndexer(SpindexerConstants.SPINDEXER_VOLTAGE);
         } else {
             feeder.stopFeeder();
         }
