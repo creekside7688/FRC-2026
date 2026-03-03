@@ -80,6 +80,11 @@ public class ShooterHood extends SubsystemBase {
         hood_Controller.setSetpoint(setPoint, ControlType.kPosition);
     }
 
+    public double getHoodPosition() {
+        return hoodMotor.getEncoder().getPosition();
+    }
+
+
     public void setVariableHoodPosition() {
         int setPoint = (int) (hoodPos.getDouble(0));
         setHoodPosition(setPoint);

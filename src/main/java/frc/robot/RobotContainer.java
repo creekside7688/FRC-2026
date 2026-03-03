@@ -106,6 +106,8 @@ public class RobotContainer {
     public final Command testSpindexer = spindexer.startEnd(() -> spindexer.runIndexer(), () -> spindexer.stopIndexer());
     public final Command testZeroHood = new Command() {};
         
+    final Supplier<Double> driveControllerXSupplier = () -> -driveController.getLeftX();
+    final Supplier<Double> driveControllerYSupplier = () -> -driveController.getLeftY();
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
@@ -209,6 +211,7 @@ public class RobotContainer {
                 camIO1 = new VisionIO() {};
                 camIO2 = new VisionIO() {};
         }
+
 
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
         camSystem = new Vision(sd, camIO1, camIO2);
