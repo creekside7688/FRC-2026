@@ -99,6 +99,13 @@ public class Robot extends LoggedRobot {
         PathPlannerLogging.setLogCurrentPoseCallback((currentPose) -> {
             Logger.recordOutput("Odometry/TrajectoryCurrentPose", currentPose);
         });
+
+        // DataLogManager.start();
+        // URCL.start();
+
+        // // If logging only to DataLog
+        // URCL.start(DataLogManager.getLog());
+
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.

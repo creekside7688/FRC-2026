@@ -11,9 +11,9 @@ public class ShooterConstants {
     public static final int BALL_SHOOTING_MOTOR_ID2 = 12;
     public static final int BALL_HOOD_MOTOR = 9;
 
-    public static final double SHOOTER_KV = 0.0021194;
-    public static final double SHOOTER_KA = 0.00017021;
-    public static final double SHOOTER_KS = 0.1685;
+    public static final double SHOOTER_KV = 0.0021152;
+    public static final double SHOOTER_KA = 0.00024505;
+    public static final double SHOOTER_KS = 0.12126;
 
     public static final double SHOOTER_P = 0;
     public static final double SHOOTER_I = 0;

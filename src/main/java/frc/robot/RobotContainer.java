@@ -320,7 +320,14 @@ public class RobotContainer {
         // () -> shooter.checkShooterRPMTolerance() &&
         // shooterhood.checkShooterPositionTolerance()));
 
+        // joystick.getButton3().whileTrue(Commands.run(() -> shooter.SetRPM(4000), shooter));
+
         // operatorController.getX().whileTrue(shooterRunSequential);
+
+        // joystick.getButton5().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        // joystick.getButton3().whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        // joystick.getButton6().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        // joystick.getButton4().whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     /**
