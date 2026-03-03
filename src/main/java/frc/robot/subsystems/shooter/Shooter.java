@@ -164,6 +164,8 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run;
         SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
+        shootMotor1.getEncoder().getVelocity();
+        shootMotor1.getEncoder().getPosition();
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -184,6 +186,11 @@ public class Shooter extends SubsystemBase {
     public Command setShooterRPM(Supplier<Pose2d> poseSupplier) {
         // implicitly requires `this`
         return this.runOnce(() -> this.SetRPM(ShooterLookup.lookupRPM(getRPMFromPose(poseSupplier.get()))));
+    }
+
+    public Command setSpecificShooterRPM(int rpm) {
+        // implicitly requires `this`
+        return this.runOnce(() -> this.SetRPM(rpm));
     }
 
     public Command runQuickShooter() {

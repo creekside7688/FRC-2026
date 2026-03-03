@@ -67,7 +67,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setIntakeAngleForward() {
-        this.intakeClosedLoopController.setSetpoint(0.331, ControlType.kVelocity);
+        this.intakeClosedLoopController.setSetpoint(2.301, ControlType.kVelocity);
     }
 
     public double getVelocity() {
@@ -138,14 +138,14 @@ public class Intake extends SubsystemBase {
         this.intakeConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         this.intakeConfig
                 .softLimit
-                .forwardSoftLimit(0.331)
+                .forwardSoftLimit(2.03)
                 .reverseSoftLimit(0.0)
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimitEnabled(true);
         this.intakeConfig.idleMode(IdleMode.kBrake);
         this.resetPosition();
         this.setPositionConversionFactor();
-        this.intakeConfig.closedLoop.outputRange(-1, 0.2);
+        this.intakeConfig.closedLoop.outputRange(-0.5, 0.2);
         this.intakeConfig
                 .closedLoop
                 .feedForward
@@ -158,7 +158,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void periodic() {
-        // this.printPosition();
+        this.printPosition();
         // this.printVelocity();
     }
 }
