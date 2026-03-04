@@ -81,7 +81,9 @@ public class PositionPIDCommand extends Command {
         PathPlannerTrajectoryState goalState = new PathPlannerTrajectoryState();
         goalState.pose = goalPose;
 
-        drive.runVelocity(mDriveController.calculateRobotRelativeSpeeds(drive.getPose(), goalState));
+        drive.runVelocity(mDriveController
+                .calculateRobotRelativeSpeeds(drive.getPose(), goalState)
+                .div(1.25));
     }
 
     @Override

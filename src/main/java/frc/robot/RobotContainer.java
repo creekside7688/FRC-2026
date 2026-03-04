@@ -241,8 +241,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand);
         NamedCommands.registerCommand("Stow Intake", intakeBackCommand);
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
-        NamedCommands.registerCommand("Climb On Right", autoClimbRight);
-        NamedCommands.registerCommand("Climb On Left", autoClimbLeft);
+        NamedCommands.registerCommand("Climb On Left", autoClimbRight);
+        NamedCommands.registerCommand("Climb On Right", autoClimbLeft);
         NamedCommands.registerCommand("Climb Motors Run", climberPost);
 
         autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -296,16 +296,23 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        joystick.getButton1().whileTrue(testvds);
+        operatorController.getRightBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        operatorController.getRightBumper().whileFalse(intakeFixAngleBackCommand);
+        operatorController.getLeftBumper().whileTrue(intakeRollerForwardCommand);
+
+        operatorController.getX().whileTrue(runShooter);
+
+        operatorController.getLeftTrigger().whileTrue(climberZero);
+        operatorController.getRightTrigger().whileTrue(climberPost);
+        // joystick.getButton1().whileTrue(testvds);
         /*
         joystick.getButton3().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         joystick.getButton4().whileFalse(intakeFixAngleBackCommand);
         joystick.getButton5().whileTrue(intakeStopCommand);
-
-        joystick.getButton6().whileTrue(climberPre);
-        joystick.getButton7().whileTrue(climberPost);
-        joystick.getButton8().whileTrue(climberZero);
         */
+        // joystick.getButton6().whileTrue(climberPre);
+        // joystick.getButton3().whileTrue(climberPost);
+        // joystick.getButton5().whileTrue(climberZero);
 
         shooterhood.setDefaultCommand(shooterhood.runOnce(() -> shooterhood.setHoodPosition(75)));
 
