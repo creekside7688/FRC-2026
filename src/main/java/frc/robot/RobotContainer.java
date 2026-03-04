@@ -56,7 +56,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
-import frc.robot.subsystems.shooter.commands.TestShootingLookup;
 // import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
@@ -109,9 +108,6 @@ public class RobotContainer {
     private final ClimberZero climberZero = new ClimberZero(climber);
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
-
-    private final TestShootingLookup testlookup =
-            new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
 
     //     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 

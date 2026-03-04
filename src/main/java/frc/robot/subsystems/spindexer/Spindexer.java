@@ -32,6 +32,10 @@ public class Spindexer extends SubsystemBase {
         indexerMotor.setVoltage(SpindexerConstants.SPINDEXER_VOLTAGE);
     }
 
+    public void unclogSpindexer() {
+        indexerMotor.setVoltage(-SpindexerConstants.SPINDEXER_VOLTAGE);
+    }
+
     public void stopIndexer() {
         indexerMotor.setVoltage(0);
     }
@@ -43,6 +47,10 @@ public class Spindexer extends SubsystemBase {
 
     public Command runSpindexerMotor() {
         return this.runOnce(() -> this.runIndexer());
+    }
+
+    public Command unclogSpindexerMotor() {
+        return this.runOnce(() -> this.unclogSpindexer());
     }
 
     public Command stopSpindexerMotor() {

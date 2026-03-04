@@ -15,6 +15,11 @@ public class ShooterFeeder extends SubsystemBase {
         feedControllerSrx.set(ControlMode.PercentOutput, FeederConstants.RUN_FEEDER_OUTPUT);
     }
 
+    public void UnclogFeeder() {
+        feedControllerSrx.set(ControlMode.PercentOutput, -FeederConstants.RUN_FEEDER_OUTPUT);
+        
+    }
+
     public void stopFeeder() {
         feedControllerSrx.set(ControlMode.PercentOutput, 0);
     }
@@ -23,6 +28,10 @@ public class ShooterFeeder extends SubsystemBase {
 
     public Command runShooterFeeder() {
         return this.runOnce(() -> this.RunFeeder());
+    }
+
+    public Command unclogShooterFeeder() {
+        return this.runOnce(() -> this.UnclogFeeder());
     }
 
     public Command stopShooterFeeder() {
