@@ -57,7 +57,7 @@ import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
 import frc.robot.subsystems.shooter.commands.TestShootingLookup;
-import frc.robot.subsystems.shooter.commands.TestVDS;
+// import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
@@ -90,6 +90,7 @@ public class RobotContainer {
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
+    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -112,7 +113,7 @@ public class RobotContainer {
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
 
-    private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
+    //     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 
     private final Command autoClimbLeft;
     private final Command autoClimbRight;
@@ -298,7 +299,7 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         operatorController.getRightBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         operatorController.getRightBumper().whileFalse(intakeFixAngleBackCommand);
-        operatorController.getLeftBumper().whileTrue(intakeRollerForwardCommand);
+        operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
         operatorController.getX().whileTrue(runShooter);
 

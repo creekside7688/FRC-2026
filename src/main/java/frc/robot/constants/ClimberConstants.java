@@ -32,7 +32,7 @@ public class ClimberConstants {
     //     public static final double HOOK_PULL_TARGET_POSITION_INCHES =
     //     CHAIN_CIRCUMFERENCE_INCHES * .5 + HOOK_PULL_PERCENT * CHAIN_CENTERS_DISTANCE_INCHES; // pull down the chain
 
-    public static final double HOOK_MOTOR_SPEED = .5; // percent output
+    public static final double HOOK_MOTOR_SPEED = 1; // percent output
     //     public static final double GAP_BLOCKER_MOTOR_SPEED = 0.5; // percent output
 
     public static final double HOOK_ACCURACY_INCHES = 0.5; // inches
