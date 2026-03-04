@@ -35,8 +35,10 @@ import frc.robot.constants.ModuleConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.commands.ClimberDown;
 import frc.robot.subsystems.climber.commands.ClimberPost;
 import frc.robot.subsystems.climber.commands.ClimberPre;
+import frc.robot.subsystems.climber.commands.ClimberUp;
 import frc.robot.subsystems.climber.commands.ClimberZero;
 import frc.robot.subsystems.drivebase.GyroIO;
 import frc.robot.subsystems.drivebase.GyroIONavX;
@@ -102,10 +104,12 @@ public class RobotContainer {
     private final ShooterFeeder feeder = new ShooterFeeder();
     private final Spindexer spindexer = new Spindexer();
 
-    private final Climber climber = new Climber();
+    private final Climber climber = new Climber(false);
     private final ClimberPre climberPre = new ClimberPre(climber);
     private final ClimberPost climberPost = new ClimberPost(climber);
     private final ClimberZero climberZero = new ClimberZero(climber);
+    private final ClimberDown climberManualDown = new ClimberDown(climber);
+    private final ClimberUp climberManualUp = new ClimberUp(climber);
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
@@ -293,14 +297,16 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        operatorController.getRightBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        operatorController.getRightBumper().whileFalse(intakeFixAngleBackCommand);
+        operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
         operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
-        operatorController.getX().whileTrue(runShooter);
+        operatorController.getRightTrigger().whileTrue(runShooter);
 
-        operatorController.getLeftTrigger().whileTrue(climberZero);
-        operatorController.getRightTrigger().whileTrue(climberPost);
+        operatorController.getDown().whileTrue(climberZero);
+        operatorController.getUp().whileTrue(climberPost);
+        operatorController.getLeftStick().whileTrue(climberManualDown);
+        operatorController.getRightStick().whileTrue(climberManualUp);
         // joystick.getButton1().whileTrue(testvds);
         /*
         joystick.getButton3().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));

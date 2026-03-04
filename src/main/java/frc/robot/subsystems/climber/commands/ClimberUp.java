@@ -8,34 +8,37 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climber.Climber;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ClimberPost extends Command {
-    private final Climber climber;
+public class ClimberUp extends Command {
+  /** Creates a new ClimberUp. */
+  private final Climber climber;
 
     /** Creates a new ClimberPost. */
-    public ClimberPost(Climber climber) {
+    public ClimberUp(Climber climber) {
         this.climber = climber;
         addRequirements(climber);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-        climber.setTestMode(false);
-        climber.largeHookPost();
-    }
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    climber.setTestMode(false);
+    climber.largeHookPost();
+  }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {}
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {}
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {}
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    climber.testIfEnd();
+  }
 
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return climber.focus;
-    }
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
 }
