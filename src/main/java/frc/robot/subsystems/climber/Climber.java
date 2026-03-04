@@ -47,7 +47,7 @@ public class Climber extends SubsystemBase {
         if (this.test) {
             this.focus = false;
         }
-        
+
         // largeHookConfig.inverted(true);
         largeHookConfig.smartCurrentLimit(ClimberConstants.STALL_CURRENT_LIMIT);
         largeHookConfig.idleMode(IdleMode.kBrake);
@@ -86,18 +86,16 @@ public class Climber extends SubsystemBase {
     // }
 
     public void largeHookZero() {
-        if(!test){
-        focus = false;
-        targetLargeHookPosition = 0;
+        if (!test) {
+            focus = false;
+            targetLargeHookPosition = 0;
         }
     }
 
-    public void setTestMode(boolean is_test_mode)
-    {
-        this.test = is_test_mode;
-        if(is_test_mode)
-        {
-            this.focus = false;
+    public void setTestMode(boolean is_test_mode) {
+        test = is_test_mode;
+        if (is_test_mode) {
+            focus = false;
         }
     }
 
@@ -175,10 +173,9 @@ public class Climber extends SubsystemBase {
                     Math.signum(diff));
         }
     }
+
     public void testIfEnd() {
-        if (test) {
-            largeHookMotor.set(0);            
-        }
+        largeHookMotor.set(0);
     }
 
     @Override
@@ -191,8 +188,11 @@ public class Climber extends SubsystemBase {
         //         ClimberConstants.GAP_BLOCKER_ACCURACY_ROTATIONS,
         //         ClimberConstants.GAP_BLOCKER_MOTOR_SPEED * (ClimberConstants.GAP_BLOCKER_CLOCKWISE ? -1 : 1));
 
-        if (!test) {setMotor(largeHookMotor, largeHookEncoder.getPosition(), targetLargeHookPosition);}
+        if (!test) {
+            setMotor(largeHookMotor, largeHookEncoder.getPosition(), targetLargeHookPosition);
+        }
         SmartDashboard.putNumber("climber encoder pos", largeHookEncoder.getPosition());
+        SmartDashboard.putBoolean("climberTestMode", test);
 
         // setMotor(
         //         smallHookMotor,
@@ -202,10 +202,7 @@ public class Climber extends SubsystemBase {
         //         ClimberConstants.HOOK_MOTOR_SPEED);
     }
 
-    public Command getSequence (Command climberReset, Command climberPre, Command climberPost) {
-        return test
-            ? new InstantCommand()
-            : new SequentialCommandGroup(climberReset, climberPre, climberPost);
-
+    public Command getSequence(Command climberReset, Command climberPre, Command climberPost) {
+        return test ? new InstantCommand() : new SequentialCommandGroup(climberReset, climberPre, climberPost);
     }
 }

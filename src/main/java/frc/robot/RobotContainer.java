@@ -54,6 +54,7 @@ import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
 import frc.robot.subsystems.intake.commands.IntakeForwardCommand;
 import frc.robot.subsystems.intake.commands.IntakeRollerForwardCommand;
 import frc.robot.subsystems.intake.commands.IntakeStopCommand;
+import frc.robot.subsystems.led.LEDLights;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -112,6 +113,7 @@ public class RobotContainer {
     private final ClimberUp climberManualUp = new ClimberUp(climber);
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
+    private final LEDLights rgbLEDs = new LEDLights();
 
     //     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 
@@ -297,11 +299,12 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
-        operatorController.getLeftBumper().whileTrue(rollerAgitate);
+        rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
+        // operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        // operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
+        // operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
-        operatorController.getRightTrigger().whileTrue(runShooter);
+        // operatorController.getRightTrigger().whileTrue(runShooter);
 
         operatorController.getDown().whileTrue(climberZero);
         operatorController.getUp().whileTrue(climberPost);

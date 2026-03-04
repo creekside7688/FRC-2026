@@ -17,7 +17,6 @@ public class ShooterFeeder extends SubsystemBase {
 
     public void UnclogFeeder() {
         feedControllerSrx.set(ControlMode.PercentOutput, -FeederConstants.RUN_FEEDER_OUTPUT);
-        
     }
 
     public void stopFeeder() {
