@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Hub Start To Climb Shoot"
+            "pathName": "Left Trench Start To Left Dump"
           }
         },
         {
@@ -17,7 +17,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
@@ -29,7 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 2.5
                 }
               }
             ]
@@ -38,7 +38,7 @@
       ]
     }
   },
-  "resetOdom": false,
-  "folder": "Hub Start",
+  "resetOdom": true,
+  "folder": null,
   "choreoAuto": false
 }

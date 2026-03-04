@@ -85,14 +85,17 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
+    private final LEDLights rgbLEDs = new LEDLights();
+
     private final Intake intake = new Intake();
     public final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
     public final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
-    public final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
+    public final IntakeRollerForwardCommand intakeRollerForwardCommand =
+            new IntakeRollerForwardCommand(intake, rgbLEDs);
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
-    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
+    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake, rgbLEDs);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -113,7 +116,6 @@ public class RobotContainer {
     private final ClimberUp climberManualUp = new ClimberUp(climber);
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
-    private final LEDLights rgbLEDs = new LEDLights();
 
     //     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 
@@ -296,15 +298,18 @@ public class RobotContainer {
         //         .whileTrue(DriveCommands.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
         driveController.getRightBumper().whileTrue(autoClimbRight);
         driveController.getLeftBumper().whileTrue(autoClimbLeft);
+        // driveController.getDown().whileTrue(runShooter);
     }
 
     public void configureOperatorBindings() {
-        rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
-        // operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        // operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
-        // operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
-        // operatorController.getRightTrigger().whileTrue(runShooter);
+        rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
+
+        operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
+        operatorController.getLeftBumper().whileTrue(rollerAgitate);
+
+        operatorController.getRightTrigger().whileTrue(runShooter);
 
         operatorController.getDown().whileTrue(climberZero);
         operatorController.getUp().whileTrue(climberPost);

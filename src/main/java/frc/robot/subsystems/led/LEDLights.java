@@ -82,14 +82,14 @@ public class LEDLights extends SubsystemBase {
     }
 
     public Command runPattern(LEDPattern pattern) {
-        return run(() -> pattern.applyTo(ledBuffer));
+        return run(() -> pattern.applyTo(ledBuffer)).ignoringDisable(true);
     }
 
-    public void RGBflash() {
+    public Command RGBflash() {
         LEDPattern white = LEDPattern.solid(Color.kWhite);
         LEDPattern pattern = white.blink(Seconds.of(1.5));
         pattern = pattern.atBrightness(Percent.of(200));
-        runPattern(pattern);
+        return runPattern(pattern);
     }
 
     @Override

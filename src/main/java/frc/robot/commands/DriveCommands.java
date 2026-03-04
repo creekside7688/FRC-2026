@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.SwerveUtils;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.DrivebaseConstants;
@@ -27,6 +28,9 @@ public class DriveCommands {
             new PIDController(DrivebaseConstants.OVERRIDE_ANGLE_KP, 0.0, DrivebaseConstants.OVERRIDE_ANGLE_KD);
 
     private static final PIDController yController = new PIDController(4, 0, 0);
+
+    private static final Trigger autoAlignAtSetpoint = new Trigger(() -> angleController.atSetpoint());
+    private static final Trigger autoAlignDebounced = autoAlignAtSetpoint.debounce(0.2);
 
     static {
         angleController.enableContinuousInput(-Math.PI, Math.PI); // I love pid controllers
@@ -184,7 +188,7 @@ public class DriveCommands {
         }
 
         public boolean isFinished() {
-            return angleController.atSetpoint();
+            return autoAlignDebounced.getAsBoolean();
         }
     }
 }

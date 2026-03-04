@@ -46,7 +46,7 @@ public class RunShooter extends Command {
         distance = hubPose.getDistance(
                 sd.getPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation());
 
-        SmartDashboard.putNumber("distance from hub", distance);
+        SmartDashboard.putNumber("distance from hub", distance * 39.3701);
     }
 
     // Called when the command is initially scheduled.
