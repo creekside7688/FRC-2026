@@ -20,7 +20,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -58,6 +57,7 @@ import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
 import frc.robot.subsystems.shooter.commands.TestShootingLookup;
+import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
@@ -111,6 +111,8 @@ public class RobotContainer {
 
     private final TestShootingLookup testlookup =
             new TestShootingLookup(shooter, feeder, shooterhood, spindexer); // for
+
+    private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 
     private final Command autoClimbLeft;
     private final Command autoClimbRight;
@@ -236,8 +238,8 @@ public class RobotContainer {
                                         ? GameConstants.HUB_RED
                                         : GameConstants.HUB_BLUE)));
         NamedCommands.registerCommand("Shoot", runShooter);
-        NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand); 
-        NamedCommands.registerCommand("Stow Intake", intakeBackCommand); 
+        NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand);
+        NamedCommands.registerCommand("Stow Intake", intakeBackCommand);
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
         NamedCommands.registerCommand("Climb On Right", autoClimbRight);
         NamedCommands.registerCommand("Climb On Left", autoClimbLeft);
@@ -283,8 +285,8 @@ public class RobotContainer {
                                         .plus(ShooterConstants.ROBOT_TO_SHOOTER)
                                         .getTranslation(),
                                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
-                                ? GameConstants.HUB_RED
-                                : GameConstants.HUB_BLUE)));
+                                        ? GameConstants.HUB_RED
+                                        : GameConstants.HUB_BLUE)));
 
         // driveController
         //         .getRightBumper()
@@ -294,18 +296,20 @@ public class RobotContainer {
     }
 
     public void configureOperatorBindings() {
-        // operatorController.getX().whileTrue(runShooter);
-        // operatorController.getLeftBumper().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
-        // operatorController.getLeftBumper().whileFalse(intakeFixAngleBackCommand);
-        // operatorController.getRightBumper().whileTrue(intakeStopCommand);
+        joystick.getButton1().whileTrue(testvds);
+        /*
+        joystick.getButton3().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        joystick.getButton4().whileFalse(intakeFixAngleBackCommand);
+        joystick.getButton5().whileTrue(intakeStopCommand);
 
-        // operatorController.getLeftTrigger().whileTrue(climberPre);
-        // operatorController.getRightTrigger().whileTrue(climberPost);
-        // operatorController.getA().whileTrue(climberZero);
+        joystick.getButton6().whileTrue(climberPre);
+        joystick.getButton7().whileTrue(climberPost);
+        joystick.getButton8().whileTrue(climberZero);
+        */
 
         shooterhood.setDefaultCommand(shooterhood.runOnce(() -> shooterhood.setHoodPosition(75)));
 
-        joystick.getButton1().whileTrue(runShooter);
+        // joystick.getButton1().whileTrue(runShooter);
         // joystick.getButton2().whileTrue(intakeFixAngleBackCommand);
         // Command shooterRunSequential = ShootRPM.alongWith(
         // ShootAngle,
@@ -353,6 +357,12 @@ public class RobotContainer {
                 new Pose3d(driveSimulation.getSimulatedDriveTrainPose().plus(ShooterConstants.ROBOT_TO_SHOOTER))
                         .plus(new Transform3d(
                                 new Translation3d(Inches.of(0), Inches.of(0), Inches.of(17)), Rotation3d.kZero)));
-        Logger.recordOutput("test dist", driveSimulation.getSimulatedDriveTrainPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation().getDistance((GameConstants.HUB_RED)));
+        Logger.recordOutput(
+                "test dist",
+                driveSimulation
+                        .getSimulatedDriveTrainPose()
+                        .plus(ShooterConstants.ROBOT_TO_SHOOTER)
+                        .getTranslation()
+                        .getDistance((GameConstants.HUB_RED)));
     }
 }

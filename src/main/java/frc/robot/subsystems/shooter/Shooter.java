@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
 
     // private GenericEntry voltage = tab.add("shooterVoltage", 0).getEntry();
 
-    // private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
+    private GenericEntry shootRPM = tab.add("shootRPM", 0).getEntry();
 
     private GenericEntry desiredDistance = tab.add("desiredDistance", 100).getEntry();
 
@@ -108,38 +108,34 @@ public class Shooter extends SubsystemBase {
 
     public boolean checkShooterRPMTolerance() {
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = desiredRPM * 1.02;
-        double toleranceLow = desiredRPM * 0.98;
+        double toleranceHigh = desiredRPM * 1.035;
+        double toleranceLow = desiredRPM * 0.965;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
         return false;
     }
 
-    /*
     public boolean checkVariableRPMTolerance() {
         double targetRPM = shootRPM.getDouble(0);
         double shooterVelocity = shootMotor1.getEncoder().getVelocity();
-        double toleranceHigh = targetRPM * 1.02;
-        double toleranceLow = targetRPM * 0.98;
+        double toleranceHigh = targetRPM * 1.035;
+        double toleranceLow = targetRPM * 0.965;
         if (shooterVelocity > toleranceLow && shooterVelocity < toleranceHigh) {
             return true;
         }
         return false;
     }
-        */
 
     public void SetRPM(double rpm) {
         desiredRPM = rpm;
         sm1_Controller.setSetpoint(rpm, ControlType.kVelocity);
     }
 
-    /*
     public void SetVariableRPM() {
         int rpm = (int) shootRPM.getDouble(0);
         SetRPM(rpm);
     }
-    */
 
     public void RunIdle() {
         SetRPM(ShooterConstants.IDLE_RPM);
