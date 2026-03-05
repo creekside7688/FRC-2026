@@ -91,11 +91,11 @@ public class RobotContainer {
     public final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
     public final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
     public final IntakeRollerForwardCommand intakeRollerForwardCommand =
-            new IntakeRollerForwardCommand(intake, rgbLEDs);
+            new IntakeRollerForwardCommand(intake);
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
-    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake, rgbLEDs);
+    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 

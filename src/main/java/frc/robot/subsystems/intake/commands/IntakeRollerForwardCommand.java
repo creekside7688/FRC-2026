@@ -9,14 +9,12 @@ import frc.robot.subsystems.led.LEDLights;
 
 public class IntakeRollerForwardCommand extends Command {
     Intake intake;
-    LEDLights lights;
     double motorInput;
     InstantCommand flashLED;
 
-    public IntakeRollerForwardCommand(Intake inputIntake, LEDLights inputLights) {
+    public IntakeRollerForwardCommand(Intake inputIntake) {
         this.intake = inputIntake;
-        this.lights = inputLights;
-        this.addRequirements(new Subsystem[] {inputIntake, inputLights});
+        this.addRequirements(new Subsystem[] {inputIntake});
     }
 
     public void initialize() {}
