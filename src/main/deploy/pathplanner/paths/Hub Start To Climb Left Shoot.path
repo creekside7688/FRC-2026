@@ -3,37 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
+        "x": 3.585,
         "y": 4.029
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0631355705254095,
-        "y": 4.879863415683416
+        "x": 3.9584300590270285,
+        "y": 4.029
       },
       "isLocked": false,
-      "linkedName": "Climb Left Shoot"
+      "linkedName": "Hub Start"
     },
     {
       "anchor": {
-        "x": 1.5229807152546635,
-        "y": 5.984891057618906
+        "x": 2.0,
+        "y": 4.029
       },
       "prevControl": {
-        "x": 1.389647481992702,
-        "y": 5.298085345788898
+        "x": 2.4897116251236193,
+        "y": 4.029
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Climb Left Shoot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -46,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 180.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Custom Start",

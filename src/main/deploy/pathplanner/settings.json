@@ -3,12 +3,12 @@
   "robotLength": 0.838,
   "holonomicMode": true,
   "pathFolders": [
-    "Custom Start",
-    "Stolen",
-    "Stolen Start"
+    "Custom Start"
   ],
   "autoFolders": [
-    "Hub Start"
+    "Hub Start",
+    "Left Trench Start",
+    "Right Trench Start"
   ],
   "defaultMaxVel": 2.5,
   "defaultMaxAccel": 3.0,
