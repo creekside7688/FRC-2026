@@ -246,8 +246,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("Deploy Intake", intakeForwardCommand);
         NamedCommands.registerCommand("Stow Intake", intakeBackCommand);
         NamedCommands.registerCommand("Run Intake Rollers", intakeRollerForwardCommand);
-        NamedCommands.registerCommand("Climb On Left", autoClimbRight);
-        NamedCommands.registerCommand("Climb On Right", autoClimbLeft);
+        NamedCommands.registerCommand("Climb On Left", autoClimbLeft);
+        NamedCommands.registerCommand("Climb On Right", autoClimbRight);
         NamedCommands.registerCommand("Climb Motors Run", climberPost);
 
         autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
