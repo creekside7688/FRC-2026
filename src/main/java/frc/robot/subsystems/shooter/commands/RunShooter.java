@@ -36,8 +36,7 @@ public class RunShooter extends Command {
 
     private void getDistanceToHub() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        // var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
-        var hubPose = GameConstants.HUB_RED;
+        var hubPose = (alliance == Alliance.Red) ? GameConstants.HUB_RED : GameConstants.HUB_BLUE;
 
         // distance = Math.hypot(
         // (hubPose.getX() - sd.getPose().getX()),
