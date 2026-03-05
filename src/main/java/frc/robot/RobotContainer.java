@@ -291,7 +291,8 @@ public class RobotContainer {
                                         .getTranslation(),
                                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
                                         ? GameConstants.HUB_RED
-                                        : GameConstants.HUB_BLUE)));
+                                        : GameConstants.HUB_BLUE)))
+                .whileTrue(rgbLEDs.RGBSolidYellow());
 
         // driveController
         //         .getRightBumper()
@@ -309,8 +310,10 @@ public class RobotContainer {
         operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
         operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
-        operatorController.getRightTrigger().whileTrue(runShooter);
+        operatorController.getRightTrigger().whileTrue(runShooter)
+                                            .whileTrue(rgbLEDs.RGBFlashOrange());
 
+                                
         operatorController.getDown().whileTrue(climberZero);
         operatorController.getUp().whileTrue(climberPost);
         operatorController.getLeftStick().whileTrue(climberManualDown);

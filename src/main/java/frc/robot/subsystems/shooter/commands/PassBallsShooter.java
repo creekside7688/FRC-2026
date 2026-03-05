@@ -6,7 +6,7 @@ import frc.robot.subsystems.drivebase.SwerveDrive;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.Spindexer.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PassBallsShooter extends Command {
