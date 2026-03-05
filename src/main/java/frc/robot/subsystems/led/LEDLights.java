@@ -42,7 +42,8 @@ public class LEDLights extends SubsystemBase {
         led.start();
 
         // RgbSolidRed();
-        setDefaultCommand(runPattern(black).withName("Off"));
+        // setDefaultCommand(runPattern(black).withName("Off"));
+        pattern(scrollingRainbow);
     }
 
     public Command RGBSolidRed() {
@@ -83,6 +84,10 @@ public class LEDLights extends SubsystemBase {
 
     public Command runPattern(LEDPattern pattern) {
         return run(() -> pattern.applyTo(ledBuffer)).ignoringDisable(true);
+    }
+
+    public void pattern(LEDPattern pattern) {
+        pattern.applyTo(ledBuffer);
     }
 
     public Command RGBflash() {

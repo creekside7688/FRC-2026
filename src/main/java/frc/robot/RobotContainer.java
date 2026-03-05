@@ -59,7 +59,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.RunShooter;
-// import frc.robot.subsystems.shooter.commands.TestVDS;
+import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
 import frc.robot.subsystems.vision.Vision;
@@ -117,7 +117,7 @@ public class RobotContainer {
 
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
-    //     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
+    private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
 
     private final Command autoClimbLeft;
     private final Command autoClimbRight;
@@ -303,7 +303,7 @@ public class RobotContainer {
 
     public void configureOperatorBindings() {
 
-        rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
+        // rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
 
         operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
@@ -315,7 +315,8 @@ public class RobotContainer {
         operatorController.getUp().whileTrue(climberPost);
         operatorController.getLeftStick().whileTrue(climberManualDown);
         operatorController.getRightStick().whileTrue(climberManualUp);
-        // joystick.getButton1().whileTrue(testvds);
+
+        // operatorController.getX().whileTrue(testvds);
         /*
         joystick.getButton3().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
         joystick.getButton4().whileFalse(intakeFixAngleBackCommand);

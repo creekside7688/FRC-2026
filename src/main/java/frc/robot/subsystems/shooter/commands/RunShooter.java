@@ -66,6 +66,7 @@ public class RunShooter extends Command {
             feeder.RunFeeder();
             spindexer.setIndexer(SpindexerConstants.SPINDEXER_VOLTAGE);
         } else {
+            spindexer.stopIndexer();
             feeder.stopFeeder();
         }
     }
