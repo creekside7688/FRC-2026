@@ -1,0 +1,62 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Trench Start To Right Dump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align To Hub"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Dump To Right Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb On Right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb Motors Run"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Right Trench Start",
+  "choreoAuto": false
+}
