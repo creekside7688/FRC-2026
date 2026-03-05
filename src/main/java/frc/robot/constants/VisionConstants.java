@@ -6,6 +6,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 
 /**
  * LimelightConstants
@@ -33,12 +34,12 @@ public class VisionConstants {
     public static final double HIGHEST_AMBIGUITY = 0.2;
     public static final double MAX_Z_ERROR = 0.75;
 
-    public static double LINEAR_STDDEV_BASE = 0.1; // Meters
-    public static double ANGULAR_STDDEV_BASE = 0.06; // Radians
+    public static double LINEAR_STDDEV_BASE = 0.15; // Meters
+    public static double ANGULAR_STDDEV_BASE = Units.degreesToRadians(1.75); // Radians
 
     public static double[] CAM_STD_DEVS = new double[] {
-        1.0, // CAM 1
-        1.0 // CAM 2
+        1.2, // CAM 1
+        1.25 // CAM 2
     };
 
     public static final double LINEAR_STD_DEV_MEGATAG2FACTOR = 0.5;
