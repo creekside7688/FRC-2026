@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 2.033336046245737,
-        "y": 7.441
+        "y": 7.402878240128638
       },
       "prevControl": {
         "x": 2.533336046245737,
-        "y": 7.441
+        "y": 7.402878240128638
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Dump Left"
     }
   ],
   "rotationTargets": [],

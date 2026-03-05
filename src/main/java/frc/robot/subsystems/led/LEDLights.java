@@ -42,14 +42,14 @@ public class LEDLights extends SubsystemBase {
         led.start();
     }
 
-      public Command RGBSolidYellow() {
+    public Command RGBSolidYellow() {
         LEDPattern yellow = LEDPattern.solid(Color.kYellow);
         return runPattern(yellow);
     }
 
     public Command RGBFlashOrange() {
         LEDPattern orange = LEDPattern.solid(Color.kOrange);
-        LEDPattern flashorange = orange.blink(Seconds.of(1.5));
+        LEDPattern flashorange = orange.blink(Seconds.of(0.1));
         flashorange = flashorange.atBrightness(Percent.of(200));
         return runPattern(flashorange);
     }
@@ -59,6 +59,13 @@ public class LEDLights extends SubsystemBase {
         LEDPattern flashgreen = green.blink(Seconds.of(1.5));
         flashgreen = flashgreen.atBrightness(Percent.of(200));
         return runPattern(flashgreen);
+    }
+
+    public Command RGBFlashRed() {
+        LEDPattern red = LEDPattern.solid(Color.kRed);
+        LEDPattern flashRed = red.blink(Seconds.of(0.1));
+        flashRed = flashRed.atBrightness(Percent.of(200));
+        return runPattern(flashRed);
     }
 
     public Command RGBSolidRed() {

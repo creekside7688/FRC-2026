@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
-import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -28,11 +27,11 @@ public class PositionPIDCommand extends Command {
 
     private static final Supplier<Pose2d> LEFT_CLIMB_POSE =
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
-                    ? FlippingUtil.flipFieldPose(AutonomousConstants.LEFT_RED_CLIMB)
+                    ? AutonomousConstants.LEFT_BLUE_CLIMB
                     : AutonomousConstants.LEFT_RED_CLIMB;
     private static final Supplier<Pose2d> RIGHT_CLIMB_POSE =
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
-                    ? FlippingUtil.flipFieldPose(AutonomousConstants.RIGHT_RED_CLIMB)
+                    ? AutonomousConstants.RIGHT_BLUE_CLIMB
                     : AutonomousConstants.RIGHT_RED_CLIMB;
 
     private PositionPIDCommand(SwerveDrive drive, boolean isLeft) {

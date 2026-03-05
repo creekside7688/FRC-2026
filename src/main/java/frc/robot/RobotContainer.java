@@ -90,8 +90,7 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     public final IntakeBackCommand intakeBackCommand = new IntakeBackCommand(intake);
     public final IntakeForwardCommand intakeForwardCommand = new IntakeForwardCommand(intake);
-    public final IntakeRollerForwardCommand intakeRollerForwardCommand =
-            new IntakeRollerForwardCommand(intake);
+    public final IntakeRollerForwardCommand intakeRollerForwardCommand = new IntakeRollerForwardCommand(intake);
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
@@ -306,12 +305,14 @@ public class RobotContainer {
 
         rgbLEDs.setDefaultCommand(rgbLEDs.RGBRainbow());
 
-        operatorController.getLeftTrigger().whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand));
+        operatorController
+                .getLeftTrigger()
+                .whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand))
+                .whileTrue(rgbLEDs.RGBFlashRed());
         operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
         operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
-        operatorController.getRightTrigger().whileTrue(runShooter)
-                                            .whileTrue(rgbLEDs.RGBFlashOrange());
+        operatorController.getRightTrigger().whileTrue(runShooter).whileTrue(rgbLEDs.RGBFlashOrange());
 
         operatorController.getDown().whileTrue(climberZero);
         operatorController.getUp().whileTrue(climberPost);

@@ -6,7 +6,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 
 public class AutonomousConstants {
     public static final double PATH_TRANSLATION_P = 5.0;
@@ -32,7 +31,9 @@ public class AutonomousConstants {
         }
     }
 
-    public static final Pose2d LEFT_RED_CLIMB = new Pose2d(new Translation2d(15.024, 3.9), Rotation2d.k180deg);
-    public static final Pose2d RIGHT_RED_CLIMB =
-            new Pose2d(new Translation2d(15.024, 3.909 + Units.inchesToMeters(32.25 + 1.5 * 1.5)), Rotation2d.k180deg);
+    public static final Pose2d LEFT_RED_CLIMB = new Pose2d(new Translation2d(15.078, 3.914), Rotation2d.k180deg);
+    public static final Pose2d RIGHT_RED_CLIMB = new Pose2d(new Translation2d(15.069, 4.756), Rotation2d.k180deg);
+
+    public static final Pose2d LEFT_BLUE_CLIMB = new Pose2d(new Translation2d(1.465, 4.122), Rotation2d.kZero);
+    public static final Pose2d RIGHT_BLUE_CLIMB = new Pose2d(new Translation2d(1.431, 3.270), Rotation2d.k180deg);
 }
