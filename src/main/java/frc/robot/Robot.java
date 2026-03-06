@@ -65,7 +65,7 @@ public class Robot extends LoggedRobot {
         switch (RobotState.CURRENT_MODE) {
             case REAL:
                 // Logger.addDataReceiver(new WPILOGWriter()); // Uncomment during comp / when usb plugged in
-                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables, comment during comp
+                // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables, comment during comp
                 break;
 
                 // Sim robot
