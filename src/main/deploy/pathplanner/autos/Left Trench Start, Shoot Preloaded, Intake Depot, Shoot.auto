@@ -69,12 +69,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop Intake Rollers"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Stow Intake"
           }
         },

@@ -32,9 +32,13 @@ public class AutonomousConstants {
         }
     }
 
-    public static final Pose2d LEFT_RED_CLIMB = new Pose2d(new Translation2d(15.078 + Units.inchesToMeters(1), 3.914), Rotation2d.k180deg);
-    public static final Pose2d RIGHT_RED_CLIMB = new Pose2d(new Translation2d(15.069 + Units.inchesToMeters(1), 4.756), Rotation2d.k180deg);
+    public static final Pose2d LEFT_RED_CLIMB =
+            new Pose2d(new Translation2d(15.078 + Units.inchesToMeters(0.25), 3.914), Rotation2d.k180deg);
+    public static final Pose2d RIGHT_RED_CLIMB =
+            new Pose2d(new Translation2d(15.069 + Units.inchesToMeters(0.25), 4.756), Rotation2d.k180deg);
 
-    public static final Pose2d LEFT_BLUE_CLIMB = new Pose2d(new Translation2d(1.465 - Units.inchesToMeters(1), 4.122), Rotation2d.kZero);
-    public static final Pose2d RIGHT_BLUE_CLIMB = new Pose2d(new Translation2d(1.431 - Units.inchesToMeters(1), 3.270), Rotation2d.k180deg);
+    public static final Pose2d LEFT_BLUE_CLIMB =
+            new Pose2d(new Translation2d(1.465 - Units.inchesToMeters(0.25), 4.122), Rotation2d.kZero);
+    public static final Pose2d RIGHT_BLUE_CLIMB =
+            new Pose2d(new Translation2d(1.431 - Units.inchesToMeters(0.25), 3.270), Rotation2d.kZero);
 }

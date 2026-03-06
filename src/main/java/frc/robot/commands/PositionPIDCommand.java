@@ -62,7 +62,7 @@ public class PositionPIDCommand extends Command {
         return new PositionPIDCommand(swerve, isLeft)
                 .withTimeout(timeoutSeconds)
                 .finallyDo(() -> {
-                    swerve.runVelocity(new ChassisSpeeds(0, 0, 0));
+                    swerve.runVelocity(new ChassisSpeeds(0.1, 0, 0));
                 });
     }
 

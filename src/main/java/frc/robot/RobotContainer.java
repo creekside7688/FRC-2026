@@ -8,17 +8,8 @@ import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.constants.VisionConstants.ROBOT_TO_HOPPER_CAM_TRANSFORM;
 import static frc.robot.constants.VisionConstants.ROBOT_TO_SWERVE_CAM_TRANSFORM;
 
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.COTS;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
-import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -77,6 +68,13 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -98,7 +96,7 @@ public class RobotContainer {
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
-//     private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
+    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
     private final IntakeAgitate intakeAgitate = new IntakeAgitate(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -284,18 +282,16 @@ public class RobotContainer {
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
                 () -> -driveController.getRightX(),
-                false
-        ));
+                false));
 
-        driveController.getDown().whileTrue(
-                (DriveCommands.joystickDrive(
-                sd,
-                () -> -driveController.getLeftY(),
-                () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX(),
-               true 
-        )));
-        
+        driveController
+                .getLeftTrigger()
+                .whileTrue((DriveCommands.joystickDrive(
+                        sd,
+                        () -> -driveController.getLeftY(),
+                        () -> -driveController.getLeftX(),
+                        () -> -driveController.getRightX(),
+                        true)));
 
         driveController
                 .getRightTrigger()
@@ -329,7 +325,7 @@ public class RobotContainer {
                 .whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand))
                 .whileTrue(rgbLEDs.RGBFlashRed());
         operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
-        operatorController.getLeftBumper().whileTrue(intakeAgitate);
+        operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
         operatorController.getRightTrigger().whileTrue(runShooter).whileTrue(rgbLEDs.RGBFlashOrange());
         operatorController.getA().whileTrue(pass);
