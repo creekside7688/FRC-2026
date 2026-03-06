@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 1.811305229894857,
-        "y": 1.3860240352463074
+        "y": 1.3860240352463071
       },
       "isLocked": false,
       "linkedName": "Dump Right"
@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 1.8977543309436578,
-        "y": 2.337530052221014
+        "y": 2.3375300522210134
       },
       "nextControl": null,
       "isLocked": false,
