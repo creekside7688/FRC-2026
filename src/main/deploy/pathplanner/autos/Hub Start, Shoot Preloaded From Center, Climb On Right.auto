@@ -31,6 +31,12 @@
                 "data": {
                   "waitTime": 4.0
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake Rollers"
+                }
               }
             ]
           }
