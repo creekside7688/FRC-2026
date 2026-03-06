@@ -42,7 +42,7 @@ public class DriveCommands {
      * Field relative drive command using two joysticks (controlling linear and angular velocities).
      */
     public static Command joystickDrive(
-            SwerveDrive swerveDrive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+            SwerveDrive swerveDrive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier, boolean slowMode) {
         return Commands.run(
                 () -> {
                     // Get linear velocity
@@ -53,12 +53,16 @@ public class DriveCommands {
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), ControllerConstants.DEADBAND);
 
                     // Square rotation value for more precise control
-                    omega = Math.copySign(omega * omega, omega);
+                    omega = Math.copySign(omega * omega, omega) * (slowMode ? 
+                        DrivebaseConstants.MAXIMUM_LIMITED_ANGULAR_SPEED_RADIANS_PER_SECOND : DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND);
+
+                    double linearMagnitude = slowMode ? DrivebaseConstants.MAXIMUM_LIMITED_SPEED_METRES_PER_SECOND
+                                                : DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND;
 
                     // Convert to field relative speeds & send command
                     ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
-                            linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            linearVelocity.getX() * linearMagnitude,
+                            linearVelocity.getY() * linearMagnitude,
                             omega * DrivebaseConstants.MAXIMUM_ANGULAR_SPEED_RADIANS_PER_SECOND);
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
