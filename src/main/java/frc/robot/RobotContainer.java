@@ -48,6 +48,7 @@ import frc.robot.subsystems.drivebase.module.ModuleIO;
 import frc.robot.subsystems.drivebase.module.ModuleIOMapleSim;
 import frc.robot.subsystems.drivebase.module.ModuleIOSparkMax;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.commands.IntakeAgitate;
 import frc.robot.subsystems.intake.commands.IntakeBackCommand;
 import frc.robot.subsystems.intake.commands.IntakeFixAngleBack;
 import frc.robot.subsystems.intake.commands.IntakeFixAngleForward;
@@ -95,7 +96,8 @@ public class RobotContainer {
     private final IntakeFixAngleForward intakeFixAngleForwardCommand = new IntakeFixAngleForward(intake);
     private final IntakeFixAngleBack intakeFixAngleBackCommand = new IntakeFixAngleBack(intake);
     private final IntakeStopCommand intakeStopCommand = new IntakeStopCommand(intake);
-    private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
+//     private final IntakeRollerForwardCommand rollerAgitate = new IntakeRollerForwardCommand(intake);
+    private final IntakeAgitate intakeAgitate = new IntakeAgitate(intake);
 
     private final Controller operatorController = new Controller(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -313,7 +315,7 @@ public class RobotContainer {
                 .whileTrue(intakeForwardCommand.andThen(intakeRollerForwardCommand))
                 .whileTrue(rgbLEDs.RGBFlashRed());
         operatorController.getLeftTrigger().whileFalse(intakeFixAngleBackCommand);
-        operatorController.getLeftBumper().whileTrue(rollerAgitate);
+        operatorController.getLeftBumper().whileTrue(intakeAgitate);
 
         operatorController.getRightTrigger().whileTrue(runShooter).whileTrue(rgbLEDs.RGBFlashOrange());
         operatorController.getA().whileTrue(pass);
