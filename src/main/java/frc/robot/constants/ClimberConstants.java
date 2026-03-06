@@ -26,7 +26,7 @@ public class ClimberConstants {
     public static final double HOOK_PRE_TARGET_POSITION_INCHES = -4.81;
 
     //     CHAIN_CIRCUMFERENCE_INCHES * 3 / 8; // 45 deg from hook point)
-    public static final double HOOK_POST_TARGET_POSITION_INCHES = -13;
+    public static final double HOOK_POST_TARGET_POSITION_INCHES = -16.0;
     //     CHAIN_CIRCUMFERENCE_INCHES * .5
     //     + HOOK_POST_PERCENT * CHAIN_CENTERS_DISTANCE_INCHES; // a little after horizontal level
     //     public static final double HOOK_PULL_TARGET_POSITION_INCHES =

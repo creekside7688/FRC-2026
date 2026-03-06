@@ -58,6 +58,7 @@ import frc.robot.subsystems.led.LEDLights;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.commands.PassBallsShooter;
 import frc.robot.subsystems.shooter.commands.RunShooter;
 import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -106,6 +107,7 @@ public class RobotContainer {
     private final ShooterHood shooterhood = new ShooterHood();
     private final ShooterFeeder feeder = new ShooterFeeder();
     private final Spindexer spindexer = new Spindexer();
+    private final PassBallsShooter pass;
 
     private final Climber climber = new Climber(false);
     private final ClimberPre climberPre = new ClimberPre(climber);
@@ -223,6 +225,7 @@ public class RobotContainer {
         camSystem = new Vision(sd, camIO1, camIO2);
 
         runShooter = new RunShooter(shooter, sd, feeder, shooterhood, spindexer);
+        pass = new PassBallsShooter(shooter, sd, feeder, shooterhood, spindexer);
 
         autoClimbRight = PositionPIDCommand.generateCommand(sd, false, 3);
 
@@ -313,6 +316,7 @@ public class RobotContainer {
         operatorController.getLeftBumper().whileTrue(rollerAgitate);
 
         operatorController.getRightTrigger().whileTrue(runShooter).whileTrue(rgbLEDs.RGBFlashOrange());
+        operatorController.getA().whileTrue(pass);
 
         operatorController.getDown().whileTrue(climberZero);
         operatorController.getUp().whileTrue(climberPost);
