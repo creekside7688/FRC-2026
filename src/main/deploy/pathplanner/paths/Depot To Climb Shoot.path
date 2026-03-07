@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9317367392982343,
-        "y": 5.741714939537125
+        "x": 1.4583609548931775,
+        "y": 4.397225336806347
       },
       "isLocked": false,
       "linkedName": "Depot"
     },
     {
       "anchor": {
-        "x": 2.0,
+        "x": 2.25,
         "y": 4.029
       },
       "prevControl": {
-        "x": 1.6884967602742165,
-        "y": 4.376146021720571
+        "x": 2.2636696274842465,
+        "y": 4.601099380499028
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climb Left Shoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -0.12990247583584252
   },
   "reversed": false,
   "folder": "Custom Start",

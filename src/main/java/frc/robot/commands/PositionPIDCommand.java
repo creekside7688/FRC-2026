@@ -82,7 +82,7 @@ public class PositionPIDCommand extends Command {
 
         drive.runVelocity(mDriveController
                 .calculateRobotRelativeSpeeds(drive.getPose(), goalState)
-                .div(1.25));
+                .div(1.15));
     }
 
     @Override
