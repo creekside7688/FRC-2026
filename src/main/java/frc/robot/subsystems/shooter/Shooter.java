@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -60,7 +59,7 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
 
         ShooterLookup.initializeTable();
-        SmartDashboard.putBoolean("t", false);
+        // SmartDashboard.putBoolean("t", false);
 
         this.shootMotor1Encoder = shootMotor1.getAbsoluteEncoder();
 
@@ -159,7 +158,7 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run;
-        SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
+        // SmartDashboard.putNumber("Shooter 1 Velocity", shootMotor1.getEncoder().getVelocity());
         shootMotor1.getEncoder().getVelocity();
         shootMotor1.getEncoder().getPosition();
     }

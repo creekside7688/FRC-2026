@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FieldConstants;
@@ -139,8 +138,8 @@ public class ShooterHood extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Encoder position:", hoodMotor.getEncoder().getPosition());
-        SmartDashboard.putBoolean("Within tolerance?", checkVariablePositionTolerance());
+        // SmartDashboard.putNumber("Encoder position:", hoodMotor.getEncoder().getPosition());
+        // SmartDashboard.putBoolean("Within tolerance?", checkVariablePositionTolerance());
         // This method will be called once per scheduler run
     }
 

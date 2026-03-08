@@ -2,7 +2,6 @@ package frc.robot.subsystems.shooter.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
@@ -45,7 +44,7 @@ public class RunShooter extends Command {
         distance = hubPose.getDistance(
                 sd.getPose().plus(ShooterConstants.ROBOT_TO_SHOOTER).getTranslation());
 
-        SmartDashboard.putNumber("distance from hub", distance * 39.3701);
+        // SmartDashboard.putNumber("distance from hub", distance * 39.3701);
     }
 
     // Called when the command is initially scheduled.
