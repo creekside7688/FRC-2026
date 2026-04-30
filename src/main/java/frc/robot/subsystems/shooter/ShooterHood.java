@@ -84,6 +84,10 @@ public class ShooterHood extends SubsystemBase {
         setHoodPosition(setPoint);
     }
 
+    public double getHoodPosition() {
+        return hoodMotor.getEncoder().getPosition();
+    }
+
     public boolean checkShooterPositionTolerance() {
         double shooterAngle = hoodMotor.getEncoder().getPosition();
         double toleranceHigh = desiredAngle * 1.005;

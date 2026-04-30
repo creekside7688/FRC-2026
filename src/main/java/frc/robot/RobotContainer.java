@@ -61,6 +61,7 @@ import frc.robot.subsystems.shooter.ShooterFeeder;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.commands.PassBallsShooter;
 import frc.robot.subsystems.shooter.commands.RunShooter;
+import frc.robot.subsystems.shooter.commands.TestSOTM;
 import frc.robot.subsystems.shooter.commands.TestVDS;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.commands.RunSpindexer;
@@ -68,6 +69,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import java.util.function.Supplier;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -118,6 +120,12 @@ public class RobotContainer {
     private final ClimberDown climberManualDown = new ClimberDown(climber);
     private final ClimberUp climberManualUp = new ClimberUp(climber);
 
+    // final Supplier<Double> driveControllerXSupplier = () -> -driveController.getLeftX();
+    // final Supplier<Double> driveControllerYSupplier = () -> -driveController.getLeftY();
+
+    final Supplier<Double> driveControllerXSupplier = () -> -joystick.getJoyX();
+    final Supplier<Double> driveControllerYSupplier = () -> -joystick.getJoyY();
+
     private final RunSpindexer runspindexer = new RunSpindexer(spindexer);
 
     private final TestVDS testvds = new TestVDS(shooter, shooterhood, feeder, spindexer);
@@ -141,6 +149,8 @@ public class RobotContainer {
     private final Vision camSystem;
 
     private final SwerveDrive sd;
+
+    private final TestSOTM testSOTM;
 
     private final DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
             .withGyro(COTS.ofNav2X())
@@ -224,6 +234,8 @@ public class RobotContainer {
         }
 
         sd = new SwerveDrive(gyro, fl, fr, bl, br);
+        testSOTM = new TestSOTM(
+                shooter, feeder, shooterhood, spindexer, sd, () -> -joystick.getJoyX(), () -> -joystick.getJoyY());
         camSystem = new Vision(sd, camIO1, camIO2);
 
         runShooter = new RunShooter(shooter, sd, feeder, shooterhood, spindexer);
@@ -278,11 +290,7 @@ public class RobotContainer {
     private void configureDriveBindings() {
 
         sd.setDefaultCommand(DriveCommands.joystickDrive(
-                sd,
-                () -> -driveController.getLeftY(),
-                () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX(),
-                false));
+                sd, () -> -joystick.getJoyY(), () -> -joystick.getJoyX(), () -> -joystick.getTwist(), false));
 
         driveController
                 .getLeftTrigger()
@@ -313,6 +321,7 @@ public class RobotContainer {
         //         .whileTrue(DriveCommands.joystickDriveWithTrenchAlign(sd, () -> -driveController.getLeftY()));
         driveController.getRightBumper().whileTrue(autoClimbRight);
         driveController.getLeftBumper().whileTrue(autoClimbLeft);
+        joystick.getButton1().whileTrue(testSOTM);
         // driveController.getDown().whileTrue(runShooter);
     }
 

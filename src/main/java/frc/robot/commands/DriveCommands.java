@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -94,6 +95,43 @@ public class DriveCommands {
             Supplier<Rotation2d> rotationSupplier) {
 
         // Construct command
+
+        SmartDashboard.putNumber("ControllerX Supplier", xSupplier.getAsDouble());
+        SmartDashboard.putNumber("ControllerY Supplier", ySupplier.getAsDouble());
+        SmartDashboard.putNumber("Rotational Supplier", rotationSupplier.get().getRadians());
+
+        return Commands.startRun(
+                () -> angleController.reset(),
+                () -> {
+                    // Get linear velocity
+                    Translation2d linearVelocity = SwerveUtils.GetLinearVelocityFromRawJoysticks(
+                            xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+                    // Calculate angular speed
+                    double omega = angleController.calculate(
+                            drive.getRotation2d().getRadians(),
+                            rotationSupplier.get().getRadians());
+
+                    // Convert to field relative speeds & send command
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            linearVelocity.getY() * DrivebaseConstants.MAXIMUM_SPEED_METRES_PER_SECOND,
+                            omega);
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                            speeds,
+                            isFlipped ? drive.getRotation2d().plus(new Rotation2d(Math.PI)) : drive.getRotation2d()));
+                },
+                drive);
+    }
+
+    public static Command joystickDriveForSOTM(
+            SwerveDrive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Rotation2d> rotationSupplier) {
+
         return Commands.startRun(
                 () -> angleController.reset(),
                 () -> {
